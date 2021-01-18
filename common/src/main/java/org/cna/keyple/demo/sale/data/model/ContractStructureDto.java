@@ -12,10 +12,13 @@ import java.util.Objects;
  */
 public class ContractStructureDto {
 
+    //mandatory
     private VersionNumber contractVersionNumber;
     private PriorityCode contractTariff;
     private DateCompact contactSaleDate;
     private DateCompact contractValidityEndDate;
+
+    //optional
     private Integer contractSaleSam;
     private Integer contractSaleCounter;
     private Byte contractAuthKvc;

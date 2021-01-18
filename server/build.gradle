@@ -1,0 +1,55 @@
+plugins {
+    id 'java'
+    id 'io.quarkus'
+}
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+
+task('runServer',  group:'keyple'){
+    dependsOn 'quarkusDev'
+}
+
+ext {
+    keyple_v = project.hasProperty("keyple_version") ? keyple_version : "+"
+}
+
+dependencies {
+
+    /* Keyple dependencies */
+    project.logger.lifecycle('Using dependency version: ' + keyple_v)
+    implementation group: 'org.eclipse.keyple', name: 'keyple-java-calypso', version: keyple_v
+    implementation group: 'org.eclipse.keyple', name: 'keyple-java-distributed-local', version: keyple_v
+    implementation group: 'org.eclipse.keyple', name: 'keyple-java-distributed-remote', version: keyple_v
+
+    /* Keyple plugin dependencies */
+    implementation group: 'org.eclipse.keyple', name: 'keyple-java-plugin-stub', version: keyple_v
+    implementation group: 'org.eclipse.keyple', name: 'keyple-java-plugin-pcsc', version: keyple_v
+
+    /* Common lib */
+    implementation project(":common")
+
+    /* Quarkus */
+    implementation 'io.quarkus:quarkus-resteasy-jsonb'
+    implementation 'io.quarkus:quarkus-resteasy'
+    implementation 'io.quarkus:quarkus-rest-client'
+    implementation enforcedPlatform("${quarkusPlatformGroupId}:${quarkusPlatformArtifactId}:${quarkusPlatformVersion}")
+
+    testImplementation 'io.quarkus:quarkus-junit5'
+    testImplementation 'io.rest-assured:rest-assured'
+}
+
+group 'org.cna.keyple.demo.remote.server'
+version '1.0.0-SNAPSHOT'
+
+compileJava {
+    options.encoding = 'UTF-8'
+    options.compilerArgs << '-parameters'
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+}

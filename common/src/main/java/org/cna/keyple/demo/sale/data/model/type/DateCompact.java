@@ -1,5 +1,6 @@
 package org.cna.keyple.demo.sale.data.model.type;
 
+import java.time.Instant;
 import java.util.Objects;
 
 /**
@@ -7,12 +8,20 @@ import java.util.Objects;
  * Dates are in legal local time
  */
 public class DateCompact {
-
+    private static String refDate = "2010-01-01T00:00:00Z";
     private short daysSinceReference;
 
     public DateCompact(short daysSinceReference) {
         this.daysSinceReference = daysSinceReference;
     }
+
+    public DateCompact(Instant now)
+    {
+        final long MILLIS_PER_DAY = 1000*60*60*24;
+        long ref = Instant.parse(refDate).toEpochMilli();
+        this.daysSinceReference = (short) new Long((now.toEpochMilli()-ref)/MILLIS_PER_DAY).intValue();
+    }
+
 
     /**
      * Get number of days since 1st jan 2010
