@@ -11,6 +11,11 @@ import java.nio.ByteBuffer;
  */
 public class ContractStructureParser {
 
+    /**
+     * Unparse dto to an array of byte
+     * @param dto (mandatory)
+     * @return array of byte
+     */
     public static byte[] unparse(ContractStructureDto dto){
         ByteBuffer out = ByteBuffer.allocate(29);
         out.put(dto.getContractVersionNumber().getValue());
@@ -32,12 +37,17 @@ public class ContractStructureParser {
         return out.array();
     }
 
-    public static ContractStructureDto parse(byte[] contract){
-        if(contract==null || contract.length != 29){
-            throw new IllegalArgumentException("contract should not be null and its length should be 29");
+    /**
+     * Parse dto from an array of byte
+     * @param file array of byte (mandatory)
+     * @return parsed object
+     */
+    public static ContractStructureDto parse(byte[] file){
+        if(file==null || file.length != 29){
+            throw new IllegalArgumentException("file should not be null and its length should be 29");
         }
 
-        ByteBuffer input = ByteBuffer.wrap(contract);
+        ByteBuffer input = ByteBuffer.wrap(file);
         return ContractStructureDto.newBuilder()
                 .setContractVersionNumber(VersionNumber.valueOf(input.get()))
                 .setContractTariff(PriorityCode.valueOf(input.get()))

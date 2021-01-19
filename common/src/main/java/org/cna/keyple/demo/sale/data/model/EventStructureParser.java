@@ -12,7 +12,11 @@ import java.nio.ByteBuffer;
  */
 public class EventStructureParser {
 
-
+    /**
+     * Unparse dto to an array of byte
+     * @param dto (mandatory)
+     * @return array of byte
+     */
     public static byte[] unparse(EventStructureDto dto){
         ByteBuffer out = ByteBuffer.allocate(29);
         out.put(dto.getEventVersionNumber().getValue());
@@ -26,12 +30,17 @@ public class EventStructureParser {
         return out.array();
     }
 
-    public static EventStructureDto parse(byte[] contract){
-        if(contract==null || contract.length != 29){
-            throw new IllegalArgumentException("contract should not be null and its length should be 29");
+    /**
+     * Parse dto from an array of byte
+     * @param file array of byte (mandatory)
+     * @return parsed object
+     */
+    public static EventStructureDto parse(byte[] file){
+        if(file==null || file.length != 29){
+            throw new IllegalArgumentException("file should not be null and its length should be 29");
         }
 
-        ByteBuffer input = ByteBuffer.wrap(contract);
+        ByteBuffer input = ByteBuffer.wrap(file);
         return EventStructureDto.newBuilder()
                 .setEventVersionNumber(VersionNumber.valueOf(input.get()))
                 .setEventDateStamp(new DateCompact(input.getShort()))

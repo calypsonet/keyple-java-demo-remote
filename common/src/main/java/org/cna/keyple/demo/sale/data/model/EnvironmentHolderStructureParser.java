@@ -10,7 +10,15 @@ import java.nio.ByteBuffer;
  */
 public class EnvironmentHolderStructureParser {
 
+    /**
+     * Unparse dto to an array of byte
+     * @param dto (mandatory)
+     * @return array of byte
+     */
     public static byte[] unparse(EnvironmentHolderStructureDto dto){
+        if(dto==null){
+            throw new IllegalArgumentException("dto must not be null");
+        }
         ByteBuffer out = ByteBuffer.allocate(29);
         out.put(dto.getEnvVersionNumber().getValue());
         out.putInt(dto.getEnvApplicationNumber());
@@ -25,12 +33,17 @@ public class EnvironmentHolderStructureParser {
         return out.array();
     }
 
-    public static EnvironmentHolderStructureDto parse(byte[] environmentFile){
-        if(environmentFile==null || environmentFile.length != 29){
-            throw new IllegalArgumentException("environmentFile should not be null and its length should be 29");
+    /**
+     * Parse dto from an array of byte
+     * @param file array of byte (mandatory)
+     * @return parsed object
+     */
+    public static EnvironmentHolderStructureDto parse(byte[] file){
+        if(file==null || file.length != 29){
+            throw new IllegalArgumentException("file should not be null and its length should be 29");
         }
 
-        ByteBuffer input = ByteBuffer.wrap(environmentFile);
+        ByteBuffer input = ByteBuffer.wrap(file);
         return EnvironmentHolderStructureDto.newBuilder()
                 .setEnvVersionNumber(VersionNumber.valueOf(input.get()))
                 .setEnvApplicationNumber(input.getInt())
