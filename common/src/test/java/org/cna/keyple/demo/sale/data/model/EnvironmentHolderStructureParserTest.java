@@ -8,11 +8,11 @@ import java.time.Instant;
 
 import static org.junit.Assert.*;
 
-public class ParserTest {
+public class EnvironmentHolderStructureParserTest {
+
 
     private String DATA_ENV_2 =
         "01 00 00 00 01 0F BF 18 4E 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00";
-
 
     @Test
     public void parse_environment_test(){
