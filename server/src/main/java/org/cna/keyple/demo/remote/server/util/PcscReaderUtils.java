@@ -15,12 +15,21 @@ import org.eclipse.keyple.core.service.Plugin;
 import org.eclipse.keyple.core.service.Reader;
 import org.eclipse.keyple.core.service.SmartCardService;
 import org.eclipse.keyple.core.service.exception.KeypleReaderNotFoundException;
+import org.eclipse.keyple.core.service.util.ContactCardCommonProtocols;
+import org.eclipse.keyple.core.service.util.ContactlessCardCommonProtocols;
+import org.eclipse.keyple.plugin.pcsc.PcscReader;
+import org.eclipse.keyple.plugin.pcsc.PcscSupportedContactProtocols;
+import org.eclipse.keyple.plugin.pcsc.PcscSupportedContactlessProtocols;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Collection;
 import java.util.regex.Pattern;
 
 /** PCSC Reader Utilities to read properties file and differentiate SAM and PO reader */
 public final class PcscReaderUtils {
+  private static final Logger logger = LoggerFactory.getLogger(PcscReaderUtils.class);
+
   /*
    * Get the terminal which names match the expected pattern
    *
@@ -40,5 +49,35 @@ public final class PcscReaderUtils {
       }
     }
     throw new KeypleReaderNotFoundException("Reader name pattern: " + pattern);
+  }
+
+  static Reader initPoReader(String poReaderFilter) {
+
+    Reader reader = PcscReaderUtils.getReaderByPattern(poReaderFilter);
+
+    // Get and configure the PO reader
+    ((PcscReader) reader).setContactless(true).setIsoProtocol(PcscReader.IsoProtocol.T1);
+
+    // activate protocols
+    reader.activateProtocol(
+            PcscSupportedContactlessProtocols.ISO_14443_4.name(),
+            ContactlessCardCommonProtocols.ISO_14443_4.name());
+
+    logger.info("PO Reader configured : {}", reader.getName());
+    return reader;
+
+  }
+
+  static Reader initSamReader(String samReaderFilter) {
+
+    Reader reader = PcscReaderUtils.getReaderByPattern(samReaderFilter);
+
+    ((PcscReader) reader).setContactless(false).setIsoProtocol(PcscReader.IsoProtocol.T0);
+
+    reader.activateProtocol(
+            PcscSupportedContactProtocols.ISO_7816_3.name(),
+            ContactCardCommonProtocols.ISO_7816_3.name());
+    logger.info("SAM Reader configured : {}", reader.getName());
+    return reader;
   }
 }

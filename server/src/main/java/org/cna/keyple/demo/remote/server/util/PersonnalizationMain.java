@@ -8,18 +8,13 @@ import org.cna.keyple.demo.sale.data.model.type.DateCompact;
 import org.cna.keyple.demo.sale.data.model.type.VersionNumber;
 import org.eclipse.keyple.calypso.transaction.*;
 import org.eclipse.keyple.core.card.selection.CardResource;
-import org.eclipse.keyple.core.card.selection.CardSelectionsResult;
 import org.eclipse.keyple.core.card.selection.CardSelectionsService;
 import org.eclipse.keyple.core.card.selection.CardSelector;
 import org.eclipse.keyple.core.service.Plugin;
 import org.eclipse.keyple.core.service.Reader;
 import org.eclipse.keyple.core.service.SmartCardService;
-import org.eclipse.keyple.core.service.util.ContactCardCommonProtocols;
 import org.eclipse.keyple.core.service.util.ContactlessCardCommonProtocols;
 import org.eclipse.keyple.plugin.pcsc.PcscPluginFactory;
-import org.eclipse.keyple.plugin.pcsc.PcscReader;
-import org.eclipse.keyple.plugin.pcsc.PcscSupportedContactProtocols;
-import org.eclipse.keyple.plugin.pcsc.PcscSupportedContactlessProtocols;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,7 +24,6 @@ import java.time.ZoneId;
 import java.time.ZoneOffset;
 
 import static org.cna.keyple.demo.remote.server.util.CalypsoClassicInfo.*;
-import static org.eclipse.keyple.calypso.command.sam.SamRevision.C1;
 
 public class PersonnalizationMain {
     private static String poReaderFilter = ".*(ASK|ACS).*";
@@ -39,13 +33,13 @@ public class PersonnalizationMain {
     public static void main(String[] args) {
         Plugin pcscPlugin = SmartCardService.getInstance().registerPlugin(new PcscPluginFactory(null, null));
 
-        Reader poReader = initPoReader();
+        Reader poReader = PcscReaderUtils.initPoReader(poReaderFilter);
 
-        Reader samReader = initSamReader();
+        Reader samReader = PcscReaderUtils.initSamReader(samReaderFilter);
 
-        CalypsoSam calypsoSam = selectSam(samReader);
+        CalypsoSam calypsoSam = CalypsoUtils.selectSam(samReader);
 
-        CalypsoPo calypsoPo = selectPo(poReader);
+        CalypsoPo calypsoPo = CalypsoUtils.selectPo(poReader);
 
         CardResource<CalypsoSam> samResource = new CardResource<CalypsoSam>(samReader, calypsoSam);
 
@@ -114,107 +108,6 @@ public class PersonnalizationMain {
                 .setEnvIssuingDate(new DateCompact(now))
                 .setEnvEndDate(new DateCompact(envEndDate.atStartOfDay().toInstant(ZoneOffset.UTC)))
                 .build();
-    }
-
-
-    /**
-     * Operate the PO selection
-     *
-     * @param poReader the reader where to operate the PO selection
-     * @return a CalypsoPo object if the selection succeed
-     * @throws IllegalStateException if the selection fails
-     */
-    static CalypsoPo selectPo(Reader poReader) {
-
-        // Check if a PO is present in the reader
-        if (!poReader.isCardPresent()) {
-            throw new IllegalStateException("No PO is present in the reader " + poReader.getName());
-        }
-
-        // Prepare a Calypso PO selection
-        CardSelectionsService cardSelectionsService = new CardSelectionsService();
-
-        // make the selection and read additional information afterwards
-        PoSelection poSelection =
-                new PoSelection(
-                        PoSelector.builder()
-                                .cardProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name())
-                                .aidSelector(
-                                        CardSelector.AidSelector.builder().aidToSelect(AID).build())
-                                .invalidatedPo(PoSelector.InvalidatedPo.REJECT)
-                                .build());
-
-        // Add the selection case to the current selection
-        cardSelectionsService.prepareSelection(poSelection);
-
-
-        // Actual PO communication: operate through a single request the Calypso PO selection
-        // and the file read
-        CalypsoPo calypsoPo =
-                (CalypsoPo) cardSelectionsService.processExplicitSelections(poReader).getActiveSmartCard();
-
-        return calypsoPo;
-    }
-
-    /**
-     * Operate the SAM selection
-     *
-     * @param samReader the reader where to operate the SAM selection
-     * @return a CalypsoSam object if the selection succeed
-     * @throws IllegalStateException if the selection fails
-     */
-    static CalypsoSam selectSam(Reader samReader) {
-        // Create a SAM resource after selecting the SAM
-        CardSelectionsService samSelection = new CardSelectionsService();
-
-        // Prepare selector
-        samSelection.prepareSelection(
-                new SamSelection(SamSelector.builder().samRevision(C1).serialNumber(".*").build()));
-
-        if (!samReader.isCardPresent()) {
-            throw new IllegalStateException("No SAM is present in the reader " + samReader.getName());
-        }
-
-        CardSelectionsResult cardSelectionsResult = samSelection.processExplicitSelections(samReader);
-
-        if (!cardSelectionsResult.hasActiveSelection()) {
-            throw new IllegalStateException("Unable to open a logical channel for SAM!");
-        }
-
-        CalypsoSam calypsoSam = (CalypsoSam) cardSelectionsResult.getActiveSmartCard();
-
-        return calypsoSam;
-    }
-
-
-
-    private static Reader initPoReader() {
-
-    Reader reader = PcscReaderUtils.getReaderByPattern(poReaderFilter);
-
-    // Get and configure the PO reader
-    ((PcscReader) reader).setContactless(true).setIsoProtocol(PcscReader.IsoProtocol.T1);
-
-    // activate protocols
-    reader.activateProtocol(
-            PcscSupportedContactlessProtocols.ISO_14443_4.name(),
-            ContactlessCardCommonProtocols.ISO_14443_4.name());
-
-    logger.info("PO Reader configured : {}", reader.getName());
-    return reader;
-
-    }
-    private static Reader initSamReader() {
-
-        Reader reader = PcscReaderUtils.getReaderByPattern(samReaderFilter);
-
-        ((PcscReader) reader).setContactless(false).setIsoProtocol(PcscReader.IsoProtocol.T0);
-
-        reader.activateProtocol(
-                PcscSupportedContactProtocols.ISO_7816_3.name(),
-                ContactCardCommonProtocols.ISO_7816_3.name());
-        logger.info("SAM Reader configured : {}", reader.getName());
-        return reader;
     }
 
     private static void verifyEnvironmentFile(Reader poReader){
