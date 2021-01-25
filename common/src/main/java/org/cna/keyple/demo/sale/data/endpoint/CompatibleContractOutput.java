@@ -12,6 +12,7 @@
 package org.cna.keyple.demo.sale.data.endpoint;
 
 import org.cna.keyple.demo.sale.data.model.ContractStructureDto;
+import org.cna.keyple.demo.sale.data.model.CounterStructureDto;
 import org.cna.keyple.demo.sale.data.model.type.PriorityCode;
 
 import java.util.List;
@@ -23,8 +24,8 @@ public class CompatibleContractOutput {
 
   //mandatory
   private List<ContractStructureDto> validContracts;
-  //optional
-  private Integer ticketLoaded;
+  //mandatory
+  private List<CounterStructureDto> validContractsCounters;
 
   /*
    * mandatory
@@ -43,6 +44,15 @@ public class CompatibleContractOutput {
     return this;
   }
 
+  public List<CounterStructureDto> getValidContractsCounters() {
+    return validContractsCounters;
+  }
+
+  public CompatibleContractOutput setValidContractsCounters(List<CounterStructureDto> validContractsCounters) {
+    this.validContractsCounters = validContractsCounters;
+    return this;
+  }
+
   public Integer getStatusCode() {
     return statusCode;
   }
@@ -52,12 +62,4 @@ public class CompatibleContractOutput {
     return this;
   }
 
-  public CompatibleContractOutput setTicketLoaded(Integer ticketLoaded) {
-    this.ticketLoaded = ticketLoaded;
-    return this;
-  }
-
-  public Integer getTicketLoaded() {
-    return ticketLoaded;
-  }
 }
