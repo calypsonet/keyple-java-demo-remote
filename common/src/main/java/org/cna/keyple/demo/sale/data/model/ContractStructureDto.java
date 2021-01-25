@@ -296,7 +296,7 @@ public class ContractStructureDto {
          * @param contactSaleDate the {@code contactSaleDate} to set
          * @return a reference to this Builder
          */
-        public Builder setContactSaleDate(DateCompact contactSaleDate) {
+        public Builder setContractSaleDate(DateCompact contactSaleDate) {
             this.contactSaleDate = contactSaleDate;
             return this;
         }

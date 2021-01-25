@@ -63,8 +63,8 @@ public class RemoteServerPluginConfig implements ObservablePlugin.PluginObserver
     // Register the remote plugin to the smart card service using the factory.
     SmartCardService.getInstance().registerPlugin(factory);
 
-    samResourceManager = samResourceManager;
-    assert samResourceManager != null;
+    this.samResourceManager = samResourceManager;
+    assert this.samResourceManager != null;
   }
 
   /** {@inheritDoc} */

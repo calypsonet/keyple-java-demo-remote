@@ -55,7 +55,7 @@ public class ContractStructureParser {
         return ContractStructureDto.newBuilder()
                 .setContractVersionNumber(VersionNumber.valueOf(input.get()))
                 .setContractTariff(PriorityCode.valueOf(input.get()))
-                .setContactSaleDate(new DateCompact(input.getShort()))
+                .setContractSaleDate(new DateCompact(input.getShort()))
                 .setContractValidityEndDate(new DateCompact(input.getShort()))
                 .setContractSaleSam(input.getInt(6))
                 .setContractSaleCounter(ByteArrayUtil.threeBytesToInt(file, 10))

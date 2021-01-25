@@ -1,18 +1,15 @@
 package org.cna.keyple.demo.remote.server;
 
-import io.quarkus.runtime.Startup;
 import org.eclipse.keyple.calypso.transaction.sammanager.SamResourceManager;
 import org.eclipse.keyple.calypso.transaction.sammanager.SamResourceManagerFactory;
 import org.eclipse.keyple.core.service.Plugin;
 import org.eclipse.keyple.core.service.SmartCardService;
 import org.eclipse.keyple.core.service.event.PluginObservationExceptionHandler;
 import org.eclipse.keyple.core.service.event.ReaderObservationExceptionHandler;
-import org.eclipse.keyple.distributed.RemotePluginServer;
 import org.eclipse.keyple.plugin.pcsc.PcscPluginFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Singleton;
 import javax.ws.rs.Produces;
 

@@ -37,7 +37,7 @@ public class ContractStructureParserTest {
                 .newBuilder()
                 .setContractVersionNumber(VersionNumber.CURRENT_VERSION)
                 .setContractTariff(PriorityCode.MULTI_TRIP_TICKET)
-                .setContactSaleDate(new DateCompact(Instant.now()))
+                .setContractSaleDate(new DateCompact(Instant.now()))
                 .setContractValidityEndDate(new DateCompact((short) 1))
                 .setContractSaleSam(12)
                 .setContractSaleCounter(23)

@@ -228,6 +228,51 @@ public class EventStructureDto {
         this.contractPriority4 = contractPriority4;
     }
 
+
+    /**
+     * Gets contract priority by its index.
+     *
+     * @param index should be between 1 and 4 (included)
+     * @return An instance of PriorityCode. Cannot be null.
+     * @throws IllegalArgumentException if index is out of range
+     */
+    public PriorityCode getContractPriorityAt(int index) {
+
+        if(index==1){
+            return contractPriority1;
+        } else if(index==2){
+            return contractPriority2;
+        } else if(index==3){
+            return contractPriority3;
+        } else if(index==4){
+            return contractPriority4;
+        }
+
+        throw new IllegalArgumentException("index should be between 1 and 4 (included)");
+    }
+
+    /**
+     * Set contract priority by its index.
+     *
+     * @param index should be between 1 and 4 (included)
+     * @return An instance of PriorityCode. Cannot be null.
+     * @throws IllegalArgumentException if index is out of range
+     */
+    public void setContractPriorityAt(int index, PriorityCode contractPriority) {
+
+        if(index==1){
+            this.contractPriority1 = contractPriority;
+        } else if(index==2){
+            this.contractPriority2 = contractPriority;
+        } else if(index==3){
+            this.contractPriority3 = contractPriority;
+        } else if(index==4){
+            this.contractPriority4 = contractPriority;
+        }
+
+        throw new IllegalArgumentException("index should be between 1 and 4 (included)");
+    }
+
     /**
      * Get event padding byte [ ].
      *
