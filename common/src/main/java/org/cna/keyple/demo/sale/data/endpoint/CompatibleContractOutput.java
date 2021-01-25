@@ -11,6 +11,7 @@
  ************************************************************************************** */
 package org.cna.keyple.demo.sale.data.endpoint;
 
+import org.cna.keyple.demo.sale.data.model.ContractStructureDto;
 import org.cna.keyple.demo.sale.data.model.type.PriorityCode;
 
 import java.util.List;
@@ -21,7 +22,7 @@ import java.util.List;
 public class CompatibleContractOutput {
 
   //mandatory
-  private List<PriorityCode> validContracts;
+  private List<ContractStructureDto> validContracts;
   //optional
   private Integer ticketLoaded;
 
@@ -33,11 +34,11 @@ public class CompatibleContractOutput {
    */
   private Integer statusCode;
 
-  public List<PriorityCode> getValidContracts() {
+  public List<ContractStructureDto> getValidContracts() {
     return validContracts;
   }
 
-  public CompatibleContractOutput setValidContracts(List<PriorityCode> validContracts) {
+  public CompatibleContractOutput setValidContracts(List<ContractStructureDto> validContracts) {
     this.validContracts = validContracts;
     return this;
   }
