@@ -23,6 +23,7 @@ public class EventStructureParser {
         out.putShort(dto.getEventDateStamp().getDaysSinceReference());
         out.putShort(dto.getEventTimeStamp().getMinutesSinceReference());
         out.putInt(dto.getEventLocation());
+        out.put(dto.getEventContractUsed());
         out.put(dto.getContractPriority1().getCode());
         out.put(dto.getContractPriority2().getCode());
         out.put(dto.getContractPriority3().getCode());

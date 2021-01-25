@@ -17,7 +17,7 @@ public class ContractStructureParserTest {
             "01 01 0F BF 0F DD 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00";
 
     @Test
-    public void parse_environment_test(){
+    public void parse_contract_test(){
         ContractStructureDto contract =
                 ContractStructureParser.parse(ByteArrayUtil.fromHex(DATA_CONTRACT_1));
         assertNotNull(contract);
@@ -30,4 +30,26 @@ public class ContractStructureParserTest {
         assertNull(contract.getContractAuthKvc());
         assertNull(contract.getContractAuthenticator());
     }
+
+    @Test
+    public void parse_contract() {
+        ContractStructureDto contract = ContractStructureDto
+                .newBuilder()
+                .setContractVersionNumber(VersionNumber.CURRENT_VERSION)
+                .setContractTariff(PriorityCode.MULTI_TRIP_TICKET)
+                .setContactSaleDate(new DateCompact(Instant.now()))
+                .setContractValidityEndDate(new DateCompact((short) 1))
+                .setContractSaleSam(12)
+                .setContractSaleCounter(23)
+                .setContractAuthKvc((byte) 3)
+                .setContractAuthenticator(2)
+                .build();
+
+        ContractStructureDto parsedContract = ContractStructureParser.parse(ContractStructureParser.unparse(contract));
+
+        assertTrue(parsedContract.equals(contract));
+    }
+
+
+
 }

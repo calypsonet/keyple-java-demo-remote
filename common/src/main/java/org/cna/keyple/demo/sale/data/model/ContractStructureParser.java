@@ -3,6 +3,8 @@ package org.cna.keyple.demo.sale.data.model;
 import org.cna.keyple.demo.sale.data.model.type.DateCompact;
 import org.cna.keyple.demo.sale.data.model.type.PriorityCode;
 import org.cna.keyple.demo.sale.data.model.type.VersionNumber;
+import org.cna.keyple.demo.sale.data.util.ByteArrayParserUtil;
+import org.eclipse.keyple.core.util.ByteArrayUtil;
 
 import java.nio.ByteBuffer;
 
@@ -22,17 +24,19 @@ public class ContractStructureParser {
         out.put(dto.getContractTariff().getCode());
         out.putShort(dto.getContactSaleDate().getDaysSinceReference());
         out.putShort(dto.getContractValidityEndDate().getDaysSinceReference());
-        if(dto.getContractSaleSam()!=null){
-            out.putInt(6, dto.getContractSaleCounter());
+        if(dto.getContractSaleSam()!=null) {
+            out.putInt(6, dto.getContractSaleSam());
         }
         if(dto.getContractSaleCounter()!=null){
-            out.putInt(10, dto.getContractSaleCounter());
+            out.position(10);
+            out.put(ByteArrayParserUtil.toThreeBits(dto.getContractSaleCounter()));
         }
         if(dto.getContractAuthKvc()!=null){
-            out.put(11, dto.getContractAuthKvc());
+            out.put(13, dto.getContractAuthKvc());
         }
         if(dto.getContractAuthenticator()!=null){
-            out.putInt(12, dto.getContractAuthenticator());
+            out.position(14);
+            out.put(ByteArrayParserUtil.toThreeBits(dto.getContractAuthenticator()));
         }
         return out.array();
     }
@@ -53,10 +57,10 @@ public class ContractStructureParser {
                 .setContractTariff(PriorityCode.valueOf(input.get()))
                 .setContactSaleDate(new DateCompact(input.getShort()))
                 .setContractValidityEndDate(new DateCompact(input.getShort()))
-                .setContractSaleSam(input.get(6)!=0 ? input.getInt(6):null)
-                .setContractSaleCounter(input.getInt(10)!=0 ? input.getInt(10):null)
-                .setContractAuthKvc(input.get(11)!=0 ? input.get(11):null)
-                .setContractAuthenticator(input.getInt(12)!=0 ? input.getInt(12):null)
+                .setContractSaleSam(input.getInt(6))
+                .setContractSaleCounter(ByteArrayUtil.threeBytesToInt(file, 10))
+                .setContractAuthKvc(input.get(13))
+                .setContractAuthenticator(ByteArrayUtil.threeBytesToInt(file, 14))
                 .build();
     }
 
