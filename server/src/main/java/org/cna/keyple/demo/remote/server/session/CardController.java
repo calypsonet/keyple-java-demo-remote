@@ -22,6 +22,9 @@ import java.util.List;
 
 import static org.cna.keyple.demo.remote.server.util.CalypsoClassicInfo.*;
 
+/**
+ * Perform operations to the calypso PO
+ */
 public class CardController {
 
     private static final Logger logger = LoggerFactory.getLogger(CardController.class);
@@ -148,8 +151,6 @@ public class CardController {
         /*
          * Prepare file update
          */
-
-
         //Fill the environment structure with predefined values
         poTransaction.prepareUpdateRecord(SFI_EnvironmentAndHolder, 1,
                 EnvironmentHolderStructureParser.unparse(getEnvironmentInit()));

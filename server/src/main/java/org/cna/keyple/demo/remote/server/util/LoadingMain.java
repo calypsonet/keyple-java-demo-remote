@@ -17,8 +17,6 @@ import static org.cna.keyple.demo.remote.server.util.CalypsoUtils.selectPoWithEn
 import static org.cna.keyple.demo.remote.server.util.CalypsoUtils.selectSam;
 
 public class LoadingMain {
-    private static String poReaderFilter = ".*(ASK|ACS).*";
-    private static String samReaderFilter = ".*(Cherry TC|SCM Microsystems|Identive|HID|Generic).*";
     private static final Logger logger = LoggerFactory.getLogger(LoadingMain.class);
 
     public static void main(String[] args) {
@@ -27,14 +25,14 @@ public class LoadingMain {
          * Init readers
          */
         SmartCardService.getInstance().registerPlugin(new PcscPluginFactory(null, null));
-        Reader poReader = PcscReaderUtils.initPoReader(poReaderFilter);
-        Reader samReader = PcscReaderUtils.initSamReader(samReaderFilter);
+        Reader poReader = PcscReaderUtils.initPoReader(PcscReaderUtils.poReaderFilter);
+        Reader samReader = PcscReaderUtils.initSamReader(PcscReaderUtils.samReaderFilter);
 
         /*
          * Select cards
          */
-        CalypsoSam calypsoSam = selectSam(samReader);
         CalypsoPo calypsoPo = selectPoWithEnvironment(poReader);
+        CalypsoSam calypsoSam = selectSam(samReader);
         CardResource<CalypsoSam> samResource = new CardResource<>(samReader, calypsoSam);
 
         /*
@@ -43,19 +41,14 @@ public class LoadingMain {
         CardController cardController = new CardController(calypsoPo, poReader, samResource);
 
         CardContent cardContent = cardController.readCard();
-
         logger.info(cardContent.toString());
-
         cardContent.listValidContracts();
 
         //WriteTitleInput writeTitleInput = new WriteTitleInput().setContractTariff(PriorityCode.SEASON_PASS);
-
         WriteTitleInput writeTitleInput = new WriteTitleInput().setContractTariff(PriorityCode.MULTI_TRIP_TICKET).setTicketToLoad(2);
-
         //WriteTitleInput writeTitleInput = new WriteTitleInput().setContractTariff(PriorityCode.STORED_VALUE).setTicketToLoad(13);
 
         cardContent.insertNewContract(writeTitleInput.getContractTariff(), writeTitleInput.getTicketToLoad());
-
         cardController.writeCard(cardContent);
 
         logger.info(cardContent.toString());

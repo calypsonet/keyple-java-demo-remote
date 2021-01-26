@@ -63,7 +63,7 @@ public final class CalypsoUtils {
    * @return a CalypsoSam object if the selection succeed
    * @throws IllegalStateException if the selection fails
    */
-  static CalypsoSam selectSam(Reader samReader) {
+  public static CalypsoSam selectSam(Reader samReader) {
     // Create a SAM resource after selecting the SAM
     CardSelectionsService samSelection = new CardSelectionsService();
 

@@ -29,6 +29,8 @@ import java.util.regex.Pattern;
 /** PCSC Reader Utilities to read properties file and differentiate SAM and PO reader */
 public final class PcscReaderUtils {
   private static final Logger logger = LoggerFactory.getLogger(PcscReaderUtils.class);
+  static String poReaderFilter = ".*(ASK|ACS).*";
+  static String samReaderFilter = ".*(Cherry TC|SCM Microsystems|Identive|HID|Generic).*";
 
   /*
    * Get the terminal which names match the expected pattern
@@ -37,7 +39,7 @@ public final class PcscReaderUtils {
    * @return Reader
    * @throws KeypleReaderException the reader is not found or readers are not initialized
    */
-  static Reader getReaderByPattern(String pattern) {
+  public static Reader getReaderByPattern(String pattern) {
     Pattern p = Pattern.compile(pattern);
     Collection<Plugin> plugins = SmartCardService.getInstance().getPlugins().values();
     for (Plugin plugin : plugins) {
@@ -68,7 +70,7 @@ public final class PcscReaderUtils {
 
   }
 
-  static Reader initSamReader(String samReaderFilter) {
+  public static Reader initSamReader(String samReaderFilter) {
 
     Reader reader = PcscReaderUtils.getReaderByPattern(samReaderFilter);
 
