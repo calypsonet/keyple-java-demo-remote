@@ -65,6 +65,11 @@ public class CounterStructureDto {
         return Objects.hash(getCounterValue());
     }
 
+    @Override
+    public String toString() {
+        return String.valueOf(counterValue);
+    }
+
     /**
      * {@code CounterStructureDto} builder static inner class.
      */

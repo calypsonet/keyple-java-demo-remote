@@ -251,6 +251,21 @@ public class ContractStructureDto {
         return result;
     }
 
+    @Override
+    public String toString() {
+        return "{" +
+                "contractVersionNumber=" + contractVersionNumber +
+                ", contractTariff=" + contractTariff +
+                ", contactSaleDate=" + contactSaleDate +
+                ", contractValidityEndDate=" + contractValidityEndDate +
+                ", contractSaleSam=" + contractSaleSam +
+                ", contractSaleCounter=" + contractSaleCounter +
+                ", contractAuthKvc=" + contractAuthKvc +
+                ", contractAuthenticator=" + contractAuthenticator +
+                ", contractPadding=" + Arrays.toString(contractPadding) +
+                '}';
+    }
+
     /**
      * {@code ContractStructureDto} builder static inner class.
      */

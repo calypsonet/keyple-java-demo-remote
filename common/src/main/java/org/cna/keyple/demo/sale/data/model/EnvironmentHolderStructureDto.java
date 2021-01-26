@@ -203,6 +203,19 @@ public class EnvironmentHolderStructureDto {
         return result;
     }
 
+    @Override
+    public String toString() {
+        return "{" +
+                "envVersionNumber=" + envVersionNumber +
+                ", envApplicationNumber=" + envApplicationNumber +
+                ", envIssuingDate=" + envIssuingDate +
+                ", envEndDate=" + envEndDate +
+                ", holderCompany=" + holderCompany +
+                ", holderIdNumber=" + holderIdNumber +
+                ", envPadding=" + Arrays.toString(envPadding) +
+                '}';
+    }
+
     /**
      * {@code EnvironmentHolderStructureDto} builder static inner class.
      */

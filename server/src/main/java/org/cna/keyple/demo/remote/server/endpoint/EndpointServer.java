@@ -11,21 +11,19 @@
  ************************************************************************************** */
 package org.cna.keyple.demo.remote.server.endpoint;
 
-import java.util.List;
+import org.eclipse.keyple.distributed.MessageDto;
+import org.eclipse.keyple.distributed.SyncNodeServer;
+import org.eclipse.keyple.distributed.impl.RemotePluginServerUtils;
+
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-
-import org.eclipse.keyple.distributed.MessageDto;
-import org.eclipse.keyple.distributed.SyncNodeServer;
-import org.eclipse.keyple.distributed.impl.RemotePluginServerUtils;
+import java.util.List;
 
 /**
  * Server Controller.
- *
- * <p>Responds to {@link EndpointClient} requests.
  */
 @Path("/remote-plugin")
 public class EndpointServer {

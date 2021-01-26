@@ -68,7 +68,8 @@ public class TransactionTest {
                         .withoutReaderObservation()
                         .getService();
 
-        CompatibleContractInput compatibleContractInput = new CompatibleContractInput().setPluginType("Android NFC");
+        CompatibleContractInput compatibleContractInput =
+                new CompatibleContractInput().setPluginType("Android NFC");
 
         /* Execute Remote Service : Get Compatible Title */
         CompatibleContractOutput compatibleContractOutput = localService.executeRemoteService(
@@ -99,7 +100,7 @@ public class TransactionTest {
                 RemoteServiceParameters
                         .builder("WRITE_TITLE", poReader)
                         .withInitialCardContent(calypsoPo)
-                        .withUserInputData(writeTitleInput)
+                        .withUserInputData(writeTitleInput2)
                         .build(),
                 WriteTitleOutput.class);
 
@@ -108,6 +109,10 @@ public class TransactionTest {
 
     }
 
+    /**
+     * Init a local Po Reader matching poReaderFilter name
+     * @return po reader
+     */
     private static Reader initPoReader() {
         Pattern p = Pattern.compile(poReaderFilter);
         for (Reader reader : SmartCardService.getInstance().getPlugin("PcscPlugin").getReaders().values()) {
