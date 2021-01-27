@@ -18,8 +18,11 @@ import org.cna.keyple.demo.sale.data.endpoint.CompatibleContractOutput;
 import org.cna.keyple.demo.sale.data.endpoint.WriteTitleInput;
 import org.cna.keyple.demo.sale.data.endpoint.WriteTitleOutput;
 import org.cna.keyple.demo.sale.data.model.ContractStructureDto;
+import org.eclipse.keyple.calypso.command.sam.SamRevision;
 import org.eclipse.keyple.calypso.transaction.CalypsoPo;
 import org.eclipse.keyple.calypso.transaction.CalypsoSam;
+import org.eclipse.keyple.calypso.transaction.sammanager.SamIdentifier;
+import org.eclipse.keyple.calypso.transaction.sammanager.SamResourceManager;
 import org.eclipse.keyple.core.card.selection.CardResource;
 import org.eclipse.keyple.core.service.SmartCardService;
 import org.eclipse.keyple.core.service.event.ObservablePlugin;
@@ -50,9 +53,9 @@ public class RemoteServerPluginConfig implements ObservablePlugin.PluginObserver
 
   private static final Logger logger = LoggerFactory.getLogger(RemoteServerPluginConfig.class);
 
-  private CardResource<CalypsoSam> samResource;
+  SamResourceManager samResourceManager;
 
-  public RemoteServerPluginConfig(CardResource<CalypsoSam> samResource){
+  public RemoteServerPluginConfig(SamResourceManager samResourceManager){
     logger.info("Init RemoteServerPluginConfig...");
 
     // Init the remote plugin factory with a sync node and a remote plugin observer.
@@ -68,7 +71,7 @@ public class RemoteServerPluginConfig implements ObservablePlugin.PluginObserver
     // Register the remote plugin to the smart card service using the factory.
     SmartCardService.getInstance().registerPlugin(factory);
 
-    this.samResource = samResource;
+    this.samResourceManager = samResourceManager;
   }
 
   /** {@inheritDoc} */
@@ -127,6 +130,9 @@ public class RemoteServerPluginConfig implements ObservablePlugin.PluginObserver
      */
     CalypsoPo calypsoPo = reader.getInitialCardContent(CalypsoPo.class);
 
+    CardResource<CalypsoSam> samResource = samResourceManager.allocateSamResource(
+            SamResourceManager.AllocationMode.BLOCKING,
+            new SamIdentifier.SamIdentifierBuilder().serialNumber("").samRevision(SamRevision.AUTO).groupReference(".*").build());
 
     CardController cardController = new CardController(
             calypsoPo,
@@ -138,6 +144,8 @@ public class RemoteServerPluginConfig implements ObservablePlugin.PluginObserver
     logger.info(cardContent.toString());
 
     List<ContractStructureDto> validContracts = cardContent.listValidContracts();
+
+    samResourceManager.freeSamResource(samResource);
 
     return new CompatibleContractOutput().setValidContracts(validContracts).setStatusCode(0);
   }
@@ -155,6 +163,10 @@ public class RemoteServerPluginConfig implements ObservablePlugin.PluginObserver
     WriteTitleInput writeTitleInput = reader.getUserInputData(WriteTitleInput.class);
     CalypsoPo calypsoPo = reader.getInitialCardContent(CalypsoPo.class);
 
+    CardResource<CalypsoSam> samResource = samResourceManager.allocateSamResource(
+            SamResourceManager.AllocationMode.BLOCKING,
+            new SamIdentifier.SamIdentifierBuilder().serialNumber("").samRevision(SamRevision.AUTO).groupReference(".*").build());
+
     CardController cardController = new CardController(
             calypsoPo,
             reader,
@@ -170,6 +182,8 @@ public class RemoteServerPluginConfig implements ObservablePlugin.PluginObserver
             writeTitleInput.getTicketToLoad());
 
     int statusCode = cardController.writeCard(cardContent);
+
+    samResourceManager.freeSamResource(samResource);
 
     return new WriteTitleOutput().setStatusCode(statusCode);
   }

@@ -1,16 +1,18 @@
 package org.cna.keyple.demo.remote.server;
 
-import org.cna.keyple.demo.remote.server.util.CalypsoUtils;
 import org.cna.keyple.demo.remote.server.util.PcscReaderUtils;
-import org.eclipse.keyple.calypso.transaction.CalypsoSam;
-import org.eclipse.keyple.core.card.selection.CardResource;
-import org.eclipse.keyple.core.service.Reader;
+import org.eclipse.keyple.calypso.transaction.sammanager.SamResourceManager;
+import org.eclipse.keyple.calypso.transaction.sammanager.SamResourceManagerFactory;
+import org.eclipse.keyple.core.service.Plugin;
 import org.eclipse.keyple.core.service.SmartCardService;
+import org.eclipse.keyple.core.service.event.PluginObservationExceptionHandler;
+import org.eclipse.keyple.core.service.event.ReaderObservationExceptionHandler;
 import org.eclipse.keyple.plugin.pcsc.PcscPluginFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.enterprise.context.RequestScoped;
+import javax.inject.Singleton;
+import javax.ws.rs.Produces;
 
 /**
  * Configure the SAM resource Manager
@@ -20,26 +22,36 @@ public class SamResourceManagerConfig {
     private static final Logger logger = LoggerFactory.getLogger(SamResourceManagerConfig.class);
 
     private static String samReaderFilter = ".*(Cherry TC|SCM Microsystems|Identive|HID|Generic).*";
+    private SamResourceManager samResourceManager;
 
-    /**
-     * Operate the SAM selection
-     *
-     * @return a CalypsoSam object if the selection succeed
-     * @throws IllegalStateException if the selection fails
-     */
-    @RequestScoped
-    CardResource<CalypsoSam> selectSam() {
+    @Produces
+    @Singleton
+    public SamResourceManager samResourceManager() {
+        logger.info("Init SamResourceManager with PCSC Plugin...");
 
-        SmartCardService.getInstance().registerPlugin(
-                new PcscPluginFactory(null,null));
+        // Registers the plugin to the smart card service.
+        Plugin plugin = SmartCardService.getInstance().registerPlugin(new PcscPluginFactory(new PluginObservationExceptionHandler() {
+            @Override
+            public void onPluginObservationError(String pluginName, Throwable e) {
+                logger.error("error in reader observer pluginName:{}, error:{}", pluginName, e.getMessage());
+            }
+        }, new ReaderObservationExceptionHandler() {
+            @Override
+            public void onReaderObservationError(String pluginName, String readerName, Throwable e) {
+                logger.error("error in reader observer pluginName:{}, readerName:{}, error:{}", pluginName, readerName, e.getMessage());
+            }
+        }));
 
-        Reader samReader =  PcscReaderUtils.initSamReader(samReaderFilter);
+        if (plugin.getReaders().size() == 0) {
+            throw new IllegalStateException(
+                    "For the matter of this example, we expect at least one PCSC reader to be connected");
+        }
 
-        logger.info("SAM Reader configured : {}", samReader.getName());
+        PcscReaderUtils.initSamReader(samReaderFilter);
 
-        CalypsoSam calypsoSam = CalypsoUtils.selectSam(samReader);
+        samResourceManager = SamResourceManagerFactory.instantiate(plugin, samReaderFilter);
 
-        return new CardResource<>(samReader, calypsoSam);
+        return samResourceManager;
     }
 
 }
