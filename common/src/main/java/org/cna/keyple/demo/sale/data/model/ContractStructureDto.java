@@ -237,10 +237,10 @@ public class ContractStructureDto {
                 getContractTariff() == that.getContractTariff() &&
                 getContactSaleDate().equals(that.getContactSaleDate()) &&
                 getContractValidityEndDate().equals(that.getContractValidityEndDate()) &&
-                getContractSaleSam().equals(that.getContractSaleSam()) &&
-                getContractSaleCounter().equals(that.getContractSaleCounter()) &&
-                getContractAuthKvc().equals(that.getContractAuthKvc()) &&
-                getContractAuthenticator().equals(that.getContractAuthenticator()) &&
+                Objects.equals(getContractSaleSam(),that.getContractSaleSam()) &&
+                Objects.equals(getContractSaleCounter(),that.getContractSaleCounter()) &&
+                Objects.equals(getContractAuthKvc(),that.getContractAuthKvc()) &&
+                Objects.equals(getContractAuthenticator(),that.getContractAuthenticator()) &&
                 Arrays.equals(getContractPadding(), that.getContractPadding());
     }
 

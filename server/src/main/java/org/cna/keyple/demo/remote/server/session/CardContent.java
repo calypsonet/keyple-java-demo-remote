@@ -86,16 +86,16 @@ public class CardContent {
         //find contract in card
         int existingContractIndex = isReload(newContract.getContractTariff());
 
+        EventStructureDto currentEvent = getEvent();
         // update contracts
-        if(existingContractIndex != 0){
-            EventStructureDto currentEvent = getEvent();
+        if(existingContractIndex > 0){
 
             //is a reload operation
             if(!currentEvent.getContractPriorityAt(existingContractIndex)
                     .equals(newContract.getContractTariff())){
                 //contract was expired
                 currentEvent.setContractPriorityAt(existingContractIndex, newContract.getContractTariff());
-                updateContract(newContract, existingContractIndex);
+                updateContract(existingContractIndex,newContract);
                 updateEvent(currentEvent);
             };
         }else{
@@ -105,7 +105,9 @@ public class CardContent {
                 //no available position, reject card
                 return 2;
             }
-            updateContract(newContract, newPosition);
+            updateContract(newPosition,newContract);
+            currentEvent.setContractPriorityAt(newPosition, newContract.getContractTariff());
+            updateEvent(currentEvent);
         }
 
         // update increment
@@ -173,7 +175,7 @@ public class CardContent {
                     //  Update the associated ContractPriorty field present
                     //  in the persistent object to 31 and set the change flag to true.
                     contract.setContractTariff(PriorityCode.EXPIRED);
-                    updateContract(contract, calypsoIndex);
+                    updateContract(calypsoIndex,contract);
                 }
                 if(contract.getContractTariff() == PriorityCode.MULTI_TRIP_TICKET){
                     counter = getCounter();
@@ -236,25 +238,29 @@ public class CardContent {
     }
 
     /**
+     * (package-private)
      * Update event
      * @param event new event
      */
-    private void updateEvent(EventStructureDto event){
+    void updateEvent(EventStructureDto event){
         this.event = event;
         this.isEventUpdated = true;
     }
 
     /**
+     * (package-private)
      * Update contract at a specific index
      * @param contract
      * @param calypsoIndex
      */
-    private void updateContract(ContractStructureDto contract, int calypsoIndex){
+    void updateContract(int calypsoIndex,ContractStructureDto contract){
         contracts.set(calypsoIndex-1, contract);
         contractUpdated.add(contract);
     }
 
+
     /**
+     * (private)
      * Update counter
      * @param counterIncrement
      */
@@ -265,6 +271,7 @@ public class CardContent {
     }
 
     /**
+     * (private)
      * Return the calypso index of the contractTariff if present in the card
      * @param contractTariff
      * @return calypso index (1-4), 0 if none
@@ -279,6 +286,7 @@ public class CardContent {
     }
 
     /**
+     * (private)
      * Find the position for a new contract
      * @return calypso index (1-4), 0 if none
      */
@@ -299,6 +307,7 @@ public class CardContent {
     }
 
     /**
+     * (private)
      * Fill the contract structure to update:
      * - ContractVersionNumber = 1
      * - ContractTariff = Value provided by upper layer

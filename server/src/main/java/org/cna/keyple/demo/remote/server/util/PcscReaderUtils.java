@@ -53,7 +53,7 @@ public final class PcscReaderUtils {
     throw new KeypleReaderNotFoundException("Reader name pattern: " + pattern);
   }
 
-  static Reader initPoReader(String poReaderFilter) {
+  static public Reader initPoReader(String poReaderFilter) {
 
     Reader reader = PcscReaderUtils.getReaderByPattern(poReaderFilter);
 
@@ -76,9 +76,13 @@ public final class PcscReaderUtils {
 
     ((PcscReader) reader).setContactless(false).setIsoProtocol(PcscReader.IsoProtocol.T0);
 
+    ((PcscReader) reader).setSharingMode(PcscReader.SharingMode.SHARED);
+
     reader.activateProtocol(
             PcscSupportedContactProtocols.ISO_7816_3.name(),
             ContactCardCommonProtocols.ISO_7816_3.name());
+
+
     logger.info("SAM Reader configured : {}", reader.getName());
     return reader;
   }

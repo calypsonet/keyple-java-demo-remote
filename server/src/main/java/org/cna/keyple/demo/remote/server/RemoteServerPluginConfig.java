@@ -134,10 +134,11 @@ public class RemoteServerPluginConfig implements ObservablePlugin.PluginObserver
             SamResourceManager.AllocationMode.BLOCKING,
             new SamIdentifier.SamIdentifierBuilder().serialNumber("").samRevision(SamRevision.AUTO).groupReference(".*").build());
 
-    CardController cardController = new CardController(
-            calypsoPo,
-            reader,
-            samResource);
+    CardController cardController = CardController.newBuilder()
+            .withCalypsoPo(calypsoPo)
+            .withReader(reader)
+            .withSamResource(samResource)
+            .build();
 
     CardContent cardContent = cardController.readCard();
 
@@ -167,10 +168,11 @@ public class RemoteServerPluginConfig implements ObservablePlugin.PluginObserver
             SamResourceManager.AllocationMode.BLOCKING,
             new SamIdentifier.SamIdentifierBuilder().serialNumber("").samRevision(SamRevision.AUTO).groupReference(".*").build());
 
-    CardController cardController = new CardController(
-            calypsoPo,
-            reader,
-            samResource);
+    CardController cardController = CardController.newBuilder()
+            .withCalypsoPo(calypsoPo)
+            .withReader(reader)
+            .withSamResource(samResource)
+            .build();
 
     //should retrieve cardContent from server cache instead
     CardContent cardContent = cardController.readCard();

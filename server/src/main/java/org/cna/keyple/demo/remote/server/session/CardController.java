@@ -5,12 +5,11 @@ import org.cna.keyple.demo.remote.server.util.CalypsoUtils;
 import org.cna.keyple.demo.sale.data.model.*;
 import org.cna.keyple.demo.sale.data.model.type.DateCompact;
 import org.cna.keyple.demo.sale.data.model.type.VersionNumber;
-import org.eclipse.keyple.calypso.transaction.*;
+import org.eclipse.keyple.calypso.transaction.CalypsoPo;
+import org.eclipse.keyple.calypso.transaction.CalypsoSam;
+import org.eclipse.keyple.calypso.transaction.PoTransaction;
 import org.eclipse.keyple.core.card.selection.CardResource;
-import org.eclipse.keyple.core.card.selection.CardSelectionsService;
-import org.eclipse.keyple.core.card.selection.CardSelector;
 import org.eclipse.keyple.core.service.Reader;
-import org.eclipse.keyple.core.service.util.ContactlessCardCommonProtocols;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,7 +22,7 @@ import java.util.List;
 import static org.cna.keyple.demo.remote.server.util.CalypsoClassicInfo.*;
 
 /**
- * Perform operations to the calypso PO
+ * Perform operations with a calypso PO inserted in a Reader. It requires a {@link CalypsoSam} to perform secured operations
  */
 public class CardController {
 
@@ -32,15 +31,70 @@ public class CardController {
     private final Reader poReader;
     private final CardResource<CalypsoSam> samResource;
 
-    public CardController(CalypsoPo calypsoPo , Reader poReader, CardResource<CalypsoSam> samResource){
+    public static Builder newBuilder(){
+        return new Builder();
+    }
+
+    /**
+     * static Builder class
+     */
+    public static final class Builder {
+        private  CalypsoPo calypsoPo;
+        private  Reader poReader;
+        private  CardResource<CalypsoSam> samResource;
+
+        /**
+         * Specify the calypso PO to which the operation will be executed
+         * @param calypsoPo non null instance of a calypso smart card object
+         * @return next step of configuration
+         */
+        public Builder withCalypsoPo(CalypsoPo calypsoPo){
+            this.calypsoPo = calypsoPo;
+            return this;
+        }
+
+        /**
+         * Specify the reader where the calypso PO is inserted
+         * @param poReader non null instance of a reader
+         * @return next step of configuration
+         */
+        public Builder withReader(Reader poReader){
+            this.poReader = poReader;
+            return this;
+        }
+        /**
+         * Specify the sam resource required to perform secured operations
+         * @param samResource non null instance of a card resource
+         * @return next step of configuration
+         */
+        public Builder withSamResource(CardResource<CalypsoSam> samResource){
+            this.samResource = samResource;
+            return this;
+        }
+
+        public CardController build(){
+            return new CardController(calypsoPo, poReader,samResource);
+        }
+
+    }
+
+    /**
+     * (private)
+     * Build this controller with the calypso you aim to read.
+     * @param calypsoPo selected smart card
+     * @param poReader reader the smart card is inserted into
+     * @param samResource sam resource needed to perform secure operations
+     */
+    private CardController(CalypsoPo calypsoPo , Reader poReader, CardResource<CalypsoSam> samResource){
         this.calypsoPo = calypsoPo;
         this.poReader = poReader;
         this.samResource = samResource;
     }
 
     /**
-     * Read card
-     * @return
+     * (public)
+     * Read all files on the calypso PO inserted in the Reader
+     * @return card content
      */
     public CardContent readCard(){
         // prepare the PO Transaction
@@ -90,8 +144,8 @@ public class CardController {
     }
 
     /**
-     * Update card based on a card session
-     * @param cardContent
+     * Write the card content into the inserted card. Only updated-marked files will be physically updated.
+     * @param cardContent updated content to be written
      * @return status code
      */
     public int writeCard(CardContent cardContent){
@@ -117,7 +171,7 @@ public class CardController {
         }
 
         /* Update event */
-        if(cardContent.isCounterUpdated()){
+        if(cardContent.isEventUpdated()){
             poTransaction.prepareUpdateRecord(SFI_EventLog, 1,
                     EventStructureParser.unparse(buildEvent(cardContent.getEvent(), cardContent.getContracts())));
         }
@@ -135,6 +189,9 @@ public class CardController {
         return 0;
     }
 
+    /**
+     * Empty the inserted card with empty files for event, contracts, counters. Init the environment file.
+     */
     public void initCard(){
         // prepare the PO Transaction
         PoTransaction poTransaction =
@@ -181,46 +238,6 @@ public class CardController {
         logger.info("Calypso Session Closed - SESSION_LVL_PERSO");
     }
 
-    /**
-     * Verify that the environment file of the card is valid
-     * @return true if card is init
-     */
-    public Boolean verifyEnvironmentFile(){
-        // Prepare a Calypso PO selection
-        CardSelectionsService cardSelectionsService = new CardSelectionsService();
-
-        // Setting of an AID based selection of a Calypso REV3 PO
-        PoSelection poSelection =
-                new PoSelection(
-                        PoSelector.builder()
-                                .cardProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name())
-                                .aidSelector(
-                                        CardSelector.AidSelector.builder().aidToSelect(CalypsoClassicInfo.AID).build())
-                                .invalidatedPo(PoSelector.InvalidatedPo.REJECT)
-                                .build());
-
-        // Prepare the reading order.
-        poSelection.prepareReadRecordFile(
-                CalypsoClassicInfo.SFI_EnvironmentAndHolder, 1);
-        cardSelectionsService.prepareSelection(poSelection);
-
-        CalypsoPo calypsoPo =
-                (CalypsoPo) cardSelectionsService.processExplicitSelections(poReader).getActiveSmartCard();
-
-        logger.info("The selection of the PO has succeeded.");
-
-        // Retrieve the data read from the CalyspoPo updated during the transaction process
-        ElementaryFile efEnvironmentAndHolder =
-                calypsoPo.getFileBySfi(CalypsoClassicInfo.SFI_EnvironmentAndHolder);
-
-        EnvironmentHolderStructureDto environmentAndHolder =
-                EnvironmentHolderStructureParser.parse(efEnvironmentAndHolder.getData().getContent());
-
-        // Log the result
-        logger.info("EnvironmentAndHolder file data: {}", environmentAndHolder);
-
-        return environmentAndHolder.equals(CardController.getEnvironmentInit());
-    }
 
     /**
      *

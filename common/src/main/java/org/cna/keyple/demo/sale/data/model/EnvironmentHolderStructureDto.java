@@ -191,7 +191,7 @@ public class EnvironmentHolderStructureDto {
                 getEnvVersionNumber() == that.getEnvVersionNumber() &&
                 getEnvIssuingDate().equals(that.getEnvIssuingDate()) &&
                 getEnvEndDate().equals(that.getEnvEndDate()) &&
-                getHolderCompany().equals(that.getHolderCompany()) &&
+                Objects.equals(getHolderCompany(), that.getHolderCompany()) &&
                 Objects.equals(getHolderIdNumber(), that.getHolderIdNumber()) &&
                 Arrays.equals(getEnvPadding(), that.getEnvPadding());
     }

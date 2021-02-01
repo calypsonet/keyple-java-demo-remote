@@ -93,7 +93,7 @@ public final class CalypsoUtils {
    * @return a CalypsoPo object if the selection succeed
    * @throws IllegalStateException if the selection fails
    */
-  static CalypsoPo selectPo(Reader poReader) {
+  public static CalypsoPo selectPo(Reader poReader) {
 
     // Check if a PO is present in the reader
     if (!poReader.isCardPresent()) {

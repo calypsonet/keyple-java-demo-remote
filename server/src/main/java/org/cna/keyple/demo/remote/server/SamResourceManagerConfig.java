@@ -30,7 +30,8 @@ public class SamResourceManagerConfig {
         logger.info("Init SamResourceManager with PCSC Plugin...");
 
         // Registers the plugin to the smart card service.
-        Plugin plugin = SmartCardService.getInstance().registerPlugin(new PcscPluginFactory(new PluginObservationExceptionHandler() {
+        Plugin plugin = SmartCardService.getInstance().registerPlugin(
+                new PcscPluginFactory(new PluginObservationExceptionHandler() {
             @Override
             public void onPluginObservationError(String pluginName, Throwable e) {
                 logger.error("error in reader observer pluginName:{}, error:{}", pluginName, e.getMessage());
@@ -38,7 +39,8 @@ public class SamResourceManagerConfig {
         }, new ReaderObservationExceptionHandler() {
             @Override
             public void onReaderObservationError(String pluginName, String readerName, Throwable e) {
-                logger.error("error in reader observer pluginName:{}, readerName:{}, error:{}", pluginName, readerName, e.getMessage());
+                logger.error("error in reader observer pluginName:{}, readerName:{}, error:{}",
+                        pluginName, readerName, e.getMessage());
             }
         }));
 
