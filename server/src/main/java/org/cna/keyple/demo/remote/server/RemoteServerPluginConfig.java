@@ -15,6 +15,7 @@ import io.quarkus.runtime.Startup;
 import org.cna.keyple.demo.remote.server.card.CardContent;
 import org.cna.keyple.demo.remote.server.card.CardController;
 import org.cna.keyple.demo.sale.data.endpoint.AnalyzeContractsOutput;
+import org.cna.keyple.demo.sale.data.endpoint.CardIssuanceOutput;
 import org.cna.keyple.demo.sale.data.endpoint.WriteContractInput;
 import org.cna.keyple.demo.sale.data.endpoint.WriteContractOutput;
 import org.cna.keyple.demo.sale.data.model.ContractStructureDto;
@@ -44,7 +45,8 @@ import java.util.concurrent.Executors;
  * <p>It contains the business logic of the remote service execution.
  * <ul>
  *     <li>CONTRACT_ANALYSIS : returns the list of compatible title with the calypsoPo inserted</li>
- *      <li>WRITE_CONTRACT : returns the list of compatible title with the calypsoPo inserted</li>
+ *      <li>WRITE_CONTRACT : write a new contract in the calypsoPo inserted</li>
+ *      <li>CARD_ISSUANCE : Clean/Initialize Application of the calypsoPO inserted</li>
  * </ul>
  *
  */
@@ -109,7 +111,12 @@ public class RemoteServerPluginConfig implements ObservablePlugin.PluginObserver
     } else if ("WRITE_CONTRACT".equals(reader.getServiceId())) {
 
       // Executes the business service using the remote reader.
-      userOutputData = writeTitle(reader);
+      userOutputData = writeContract(reader);
+
+    } else if ("CARD_ISSUANCE".equals(reader.getServiceId())) {
+
+      // Executes the business service using the remote reader.
+      userOutputData = initCard(reader);
 
     } else{
       throw new IllegalArgumentException("Service ID not recognized");
@@ -120,7 +127,7 @@ public class RemoteServerPluginConfig implements ObservablePlugin.PluginObserver
   }
 
   /**
-   *
+   * Analyze the contracts from the card inserted into the remote reader
    * @param reader The remote reader on where to execute the business logic.
    * @return a nullable reference to the user output data to transmit to the client.
    */
@@ -156,11 +163,11 @@ public class RemoteServerPluginConfig implements ObservablePlugin.PluginObserver
   }
 
   /**
-   *
+   * Write a contract into the card inserted into the remote reader
    * @param reader The remote reader on where to execute the business logic.
    * @return a nullable reference to the user output data to transmit to the client.
    */
-  private WriteContractOutput writeTitle(RemoteReaderServer reader) {
+  private WriteContractOutput writeContract(RemoteReaderServer reader) {
 
     /*
      * Retrieves the userInputData and initial calypsoPO specified by the client when executing the remote service.
@@ -198,4 +205,32 @@ public class RemoteServerPluginConfig implements ObservablePlugin.PluginObserver
 
     return new WriteContractOutput().setStatusCode(statusCode);
   }
+
+  /**
+   * Init the card inserted into the remote reader
+   * @param reader The remote reader on where to execute the business logic.
+   * @return a nullable reference to the user output data to transmit to the client.
+   */
+  private CardIssuanceOutput initCard(RemoteReaderServer reader) {
+
+    CalypsoPo calypsoPo = reader.getInitialCardContent(CalypsoPo.class);
+
+    CardResource<CalypsoSam> samResource = samResourceManager.allocateSamResource(
+            SamResourceManager.AllocationMode.BLOCKING,
+            new SamIdentifier.SamIdentifierBuilder().serialNumber("").samRevision(SamRevision.AUTO).groupReference(".*").build());
+
+    CardController cardController = CardController.newBuilder()
+            .withCalypsoPo(calypsoPo)
+            .withReader(reader)
+            .withSamResource(samResource)
+            .build();
+
+    //init card
+    cardController.initCard();
+
+    samResourceManager.freeSamResource(samResource);
+
+    return new CardIssuanceOutput().setStatusCode(0);
+  }
+
 }

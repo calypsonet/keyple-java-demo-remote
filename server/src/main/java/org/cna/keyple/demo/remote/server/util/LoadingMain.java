@@ -3,7 +3,6 @@ package org.cna.keyple.demo.remote.server.util;
 import org.cna.keyple.demo.remote.server.SamResourceManagerConfig;
 import org.cna.keyple.demo.remote.server.card.CardContent;
 import org.cna.keyple.demo.remote.server.card.CardController;
-import org.cna.keyple.demo.sale.data.endpoint.WriteContractInput;
 import org.cna.keyple.demo.sale.data.model.type.PriorityCode;
 import org.eclipse.keyple.calypso.command.sam.SamRevision;
 import org.eclipse.keyple.calypso.transaction.CalypsoPo;
@@ -39,7 +38,10 @@ public class LoadingMain {
         //CardResource<CalypsoSam> samResource = new CardResource<>(samReader, calypsoSam);
         CardResource<CalypsoSam> samResource = samResourceManager.allocateSamResource(
                 SamResourceManager.AllocationMode.BLOCKING,
-                new SamIdentifier.SamIdentifierBuilder().serialNumber("").samRevision(SamRevision.AUTO).groupReference(".*").build());
+                new SamIdentifier.SamIdentifierBuilder()
+                        .serialNumber("")
+                        .samRevision(SamRevision.AUTO)
+                        .groupReference(".*").build());
 
         /*
          * Load a contract
@@ -54,11 +56,10 @@ public class LoadingMain {
         logger.info(cardContent.toString());
         cardContent.listValidContracts();
 
-        WriteContractInput writeContractInput = new WriteContractInput().setContractTariff(PriorityCode.SEASON_PASS);
         //WriteContractInput writeContractInput = new WriteContractInput().setContractTariff(PriorityCode.MULTI_TRIP_TICKET).setTicketToLoad(2);
         //WriteContractInput writeContractInput = new WriteContractInput().setContractTariff(PriorityCode.STORED_VALUE).setTicketToLoad(13);
 
-        cardContent.insertNewContract(writeContractInput.getContractTariff(), writeContractInput.getTicketToLoad());
+        cardContent.insertNewContract(PriorityCode.SEASON_PASS, 10);
         cardController.writeCard(cardContent);
 
         logger.info(cardContent.toString());

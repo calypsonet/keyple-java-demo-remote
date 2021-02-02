@@ -16,9 +16,12 @@ package org.cna.keyple.demo.sale.data.endpoint;
  */
 public class AnalyzeContractsInput {
 
-  //mandatory
   private String pluginType;
 
+  /**
+   * Return the type of plugin used for the po reader
+   * @return not null plugin type
+   */
   public String getPluginType() {
     return pluginType;
   }

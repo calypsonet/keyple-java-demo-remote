@@ -1,23 +1,20 @@
 package org.cna.keyple.demo.sale.data.endpoint;
 
-
-public class WriteContractOutput {
+public class CardIssuanceOutput {
 
     private Integer statusCode;
 
     /**
      * get status code
-     * - 0 successful
-     * - 1 server is not ready
-     * - 2 card rejected
-     * - 3 please present the same card
+     * - 0 if successful
+     * - 1 if error
      * @return not null status code
      */
     public Integer getStatusCode() {
         return statusCode;
     }
 
-    public WriteContractOutput setStatusCode(Integer statusCode) {
+    public CardIssuanceOutput setStatusCode(Integer statusCode) {
         this.statusCode = statusCode;
         return this;
     }

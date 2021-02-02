@@ -12,13 +12,11 @@ public class WriteContractInput {
         return contractTariff;
     }
 
+    public Integer getTicketToLoad() { return ticketToLoad; }
+
     public WriteContractInput setContractTariff(PriorityCode contractTariff) {
         this.contractTariff = contractTariff;
         return this;
-    }
-
-    public Integer getTicketToLoad() {
-        return ticketToLoad;
     }
 
     public WriteContractInput setTicketToLoad(Integer ticketToLoad) {

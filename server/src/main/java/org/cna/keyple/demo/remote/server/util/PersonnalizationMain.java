@@ -30,8 +30,10 @@ public class PersonnalizationMain {
 
         CardResource<CalypsoSam> samResource = samResourceManager.allocateSamResource(
                 SamResourceManager.AllocationMode.BLOCKING,
-                new SamIdentifier.SamIdentifierBuilder().serialNumber("").samRevision(SamRevision.AUTO).groupReference(".*").build());
-
+                new SamIdentifier.SamIdentifierBuilder()
+                        .serialNumber("")
+                        .samRevision(SamRevision.AUTO)
+                        .groupReference(".*").build());
 
         /*
          * Select cards

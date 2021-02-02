@@ -5,10 +5,7 @@ import org.cna.keyple.demo.remote.integration.client.EndpointClient;
 import org.cna.keyple.demo.remote.integration.client.HeartbeatClient;
 import org.cna.keyple.demo.remote.server.util.CalypsoUtils;
 import org.cna.keyple.demo.remote.server.util.PcscReaderUtils;
-import org.cna.keyple.demo.sale.data.endpoint.AnalyzeContractsInput;
-import org.cna.keyple.demo.sale.data.endpoint.AnalyzeContractsOutput;
-import org.cna.keyple.demo.sale.data.endpoint.WriteContractInput;
-import org.cna.keyple.demo.sale.data.endpoint.WriteContractOutput;
+import org.cna.keyple.demo.sale.data.endpoint.*;
 import org.cna.keyple.demo.sale.data.model.type.PriorityCode;
 import org.eclipse.keyple.calypso.transaction.CalypsoPo;
 import org.eclipse.keyple.core.service.Reader;
@@ -80,6 +77,16 @@ public class TransactionTest {
         CalypsoPo calypsoPo = CalypsoUtils.selectPo(poReader);
 
         LocalServiceClient localService = LocalServiceClientUtils.getLocalService(LOCAL_SERVICE_NAME);
+
+        /* Execute Remote Service : Get Compatible Title */
+        CardIssuanceOutput cardIssuanceOutput = localService.executeRemoteService(
+                RemoteServiceParameters
+                        .builder("CARD_ISSUANCE", poReader)
+                        .withInitialCardContent(calypsoPo)
+                        .build(),
+                CardIssuanceOutput.class);
+
+        assertEquals(0, cardIssuanceOutput.getStatusCode());
 
         AnalyzeContractsInput compatibleContractInput =
                 new AnalyzeContractsInput().setPluginType("Android NFC");

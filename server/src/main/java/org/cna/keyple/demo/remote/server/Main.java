@@ -14,8 +14,6 @@ package org.cna.keyple.demo.remote.server;
 import io.quarkus.runtime.Quarkus;
 import io.quarkus.runtime.QuarkusApplication;
 import io.quarkus.runtime.annotations.QuarkusMain;
-import javax.inject.Inject;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,7 +32,7 @@ public class Main {
     /** {@inheritDoc} */
     @Override
     public int run(String... args) {
-      logger.info("Main app init...");
+      logger.info("Keyple Demo Remote Server Started.");
       Quarkus.waitForExit();
       return 0;
     }
