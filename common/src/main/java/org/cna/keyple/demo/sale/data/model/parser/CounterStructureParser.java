@@ -1,4 +1,8 @@
-package org.cna.keyple.demo.sale.data.model;
+package org.cna.keyple.demo.sale.data.model.parser;
+
+import org.cna.keyple.demo.sale.data.model.CounterStructureDto;
+import org.cna.keyple.demo.sale.data.util.ByteArrayParserUtil;
+import org.eclipse.keyple.core.util.ByteArrayUtil;
 
 import java.nio.ByteBuffer;
 
@@ -6,6 +10,8 @@ import java.nio.ByteBuffer;
  * Parse/Unparse CounterStructureDto to an array of bytes
  */
 public class CounterStructureParser {
+
+    private static Integer COUNTER_VALUE_SIZE = 3;
 
     /**
      * Unparse dto to an array of byte
@@ -16,8 +22,8 @@ public class CounterStructureParser {
         if(dto==null){
             throw new IllegalArgumentException("dto must not be null");
         }
-        ByteBuffer out = ByteBuffer.allocate(4);
-        out.putInt(dto.getCounterValue());
+        ByteBuffer out = ByteBuffer.allocate(COUNTER_VALUE_SIZE);
+        out.put(ByteArrayParserUtil.toThreeBits(dto.getCounterValue()));
         return out.array();
     }
 
@@ -27,16 +33,15 @@ public class CounterStructureParser {
      * @return parsed object
      */
     public static CounterStructureDto parse(byte[] file){
-        if(file==null || file.length != 4){
-            throw new IllegalArgumentException("file should not be null and its length should be 29");
+        if(file==null || file.length != COUNTER_VALUE_SIZE){
+            throw new IllegalArgumentException("file should not be null and its length should be " + COUNTER_VALUE_SIZE);
         }
 
-        ByteBuffer input = ByteBuffer.wrap(file);
         return CounterStructureDto.newBuilder()
-                .setCounterValue(input.getInt())
+                .setCounterValue(ByteArrayUtil.threeBytesSignedToInt(file,0))
                 .build();
     }
     public static byte[] getEmpty(){
-        return ByteBuffer.allocate(4).array();
+        return ByteBuffer.allocate(COUNTER_VALUE_SIZE).array();
     }
 }

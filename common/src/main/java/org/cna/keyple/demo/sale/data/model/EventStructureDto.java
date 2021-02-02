@@ -228,6 +228,53 @@ public class EventStructureDto {
         this.contractPriority4 = contractPriority4;
     }
 
+
+    /**
+     * Gets contract priority by its index.
+     *
+     * @param index should be between 1 and 4 (included)
+     * @return An instance of PriorityCode. Cannot be null.
+     * @throws IllegalArgumentException if index is out of range
+     */
+    public PriorityCode getContractPriorityAt(int index) {
+
+        if(index==1){
+            return contractPriority1;
+        } else if(index==2){
+            return contractPriority2;
+        } else if(index==3){
+            return contractPriority3;
+        } else if(index==4){
+            return contractPriority4;
+        } else{
+            throw new IllegalArgumentException("index should be between 1 and 4 (included)");
+        }
+
+    }
+
+    /**
+     * Set contract priority by its index.
+     *
+     * @param index should be between 1 and 4 (included)
+     * @return An instance of PriorityCode. Cannot be null.
+     * @throws IllegalArgumentException if index is out of range
+     */
+    public void setContractPriorityAt(int index, PriorityCode contractPriority) {
+
+        if(index==1){
+            this.contractPriority1 = contractPriority;
+        } else if(index==2){
+            this.contractPriority2 = contractPriority;
+        } else if(index==3){
+            this.contractPriority3 = contractPriority;
+        } else if(index==4){
+            this.contractPriority4 = contractPriority;
+        }else{
+            throw new IllegalArgumentException("index should be between 1 and 4 (included)");
+        }
+
+    }
+
     /**
      * Get event padding byte [ ].
      *
@@ -268,6 +315,22 @@ public class EventStructureDto {
         int result = Objects.hash(getEventVersionNumber(), getEventDateStamp(), getEventTimeStamp(), getEventLocation(), getEventContractUsed(), getContractPriority1(), getContractPriority2(), getContractPriority3(), getContractPriority4());
         result = 31 * result + Arrays.hashCode(getEventPadding());
         return result;
+    }
+
+    @Override
+    public String toString() {
+        return "{" +
+                "eventVersionNumber=" + eventVersionNumber +
+                ", eventDateStamp=" + eventDateStamp +
+                ", eventTimeStamp=" + eventTimeStamp +
+                ", eventLocation=" + eventLocation +
+                ", eventContractUsed=" + eventContractUsed +
+                ", contractPriority1=" + contractPriority1 +
+                ", contractPriority2=" + contractPriority2 +
+                ", contractPriority3=" + contractPriority3 +
+                ", contractPriority4=" + contractPriority4 +
+                ", eventPadding=" + Arrays.toString(eventPadding) +
+                '}';
     }
 
     /**

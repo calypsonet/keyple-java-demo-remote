@@ -237,10 +237,10 @@ public class ContractStructureDto {
                 getContractTariff() == that.getContractTariff() &&
                 getContactSaleDate().equals(that.getContactSaleDate()) &&
                 getContractValidityEndDate().equals(that.getContractValidityEndDate()) &&
-                getContractSaleSam().equals(that.getContractSaleSam()) &&
-                getContractSaleCounter().equals(that.getContractSaleCounter()) &&
-                getContractAuthKvc().equals(that.getContractAuthKvc()) &&
-                getContractAuthenticator().equals(that.getContractAuthenticator()) &&
+                Objects.equals(getContractSaleSam(),that.getContractSaleSam()) &&
+                Objects.equals(getContractSaleCounter(),that.getContractSaleCounter()) &&
+                Objects.equals(getContractAuthKvc(),that.getContractAuthKvc()) &&
+                Objects.equals(getContractAuthenticator(),that.getContractAuthenticator()) &&
                 Arrays.equals(getContractPadding(), that.getContractPadding());
     }
 
@@ -249,6 +249,21 @@ public class ContractStructureDto {
         int result = Objects.hash(getContractVersionNumber(), getContractTariff(), getContactSaleDate(), getContractValidityEndDate(), getContractSaleSam(), getContractSaleCounter(), getContractAuthKvc(), getContractAuthenticator());
         result = 31 * result + Arrays.hashCode(getContractPadding());
         return result;
+    }
+
+    @Override
+    public String toString() {
+        return "{" +
+                "contractVersionNumber=" + contractVersionNumber +
+                ", contractTariff=" + contractTariff +
+                ", contactSaleDate=" + contactSaleDate +
+                ", contractValidityEndDate=" + contractValidityEndDate +
+                ", contractSaleSam=" + contractSaleSam +
+                ", contractSaleCounter=" + contractSaleCounter +
+                ", contractAuthKvc=" + contractAuthKvc +
+                ", contractAuthenticator=" + contractAuthenticator +
+                ", contractPadding=" + Arrays.toString(contractPadding) +
+                '}';
     }
 
     /**
@@ -296,7 +311,7 @@ public class ContractStructureDto {
          * @param contactSaleDate the {@code contactSaleDate} to set
          * @return a reference to this Builder
          */
-        public Builder setContactSaleDate(DateCompact contactSaleDate) {
+        public Builder setContractSaleDate(DateCompact contactSaleDate) {
             this.contactSaleDate = contactSaleDate;
             return this;
         }

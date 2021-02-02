@@ -50,8 +50,6 @@ public class DateCompact {
 
     @Override
     public String toString() {
-        return "DateCompact{" +
-                "daysSinceReference=" + daysSinceReference +
-                '}';
+        return String.valueOf(daysSinceReference);
     }
 }

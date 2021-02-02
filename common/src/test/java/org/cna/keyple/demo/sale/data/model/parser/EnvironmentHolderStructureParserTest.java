@@ -1,5 +1,7 @@
-package org.cna.keyple.demo.sale.data.model;
+package org.cna.keyple.demo.sale.data.model.parser;
 
+import org.cna.keyple.demo.sale.data.model.EnvironmentHolderStructureDto;
+import org.cna.keyple.demo.sale.data.model.parser.EnvironmentHolderStructureParser;
 import org.cna.keyple.demo.sale.data.model.type.DateCompact;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.junit.Test;

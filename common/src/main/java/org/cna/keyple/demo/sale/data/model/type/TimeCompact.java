@@ -48,8 +48,6 @@ public class TimeCompact {
 
     @Override
     public String toString() {
-        return "TimeCompact{" +
-                "minutesSinceReference=" + minutesSinceReference +
-                '}';
+        return String.valueOf(minutesSinceReference);
     }
 }

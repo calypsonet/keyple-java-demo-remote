@@ -1,5 +1,6 @@
-package org.cna.keyple.demo.sale.data.model;
+package org.cna.keyple.demo.sale.data.model.parser;
 
+import org.cna.keyple.demo.sale.data.model.EventStructureDto;
 import org.cna.keyple.demo.sale.data.model.type.DateCompact;
 import org.cna.keyple.demo.sale.data.model.type.PriorityCode;
 import org.cna.keyple.demo.sale.data.model.type.TimeCompact;
@@ -23,6 +24,7 @@ public class EventStructureParser {
         out.putShort(dto.getEventDateStamp().getDaysSinceReference());
         out.putShort(dto.getEventTimeStamp().getMinutesSinceReference());
         out.putInt(dto.getEventLocation());
+        out.put(dto.getEventContractUsed());
         out.put(dto.getContractPriority1().getCode());
         out.put(dto.getContractPriority2().getCode());
         out.put(dto.getContractPriority3().getCode());

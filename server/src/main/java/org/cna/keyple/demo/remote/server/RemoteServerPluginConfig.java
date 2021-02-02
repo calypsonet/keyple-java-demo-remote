@@ -12,11 +12,18 @@
 package org.cna.keyple.demo.remote.server;
 
 import io.quarkus.runtime.Startup;
-import org.cna.keyple.demo.sale.data.endpoint.CompatibleContractInput;
-import org.cna.keyple.demo.sale.data.endpoint.CompatibleContractOutput;
-import org.cna.keyple.demo.sale.data.endpoint.WriteTitleOutput;
+import org.cna.keyple.demo.remote.server.card.CardContent;
+import org.cna.keyple.demo.remote.server.card.CardController;
+import org.cna.keyple.demo.sale.data.endpoint.AnalyzeContractsOutput;
+import org.cna.keyple.demo.sale.data.endpoint.WriteContractInput;
+import org.cna.keyple.demo.sale.data.endpoint.WriteContractOutput;
+import org.cna.keyple.demo.sale.data.model.ContractStructureDto;
+import org.eclipse.keyple.calypso.command.sam.SamRevision;
 import org.eclipse.keyple.calypso.transaction.CalypsoPo;
+import org.eclipse.keyple.calypso.transaction.CalypsoSam;
+import org.eclipse.keyple.calypso.transaction.sammanager.SamIdentifier;
 import org.eclipse.keyple.calypso.transaction.sammanager.SamResourceManager;
+import org.eclipse.keyple.core.card.selection.CardResource;
 import org.eclipse.keyple.core.service.SmartCardService;
 import org.eclipse.keyple.core.service.event.ObservablePlugin;
 import org.eclipse.keyple.core.service.event.PluginEvent;
@@ -27,6 +34,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.enterprise.context.ApplicationScoped;
+import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.Executors;
 
 /**
@@ -34,7 +43,7 @@ import java.util.concurrent.Executors;
  *
  * <p>It contains the business logic of the remote service execution.
  * <ul>
- *     <li>GET_COMPATIBLE_CONTRACT : returns the list of compatible title with the calypsoPo inserted</li>
+ *     <li>CONTRACT_ANALYSIS : returns the list of compatible title with the calypsoPo inserted</li>
  *      <li>WRITE_CONTRACT : returns the list of compatible title with the calypsoPo inserted</li>
  * </ul>
  *
@@ -45,7 +54,7 @@ public class RemoteServerPluginConfig implements ObservablePlugin.PluginObserver
 
   private static final Logger logger = LoggerFactory.getLogger(RemoteServerPluginConfig.class);
 
-  private SamResourceManager samResourceManager;
+  SamResourceManager samResourceManager;
 
   public RemoteServerPluginConfig(SamResourceManager samResourceManager){
     logger.info("Init RemoteServerPluginConfig...");
@@ -63,8 +72,7 @@ public class RemoteServerPluginConfig implements ObservablePlugin.PluginObserver
     // Register the remote plugin to the smart card service using the factory.
     SmartCardService.getInstance().registerPlugin(factory);
 
-    samResourceManager = samResourceManager;
-    assert samResourceManager != null;
+    this.samResourceManager = samResourceManager;
   }
 
   /** {@inheritDoc} */
@@ -93,12 +101,12 @@ public class RemoteServerPluginConfig implements ObservablePlugin.PluginObserver
     // Analyses the Service ID contains in the reader to find which business service to execute.
     // The Service ID was specified by the client when executing the remote service.
     Object userOutputData;
-    if ("GET_COMPATIBLE_CONTRACT".equals(reader.getServiceId())) {
+    if ("CONTRACT_ANALYSIS".equals(reader.getServiceId())) {
 
       // Executes the business service using the remote reader.
-      userOutputData = getCompatibleContract(reader);
+      userOutputData = analyzeContracts(reader);
 
-    } else if ("WRITE_TITLE".equals(reader.getServiceId())) {
+    } else if ("WRITE_CONTRACT".equals(reader.getServiceId())) {
 
       // Executes the business service using the remote reader.
       userOutputData = writeTitle(reader);
@@ -116,16 +124,35 @@ public class RemoteServerPluginConfig implements ObservablePlugin.PluginObserver
    * @param reader The remote reader on where to execute the business logic.
    * @return a nullable reference to the user output data to transmit to the client.
    */
-  private CompatibleContractOutput getCompatibleContract(RemoteReaderServer reader) {
+  private AnalyzeContractsOutput analyzeContracts(RemoteReaderServer reader) {
 
     /*
      * Retrieves the compatibleContractInput and initial calypsoPO specified by the client when executing the remote service.
      */
-    CompatibleContractInput compatibleContractInput = reader.getUserInputData(CompatibleContractInput.class);
     CalypsoPo calypsoPo = reader.getInitialCardContent(CalypsoPo.class);
 
-    //TODO
-    return new CompatibleContractOutput();
+    CardResource<CalypsoSam> samResource = samResourceManager.allocateSamResource(
+            SamResourceManager.AllocationMode.BLOCKING,
+            new SamIdentifier.SamIdentifierBuilder().serialNumber("").samRevision(SamRevision.AUTO).groupReference(".*").build());
+
+    CardController cardController = CardController.newBuilder()
+            .withCalypsoPo(calypsoPo)
+            .withReader(reader)
+            .withSamResource(samResource)
+            .build();
+
+    CardContent cardContent = cardController.readCard();
+
+    logger.info(cardContent.toString());
+
+    List<ContractStructureDto> validContracts = cardContent.listValidContracts();
+
+    samResourceManager.freeSamResource(samResource);
+
+    return new AnalyzeContractsOutput()
+            .setValidContracts(validContracts)
+            .setValidContractsCounters(Arrays.asList(cardContent.getCounter()))
+            .setStatusCode(0);
   }
 
   /**
@@ -133,15 +160,42 @@ public class RemoteServerPluginConfig implements ObservablePlugin.PluginObserver
    * @param reader The remote reader on where to execute the business logic.
    * @return a nullable reference to the user output data to transmit to the client.
    */
-  private WriteTitleOutput writeTitle(RemoteReaderServer reader) {
+  private WriteContractOutput writeTitle(RemoteReaderServer reader) {
 
     /*
      * Retrieves the userInputData and initial calypsoPO specified by the client when executing the remote service.
      */
-    CompatibleContractInput userInputData = reader.getUserInputData(CompatibleContractInput.class);
+    WriteContractInput writeContractInput = reader.getUserInputData(WriteContractInput.class);
     CalypsoPo calypsoPo = reader.getInitialCardContent(CalypsoPo.class);
 
-    //TODO
-    return new WriteTitleOutput();
+    CardResource<CalypsoSam> samResource = samResourceManager.allocateSamResource(
+            SamResourceManager.AllocationMode.BLOCKING,
+            new SamIdentifier.SamIdentifierBuilder().serialNumber("").samRevision(SamRevision.AUTO).groupReference(".*").build());
+
+    CardController cardController = CardController.newBuilder()
+            .withCalypsoPo(calypsoPo)
+            .withReader(reader)
+            .withSamResource(samResource)
+            .build();
+
+    //re-read card
+    CardContent cardContent = cardController.readCard();
+
+    if(cardContent==null){
+      //is card has not been read previously, throw error
+      return new WriteContractOutput().setStatusCode(3);
+    }
+
+    logger.info(cardContent.toString());
+
+    cardContent.insertNewContract(
+            writeContractInput.getContractTariff(),
+            writeContractInput.getTicketToLoad());
+
+    int statusCode = cardController.writeCard(cardContent);
+
+    samResourceManager.freeSamResource(samResource);
+
+    return new WriteContractOutput().setStatusCode(statusCode);
   }
 }

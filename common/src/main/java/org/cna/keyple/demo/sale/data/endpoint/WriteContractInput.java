@@ -2,7 +2,7 @@ package org.cna.keyple.demo.sale.data.endpoint;
 
 import org.cna.keyple.demo.sale.data.model.type.PriorityCode;
 
-public class WriteTitleInput {
+public class WriteContractInput {
 
     //mandatory
     PriorityCode contractTariff;
@@ -12,7 +12,7 @@ public class WriteTitleInput {
         return contractTariff;
     }
 
-    public WriteTitleInput setContractTariff(PriorityCode contractTariff) {
+    public WriteContractInput setContractTariff(PriorityCode contractTariff) {
         this.contractTariff = contractTariff;
         return this;
     }
@@ -21,7 +21,7 @@ public class WriteTitleInput {
         return ticketToLoad;
     }
 
-    public WriteTitleInput setTicketToLoad(Integer ticketToLoad) {
+    public WriteContractInput setTicketToLoad(Integer ticketToLoad) {
         this.ticketToLoad = ticketToLoad;
         return this;
     }
