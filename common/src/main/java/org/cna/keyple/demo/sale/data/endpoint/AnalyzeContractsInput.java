@@ -14,7 +14,7 @@ package org.cna.keyple.demo.sale.data.endpoint;
 /**
  * Input of Compatible Contract Endpoint
  */
-public class CompatibleContractInput {
+public class AnalyzeContractsInput {
 
   //mandatory
   private String pluginType;
@@ -23,7 +23,7 @@ public class CompatibleContractInput {
     return pluginType;
   }
 
-  public CompatibleContractInput setPluginType(String pluginType) {
+  public AnalyzeContractsInput setPluginType(String pluginType) {
     this.pluginType = pluginType;
     return this;
   }

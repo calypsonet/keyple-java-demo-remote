@@ -22,7 +22,6 @@ public class SamResourceManagerConfig {
     private static final Logger logger = LoggerFactory.getLogger(SamResourceManagerConfig.class);
 
     private static String samReaderFilter = ".*(Cherry TC|SCM Microsystems|Identive|HID|Generic).*";
-    private SamResourceManager samResourceManager;
 
     @Produces
     @Singleton
@@ -51,9 +50,7 @@ public class SamResourceManagerConfig {
 
         PcscReaderUtils.initSamReader(samReaderFilter);
 
-        samResourceManager = SamResourceManagerFactory.instantiate(plugin, samReaderFilter);
-
-        return samResourceManager;
+        return SamResourceManagerFactory.instantiate(plugin, samReaderFilter);
     }
 
 }

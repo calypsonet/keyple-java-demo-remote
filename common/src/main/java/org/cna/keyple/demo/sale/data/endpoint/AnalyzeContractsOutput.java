@@ -20,7 +20,7 @@ import java.util.List;
 /**
  * Output of Compatible Contract endpoint
  */
-public class CompatibleContractOutput {
+public class AnalyzeContractsOutput {
 
   //mandatory
   private List<ContractStructureDto> validContracts;
@@ -39,7 +39,7 @@ public class CompatibleContractOutput {
     return validContracts;
   }
 
-  public CompatibleContractOutput setValidContracts(List<ContractStructureDto> validContracts) {
+  public AnalyzeContractsOutput setValidContracts(List<ContractStructureDto> validContracts) {
     this.validContracts = validContracts;
     return this;
   }
@@ -48,7 +48,7 @@ public class CompatibleContractOutput {
     return validContractsCounters;
   }
 
-  public CompatibleContractOutput setValidContractsCounters(List<CounterStructureDto> validContractsCounters) {
+  public AnalyzeContractsOutput setValidContractsCounters(List<CounterStructureDto> validContractsCounters) {
     this.validContractsCounters = validContractsCounters;
     return this;
   }
@@ -57,7 +57,7 @@ public class CompatibleContractOutput {
     return statusCode;
   }
 
-  public CompatibleContractOutput setStatusCode(Integer statusCode) {
+  public AnalyzeContractsOutput setStatusCode(Integer statusCode) {
     this.statusCode = statusCode;
     return this;
   }

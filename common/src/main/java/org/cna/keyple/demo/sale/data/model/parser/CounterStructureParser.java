@@ -1,5 +1,6 @@
-package org.cna.keyple.demo.sale.data.model;
+package org.cna.keyple.demo.sale.data.model.parser;
 
+import org.cna.keyple.demo.sale.data.model.CounterStructureDto;
 import org.cna.keyple.demo.sale.data.util.ByteArrayParserUtil;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 

@@ -1,11 +1,13 @@
-package org.cna.keyple.demo.remote.session;
+package org.cna.keyple.demo.remote.card;
 
 import org.cna.keyple.demo.remote.server.SamResourceManagerConfig;
-import org.cna.keyple.demo.remote.server.session.CardContent;
-import org.cna.keyple.demo.remote.server.session.CardController;
+import org.cna.keyple.demo.remote.server.card.CardContent;
+import org.cna.keyple.demo.remote.server.card.CardController;
 import org.cna.keyple.demo.remote.server.util.CalypsoUtils;
 import org.cna.keyple.demo.remote.server.util.PcscReaderUtils;
+import org.cna.keyple.demo.sale.data.model.type.DateCompact;
 import org.cna.keyple.demo.sale.data.model.type.PriorityCode;
+import org.cna.keyple.demo.sale.data.model.type.VersionNumber;
 import org.eclipse.keyple.calypso.command.sam.SamRevision;
 import org.eclipse.keyple.calypso.transaction.CalypsoPo;
 import org.eclipse.keyple.calypso.transaction.CalypsoSam;
@@ -16,6 +18,8 @@ import org.eclipse.keyple.core.service.Reader;
 import org.junit.jupiter.api.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.time.Instant;
 
 public class CardControllerTest {
     private static final Logger logger = LoggerFactory.getLogger(CardControllerTest.class);
@@ -93,6 +97,10 @@ public class CardControllerTest {
         logger.trace("updatedCard : {}", updatedCard);
         Assertions.assertEquals(1, updatedCard.listValidContracts().size());
         Assertions.assertEquals(PriorityCode.SEASON_PASS, updatedCard.getContractByCalypsoIndex(1).getContractTariff());
+        Assertions.assertEquals(VersionNumber.CURRENT_VERSION, updatedCard.getContractByCalypsoIndex(1).getContractVersionNumber());
+        DateCompact today = new DateCompact(Instant.now());
+        Assertions.assertEquals(today, updatedCard.getContractByCalypsoIndex(1).getContactSaleDate());
+        Assertions.assertEquals(today.getDaysSinceReference()+30, updatedCard.getContractByCalypsoIndex(1).getContractValidityEndDate().getDaysSinceReference());
         Assertions.assertEquals(PriorityCode.SEASON_PASS, updatedCard.getEvent().getContractPriorityAt(1));
         Assertions.assertEquals(0, updatedCard.getCounter().getCounterValue());
 
@@ -115,6 +123,10 @@ public class CardControllerTest {
         CardContent updatedCard = cardController.readCard();
         Assertions.assertEquals(1, updatedCard.listValidContracts().size());
         Assertions.assertEquals(PriorityCode.SEASON_PASS, updatedCard.getContractByCalypsoIndex(1).getContractTariff());
+        Assertions.assertEquals(VersionNumber.CURRENT_VERSION, updatedCard.getContractByCalypsoIndex(1).getContractVersionNumber());
+        DateCompact today = new DateCompact(Instant.now());
+        Assertions.assertEquals(today, updatedCard.getContractByCalypsoIndex(1).getContactSaleDate());
+        Assertions.assertEquals(today.getDaysSinceReference()+30, updatedCard.getContractByCalypsoIndex(1).getContractValidityEndDate().getDaysSinceReference());
         Assertions.assertEquals(PriorityCode.FORBIDDEN, updatedCard.getContractByCalypsoIndex(2).getContractTariff());
         Assertions.assertEquals(PriorityCode.FORBIDDEN, updatedCard.getContractByCalypsoIndex(3).getContractTariff());
         Assertions.assertEquals(PriorityCode.FORBIDDEN, updatedCard.getContractByCalypsoIndex(4).getContractTariff());
@@ -172,7 +184,7 @@ public class CardControllerTest {
     }
 
     @Test
-    public void load_two_contracts(){
+    public void load_season_pass_on_card_with_tickets(){
         //prepare card
         init_card();
         CardContent initCard = cardController.readCard();
@@ -185,6 +197,7 @@ public class CardControllerTest {
         cardController.writeCard(card);
 
         //check
+        //todo should change priority order
         CardContent updatedCard = cardController.readCard();
         Assertions.assertEquals(2, updatedCard.listValidContracts().size());
         Assertions.assertEquals(PriorityCode.MULTI_TRIP_TICKET, updatedCard.getContractByCalypsoIndex(1).getContractTariff());
@@ -193,4 +206,10 @@ public class CardControllerTest {
         Assertions.assertEquals(PriorityCode.SEASON_PASS, updatedCard.getEvent().getContractPriorityAt(2));
         Assertions.assertEquals(1, updatedCard.getCounter().getCounterValue());
     }
+
+    @Test
+    public void load_ticket_with_expired_season_contract(){
+        //todo
+    }
+
 }

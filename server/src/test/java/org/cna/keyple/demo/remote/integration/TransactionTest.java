@@ -5,10 +5,10 @@ import org.cna.keyple.demo.remote.integration.client.EndpointClient;
 import org.cna.keyple.demo.remote.integration.client.HeartbeatClient;
 import org.cna.keyple.demo.remote.server.util.CalypsoUtils;
 import org.cna.keyple.demo.remote.server.util.PcscReaderUtils;
-import org.cna.keyple.demo.sale.data.endpoint.CompatibleContractInput;
-import org.cna.keyple.demo.sale.data.endpoint.CompatibleContractOutput;
-import org.cna.keyple.demo.sale.data.endpoint.WriteTitleInput;
-import org.cna.keyple.demo.sale.data.endpoint.WriteTitleOutput;
+import org.cna.keyple.demo.sale.data.endpoint.AnalyzeContractsInput;
+import org.cna.keyple.demo.sale.data.endpoint.AnalyzeContractsOutput;
+import org.cna.keyple.demo.sale.data.endpoint.WriteContractInput;
+import org.cna.keyple.demo.sale.data.endpoint.WriteContractOutput;
 import org.cna.keyple.demo.sale.data.model.type.PriorityCode;
 import org.eclipse.keyple.calypso.transaction.CalypsoPo;
 import org.eclipse.keyple.core.service.Reader;
@@ -33,6 +33,7 @@ public class TransactionTest {
 
     private static String LOCAL_SERVICE_NAME = "TransactionTest";
     private static String PO_READER_FILTER = ".*(ASK|ACS).*";
+    private static Integer TICKETS_TO_LOAD = 10;
 
     @Inject  @RestClient
     HeartbeatClient heartbeatClient;
@@ -80,84 +81,42 @@ public class TransactionTest {
 
         LocalServiceClient localService = LocalServiceClientUtils.getLocalService(LOCAL_SERVICE_NAME);
 
-        CompatibleContractInput compatibleContractInput =
-                new CompatibleContractInput().setPluginType("Android NFC");
+        AnalyzeContractsInput compatibleContractInput =
+                new AnalyzeContractsInput().setPluginType("Android NFC");
 
         /* Execute Remote Service : Get Compatible Title */
-        CompatibleContractOutput compatibleContractOutput = localService.executeRemoteService(
+        AnalyzeContractsOutput contractAnalysisOutput = localService.executeRemoteService(
                 RemoteServiceParameters
-                        .builder("GET_COMPATIBLE_CONTRACT", poReader)
+                        .builder("CONTRACT_ANALYSIS", poReader)
                         .withUserInputData(compatibleContractInput)
                         .withInitialCardContent(calypsoPo)
                         .build(),
-                CompatibleContractOutput.class);
+                AnalyzeContractsOutput.class);
 
-        assertNotNull(compatibleContractOutput);
-        assertEquals(0, compatibleContractOutput.getStatusCode());
+        assertNotNull(contractAnalysisOutput);
+        assertEquals(0, contractAnalysisOutput.getStatusCode());
 
         /*
          * User select the title....
          */
 
-        WriteTitleInput writeTitleInput =
-                new WriteTitleInput().setContractTariff(PriorityCode.SEASON_PASS);
+        WriteContractInput writeContractInput =
+                new WriteContractInput()
+                        .setContractTariff(PriorityCode.MULTI_TRIP_TICKET)
+                        .setTicketToLoad(TICKETS_TO_LOAD);
 
 
         /* Execute Remote Service : Write Title */
-        WriteTitleOutput writeTitleOutput = localService.executeRemoteService(
+        WriteContractOutput writeTitleOutput = localService.executeRemoteService(
                 RemoteServiceParameters
-                        .builder("WRITE_TITLE", poReader)
+                        .builder("WRITE_CONTRACT", poReader)
                         .withInitialCardContent(calypsoPo)
-                        .withUserInputData(writeTitleInput)
+                        .withUserInputData(writeContractInput)
                         .build(),
-                WriteTitleOutput.class);
+                WriteContractOutput.class);
 
         assertNotNull(writeTitleOutput);
-        assertEquals(0, compatibleContractOutput.getStatusCode());
-
-    }
-
-    @Test
-    public void execute_successful_load_season_pass() {
-        /* Select PO */
-        CalypsoPo calypsoPo = CalypsoUtils.selectPo(poReader);
-
-        LocalServiceClient localService = LocalServiceClientUtils.getLocalService(LOCAL_SERVICE_NAME);
-
-        CompatibleContractInput compatibleContractInput =
-                new CompatibleContractInput().setPluginType("Android NFC");
-
-        /* Execute Remote Service : Get Compatible Title */
-        CompatibleContractOutput compatibleContractOutput = localService.executeRemoteService(
-                RemoteServiceParameters
-                        .builder("GET_COMPATIBLE_CONTRACT", poReader)
-                        .withUserInputData(compatibleContractInput)
-                        .withInitialCardContent(calypsoPo)
-                        .build(),
-                CompatibleContractOutput.class);
-
-        assertNotNull(compatibleContractOutput);
-        assertEquals(0, compatibleContractOutput.getStatusCode());
-
-        /*
-         * User select the title....
-         */
-
-        WriteTitleInput writeTitleInput =
-                new WriteTitleInput().setContractTariff(PriorityCode.SEASON_PASS);
-
-
-        /* Execute Remote Service : Write Title */
-        WriteTitleOutput writeTitleOutput = localService.executeRemoteService(
-                RemoteServiceParameters
-                        .builder("WRITE_TITLE", poReader)
-                        .withInitialCardContent(calypsoPo)
-                        .withUserInputData(writeTitleInput)
-                        .build(),
-                WriteTitleOutput.class);
-
-        assertNotNull(writeTitleOutput);
-        assertEquals(0, compatibleContractOutput.getStatusCode());
+        assertEquals(0, writeTitleOutput.getStatusCode());
 
     }
 

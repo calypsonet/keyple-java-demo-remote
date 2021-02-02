@@ -1,7 +1,11 @@
-package org.cna.keyple.demo.remote.server.session;
+package org.cna.keyple.demo.remote.server.card;
 
 import org.cna.keyple.demo.remote.server.util.CalypsoClassicInfo;
 import org.cna.keyple.demo.sale.data.model.*;
+import org.cna.keyple.demo.sale.data.model.parser.ContractStructureParser;
+import org.cna.keyple.demo.sale.data.model.parser.CounterStructureParser;
+import org.cna.keyple.demo.sale.data.model.parser.EnvironmentHolderStructureParser;
+import org.cna.keyple.demo.sale.data.model.parser.EventStructureParser;
 import org.cna.keyple.demo.sale.data.model.type.DateCompact;
 import org.cna.keyple.demo.sale.data.model.type.PriorityCode;
 import org.cna.keyple.demo.sale.data.model.type.VersionNumber;

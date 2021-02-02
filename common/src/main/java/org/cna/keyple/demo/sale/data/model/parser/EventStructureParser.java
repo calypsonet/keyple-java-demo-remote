@@ -1,5 +1,6 @@
-package org.cna.keyple.demo.sale.data.model;
+package org.cna.keyple.demo.sale.data.model.parser;
 
+import org.cna.keyple.demo.sale.data.model.EventStructureDto;
 import org.cna.keyple.demo.sale.data.model.type.DateCompact;
 import org.cna.keyple.demo.sale.data.model.type.PriorityCode;
 import org.cna.keyple.demo.sale.data.model.type.TimeCompact;

@@ -1,9 +1,9 @@
 package org.cna.keyple.demo.remote.server.util;
 
 import org.cna.keyple.demo.remote.server.SamResourceManagerConfig;
-import org.cna.keyple.demo.remote.server.session.CardController;
+import org.cna.keyple.demo.remote.server.card.CardController;
 import org.cna.keyple.demo.sale.data.model.EnvironmentHolderStructureDto;
-import org.cna.keyple.demo.sale.data.model.EnvironmentHolderStructureParser;
+import org.cna.keyple.demo.sale.data.model.parser.EnvironmentHolderStructureParser;
 import org.eclipse.keyple.calypso.command.sam.SamRevision;
 import org.eclipse.keyple.calypso.transaction.*;
 import org.eclipse.keyple.calypso.transaction.sammanager.SamIdentifier;

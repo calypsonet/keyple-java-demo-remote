@@ -12,11 +12,11 @@
 package org.cna.keyple.demo.remote.server;
 
 import io.quarkus.runtime.Startup;
-import org.cna.keyple.demo.remote.server.session.CardContent;
-import org.cna.keyple.demo.remote.server.session.CardController;
-import org.cna.keyple.demo.sale.data.endpoint.CompatibleContractOutput;
-import org.cna.keyple.demo.sale.data.endpoint.WriteTitleInput;
-import org.cna.keyple.demo.sale.data.endpoint.WriteTitleOutput;
+import org.cna.keyple.demo.remote.server.card.CardContent;
+import org.cna.keyple.demo.remote.server.card.CardController;
+import org.cna.keyple.demo.sale.data.endpoint.AnalyzeContractsOutput;
+import org.cna.keyple.demo.sale.data.endpoint.WriteContractInput;
+import org.cna.keyple.demo.sale.data.endpoint.WriteContractOutput;
 import org.cna.keyple.demo.sale.data.model.ContractStructureDto;
 import org.eclipse.keyple.calypso.command.sam.SamRevision;
 import org.eclipse.keyple.calypso.transaction.CalypsoPo;
@@ -42,7 +42,7 @@ import java.util.concurrent.Executors;
  *
  * <p>It contains the business logic of the remote service execution.
  * <ul>
- *     <li>GET_COMPATIBLE_CONTRACT : returns the list of compatible title with the calypsoPo inserted</li>
+ *     <li>CONTRACT_ANALYSIS : returns the list of compatible title with the calypsoPo inserted</li>
  *      <li>WRITE_CONTRACT : returns the list of compatible title with the calypsoPo inserted</li>
  * </ul>
  *
@@ -100,12 +100,12 @@ public class RemoteServerPluginConfig implements ObservablePlugin.PluginObserver
     // Analyses the Service ID contains in the reader to find which business service to execute.
     // The Service ID was specified by the client when executing the remote service.
     Object userOutputData;
-    if ("GET_COMPATIBLE_CONTRACT".equals(reader.getServiceId())) {
+    if ("CONTRACT_ANALYSIS".equals(reader.getServiceId())) {
 
       // Executes the business service using the remote reader.
-      userOutputData = getCompatibleContract(reader);
+      userOutputData = analyzeContracts(reader);
 
-    } else if ("WRITE_TITLE".equals(reader.getServiceId())) {
+    } else if ("WRITE_CONTRACT".equals(reader.getServiceId())) {
 
       // Executes the business service using the remote reader.
       userOutputData = writeTitle(reader);
@@ -123,7 +123,7 @@ public class RemoteServerPluginConfig implements ObservablePlugin.PluginObserver
    * @param reader The remote reader on where to execute the business logic.
    * @return a nullable reference to the user output data to transmit to the client.
    */
-  private CompatibleContractOutput getCompatibleContract(RemoteReaderServer reader) {
+  private AnalyzeContractsOutput analyzeContracts(RemoteReaderServer reader) {
 
     /*
      * Retrieves the compatibleContractInput and initial calypsoPO specified by the client when executing the remote service.
@@ -148,7 +148,7 @@ public class RemoteServerPluginConfig implements ObservablePlugin.PluginObserver
 
     samResourceManager.freeSamResource(samResource);
 
-    return new CompatibleContractOutput().setValidContracts(validContracts).setStatusCode(0);
+    return new AnalyzeContractsOutput().setValidContracts(validContracts).setStatusCode(0);
   }
 
   /**
@@ -156,12 +156,12 @@ public class RemoteServerPluginConfig implements ObservablePlugin.PluginObserver
    * @param reader The remote reader on where to execute the business logic.
    * @return a nullable reference to the user output data to transmit to the client.
    */
-  private WriteTitleOutput writeTitle(RemoteReaderServer reader) {
+  private WriteContractOutput writeTitle(RemoteReaderServer reader) {
 
     /*
      * Retrieves the userInputData and initial calypsoPO specified by the client when executing the remote service.
      */
-    WriteTitleInput writeTitleInput = reader.getUserInputData(WriteTitleInput.class);
+    WriteContractInput writeContractInput = reader.getUserInputData(WriteContractInput.class);
     CalypsoPo calypsoPo = reader.getInitialCardContent(CalypsoPo.class);
 
     CardResource<CalypsoSam> samResource = samResourceManager.allocateSamResource(
@@ -174,19 +174,24 @@ public class RemoteServerPluginConfig implements ObservablePlugin.PluginObserver
             .withSamResource(samResource)
             .build();
 
-    //should retrieve cardContent from server cache instead
+    //re-read card
     CardContent cardContent = cardController.readCard();
+
+    if(cardContent==null){
+      //is card has not been read previously, throw error
+      return new WriteContractOutput().setStatusCode(3);
+    }
 
     logger.info(cardContent.toString());
 
     cardContent.insertNewContract(
-            writeTitleInput.getContractTariff(),
-            writeTitleInput.getTicketToLoad());
+            writeContractInput.getContractTariff(),
+            writeContractInput.getTicketToLoad());
 
     int statusCode = cardController.writeCard(cardContent);
 
     samResourceManager.freeSamResource(samResource);
 
-    return new WriteTitleOutput().setStatusCode(statusCode);
+    return new WriteContractOutput().setStatusCode(statusCode);
   }
 }

@@ -1,5 +1,7 @@
-package org.cna.keyple.demo.sale.data.model;
+package org.cna.keyple.demo.sale.data.model.parser;
 
+import org.cna.keyple.demo.sale.data.model.CounterStructureDto;
+import org.cna.keyple.demo.sale.data.model.parser.CounterStructureParser;
 import org.junit.Test;
 
 import static org.junit.Assert.assertTrue;
