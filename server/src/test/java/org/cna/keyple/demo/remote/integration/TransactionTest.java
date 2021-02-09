@@ -128,6 +128,75 @@ public class TransactionTest {
     }
 
     @Test
+    public void execute_successful_load_pass() {
+        /* Select PO */
+        CalypsoPo calypsoPo = CalypsoUtils.selectPo(poReader);
+
+        LocalServiceClient localService = LocalServiceClientUtils.getLocalService(LOCAL_SERVICE_NAME);
+
+        /* Execute Remote Service : Get Compatible Title */
+        CardIssuanceOutput cardIssuanceOutput = localService.executeRemoteService(
+                RemoteServiceParameters
+                        .builder("CARD_ISSUANCE", poReader)
+                        .withInitialCardContent(calypsoPo)
+                        .build(),
+                CardIssuanceOutput.class);
+
+        assertEquals(0, cardIssuanceOutput.getStatusCode());
+
+        AnalyzeContractsInput compatibleContractInput =
+                new AnalyzeContractsInput().setPluginType("Android NFC");
+
+        /* Execute Remote Service : Get Compatible Title */
+        AnalyzeContractsOutput contractAnalysisOutput = localService.executeRemoteService(
+                RemoteServiceParameters
+                        .builder("CONTRACT_ANALYSIS", poReader)
+                        .withUserInputData(compatibleContractInput)
+                        .withInitialCardContent(calypsoPo)
+                        .build(),
+                AnalyzeContractsOutput.class);
+
+        assertNotNull(contractAnalysisOutput);
+        assertEquals(0, contractAnalysisOutput.getStatusCode());
+
+        /*
+         * User select the title....
+         */
+
+        WriteContractInput writeContractInput =
+                new WriteContractInput()
+                        .setContractTariff(PriorityCode.SEASON_PASS);
+
+
+        /* Execute Remote Service : Write Title */
+        WriteContractOutput writeTitleOutput = localService.executeRemoteService(
+                RemoteServiceParameters
+                        .builder("WRITE_CONTRACT", poReader)
+                        .withInitialCardContent(calypsoPo)
+                        .withUserInputData(writeContractInput)
+                        .build(),
+                WriteContractOutput.class);
+
+        assertNotNull(writeTitleOutput);
+        assertEquals(0, writeTitleOutput.getStatusCode());
+
+        /* Execute Remote Service : Check that SEASON_PASS is written in the card */
+        AnalyzeContractsOutput passExpected = localService.executeRemoteService(
+                RemoteServiceParameters
+                        .builder("CONTRACT_ANALYSIS", poReader)
+                        .withUserInputData(compatibleContractInput)
+                        .withInitialCardContent(calypsoPo)
+                        .build(),
+                AnalyzeContractsOutput.class);
+
+        assertNotNull(passExpected);
+        assertEquals(0, passExpected.getStatusCode());
+        assertEquals(1, passExpected.getValidContracts().size());
+        assertEquals(PriorityCode.SEASON_PASS, passExpected.getValidContracts().get(0).getContractTariff());
+
+    }
+
+    @Test
     public void execute_successful_load_tickets_N_times() {
         final int N = 3;
         for (int i=0;i<N;i++){
