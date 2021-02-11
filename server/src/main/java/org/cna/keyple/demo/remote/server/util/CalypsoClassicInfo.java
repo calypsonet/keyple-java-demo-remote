@@ -11,6 +11,9 @@
  ************************************************************************************** */
 package org.cna.keyple.demo.remote.server.util;
 
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * Helper class to provide specific elements to handle Calypso cards.
  *
@@ -46,6 +49,17 @@ public final class CalypsoClassicInfo {
   public static final byte SFI_EventLog = (byte) 0x08;
   public static final byte SFI_Contracts = (byte) 0x09;
   public static final byte SFI_Counters = (byte) 0x19;
+
+  public static final byte SFI_Counters_1 = (byte) 0x0A;
+  public static final byte SFI_Counters_2 = (byte) 0x0B;
+  public static final byte SFI_Counters_3 = (byte) 0x0C;
+  public static final byte SFI_Counters_4 = (byte) 0x0D;
+
+  public static final List<Byte> SFI_Counters_simulated = Arrays.asList(
+          SFI_Counters_1,
+          SFI_Counters_2,
+          SFI_Counters_3,
+          SFI_Counters_4);
 
   private CalypsoClassicInfo() {}
 }

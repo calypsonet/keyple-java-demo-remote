@@ -38,8 +38,8 @@ public enum PriorityCode {
     }
 
     /**
-     *
-     * @param code
+     * Return the enum value for the code
+     * @param code code
      * @return A instance of PriorityCode. Cannot be null
      * @throws InvalidParameterException if code does not match an enum
      */

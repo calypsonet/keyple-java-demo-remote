@@ -12,7 +12,6 @@
 package org.cna.keyple.demo.sale.data.endpoint;
 
 import org.cna.keyple.demo.sale.data.model.ContractStructureDto;
-import org.cna.keyple.demo.sale.data.model.CounterStructureDto;
 
 import java.util.List;
 
@@ -23,22 +22,25 @@ public class AnalyzeContractsOutput {
 
   //mandatory
   private List<ContractStructureDto> validContracts;
-  //mandatory
-  private List<CounterStructureDto> validContractsCounters;
+
   //mandatory
   private Integer statusCode;
 
-
+  /**
+   * Set valid contracts list
+   * @param validContracts non nullable list of contracts, can be empty
+   * @return this object
+   */
   public AnalyzeContractsOutput setValidContracts(List<ContractStructureDto> validContracts) {
     this.validContracts = validContracts;
     return this;
   }
 
-  public AnalyzeContractsOutput setValidContractsCounters(List<CounterStructureDto> validContractsCounters) {
-    this.validContractsCounters = validContractsCounters;
-    return this;
-  }
-
+  /**
+   * Set status code
+   * @param statusCode non nullable integer
+   * @return this object
+   */
   public AnalyzeContractsOutput setStatusCode(Integer statusCode) {
     this.statusCode = statusCode;
     return this;
@@ -56,15 +58,7 @@ public class AnalyzeContractsOutput {
   }
 
   /**
-   * return the list of counters present in the card. Each counter is tied to a contract.
-   * @return not null list of counters
-   */
-  public List<CounterStructureDto> getValidContractsCounters() {
-    return validContractsCounters;
-  }
-
-  /**
-   * return the list of contracts present in the card.
+   * Return the list of contracts present in the card. Each contract is tied to a counter by its index.
    * @return not null list of contracts
    */
   public List<ContractStructureDto> getValidContracts() {

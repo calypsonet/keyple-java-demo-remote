@@ -16,7 +16,7 @@ import static org.junit.Assert.*;
 public class EventStructureParserTest {
 
 
-    private String EVENT_1 =
+    private final String EVENT_1 =
             "01 0F BF 03 48 00 00 00 01 01 01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00";
 
     @Test

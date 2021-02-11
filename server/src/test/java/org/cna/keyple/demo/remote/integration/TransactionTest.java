@@ -6,6 +6,7 @@ import org.cna.keyple.demo.remote.integration.client.HeartbeatClient;
 import org.cna.keyple.demo.remote.server.util.CalypsoUtils;
 import org.cna.keyple.demo.remote.server.util.PcscReaderUtils;
 import org.cna.keyple.demo.sale.data.endpoint.*;
+import org.cna.keyple.demo.sale.data.model.ContractStructureDto;
 import org.cna.keyple.demo.sale.data.model.type.PriorityCode;
 import org.eclipse.keyple.calypso.transaction.CalypsoPo;
 import org.eclipse.keyple.core.service.Reader;
@@ -28,9 +29,9 @@ import static org.junit.jupiter.api.Assertions.*;
 @QuarkusTest
 public class TransactionTest {
 
-    private static String LOCAL_SERVICE_NAME = "TransactionTest";
-    private static String PO_READER_FILTER = ".*(ASK|ACS).*";
-    private static Integer TICKETS_TO_LOAD = 10;
+    private static final String LOCAL_SERVICE_NAME = "TransactionTest";
+    private static final String PO_READER_FILTER = ".*(ASK|ACS).*";
+    private static final Integer TICKETS_TO_LOAD = 10;
 
     @Inject  @RestClient
     HeartbeatClient heartbeatClient;
@@ -102,6 +103,7 @@ public class TransactionTest {
 
         assertNotNull(contractAnalysisOutput);
         assertEquals(0, contractAnalysisOutput.getStatusCode());
+        assertEquals(0, contractAnalysisOutput.getValidContracts().size());
 
         /*
          * User select the title....
@@ -125,6 +127,21 @@ public class TransactionTest {
         assertNotNull(writeTitleOutput);
         assertEquals(0, writeTitleOutput.getStatusCode());
 
+        /* Execute Remote Service : Check that MULTI-TRIP is written in the card */
+        AnalyzeContractsOutput passExpected = localService.executeRemoteService(
+                RemoteServiceParameters
+                        .builder("CONTRACT_ANALYSIS", poReader)
+                        .withUserInputData(compatibleContractInput)
+                        .withInitialCardContent(calypsoPo)
+                        .build(),
+                AnalyzeContractsOutput.class);
+
+        assertNotNull(passExpected);
+        assertEquals(0, passExpected.getStatusCode());
+        assertEquals(1, passExpected.getValidContracts().size());
+        ContractStructureDto writtenContract = passExpected.getValidContracts().get(0);
+        assertEquals(PriorityCode.MULTI_TRIP_TICKET, writtenContract.getContractTariff());
+        assertEquals(TICKETS_TO_LOAD, writtenContract.getCounter().getCounterValue());
     }
 
     @Test
@@ -192,8 +209,9 @@ public class TransactionTest {
         assertNotNull(passExpected);
         assertEquals(0, passExpected.getStatusCode());
         assertEquals(1, passExpected.getValidContracts().size());
-        assertEquals(PriorityCode.SEASON_PASS, passExpected.getValidContracts().get(0).getContractTariff());
-
+        ContractStructureDto writtenContract = passExpected.getValidContracts().get(0);
+        assertEquals(PriorityCode.SEASON_PASS, writtenContract.getContractTariff());
+        assertEquals(0,writtenContract.getCounter().getCounterValue());
     }
 
     @Test

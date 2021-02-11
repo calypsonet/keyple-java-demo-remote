@@ -81,9 +81,7 @@ public final class CalypsoUtils {
       throw new IllegalStateException("Unable to open a logical channel for SAM!");
     }
 
-    CalypsoSam calypsoSam = (CalypsoSam) cardSelectionsResult.getActiveSmartCard();
-
-    return calypsoSam;
+    return (CalypsoSam) cardSelectionsResult.getActiveSmartCard();
   }
 
   /**
@@ -119,10 +117,8 @@ public final class CalypsoUtils {
 
     // Actual PO communication: operate through a single request the Calypso PO selection
     // and the file read
-    CalypsoPo calypsoPo =
-            (CalypsoPo) cardSelectionsService.processExplicitSelections(poReader).getActiveSmartCard();
 
-    return calypsoPo;
+    return (CalypsoPo) cardSelectionsService.processExplicitSelections(poReader).getActiveSmartCard();
   }
 
   /**
@@ -163,10 +159,8 @@ public final class CalypsoUtils {
 
     // Actual PO communication: operate through a single request the Calypso PO selection
     // and the file read
-    CalypsoPo calypsoPo =
-            (CalypsoPo) cardSelectionsService.processExplicitSelections(poReader).getActiveSmartCard();
 
-    return calypsoPo;
+    return (CalypsoPo) cardSelectionsService.processExplicitSelections(poReader).getActiveSmartCard();
   }
 
 }

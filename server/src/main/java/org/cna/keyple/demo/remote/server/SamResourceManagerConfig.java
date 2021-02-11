@@ -21,7 +21,7 @@ import javax.ws.rs.Produces;
 public class SamResourceManagerConfig {
     private static final Logger logger = LoggerFactory.getLogger(SamResourceManagerConfig.class);
 
-    private static String samReaderFilter = ".*(Cherry TC|SCM Microsystems|Identive|HID|Generic).*";
+    private static final String samReaderFilter = ".*(Cherry TC|SCM Microsystems|Identive|HID|Generic).*";
 
     @Produces
     @Singleton
@@ -30,18 +30,8 @@ public class SamResourceManagerConfig {
 
         // Registers the plugin to the smart card service.
         Plugin plugin = SmartCardService.getInstance().registerPlugin(
-                new PcscPluginFactory(new PluginObservationExceptionHandler() {
-            @Override
-            public void onPluginObservationError(String pluginName, Throwable e) {
-                logger.error("error in reader observer pluginName:{}, error:{}", pluginName, e.getMessage());
-            }
-        }, new ReaderObservationExceptionHandler() {
-            @Override
-            public void onReaderObservationError(String pluginName, String readerName, Throwable e) {
-                logger.error("error in reader observer pluginName:{}, readerName:{}, error:{}",
-                        pluginName, readerName, e.getMessage());
-            }
-        }));
+                new PcscPluginFactory((pluginName, e) -> logger.error("error in reader observer pluginName:{}, error:{}", pluginName, e.getMessage()), (pluginName, readerName, e) -> logger.error("error in reader observer pluginName:{}, readerName:{}, error:{}",
+                        pluginName, readerName, e.getMessage())));
 
         if (plugin.getReaders().size() == 0) {
             throw new IllegalStateException(

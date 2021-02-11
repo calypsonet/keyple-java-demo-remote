@@ -26,6 +26,11 @@ public class AnalyzeContractsInput {
     return pluginType;
   }
 
+  /**
+   * Set the type of plugin used for the po reader
+   * @param pluginType name of the plugin to show on the dashboard
+   * @return this object
+   */
   public AnalyzeContractsInput setPluginType(String pluginType) {
     this.pluginType = pluginType;
     return this;

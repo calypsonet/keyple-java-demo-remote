@@ -51,7 +51,7 @@ public class PersonnalizationMain {
         logger.info(cardController.readCard().toString());
         cardController.initCard();
         logger.info(cardController.readCard().toString());
-        logger.info("Is card init : {}"+ verifyEnvironmentFile(poReader));
+        logger.info("Is card init : {}", verifyEnvironmentFile(poReader));
     }
 
 

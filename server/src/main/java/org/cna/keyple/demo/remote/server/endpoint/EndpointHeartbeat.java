@@ -11,13 +11,7 @@
  ************************************************************************************** */
 package org.cna.keyple.demo.remote.server.endpoint;
 
-import org.eclipse.keyple.distributed.MessageDto;
-import org.eclipse.keyple.distributed.SyncNodeServer;
-import org.eclipse.keyple.distributed.impl.RemotePluginServerUtils;
-
 import javax.ws.rs.*;
-import javax.ws.rs.core.MediaType;
-import java.util.List;
 
 /**
  * heartbeat endpoint

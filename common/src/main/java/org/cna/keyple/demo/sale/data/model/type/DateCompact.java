@@ -8,7 +8,7 @@ import java.util.Objects;
  * Dates are in legal local time
  */
 public class DateCompact {
-    private static String refDate = "2010-01-01T00:00:00Z";
+    private static final String refDate = "2010-01-01T00:00:00Z";
     private short daysSinceReference;
 
     public DateCompact(short daysSinceReference) {

@@ -13,7 +13,7 @@ public class ByteArrayParserUtil {
     public static byte[] toThreeBits(int input){
         byte b2 = (byte)((input >> 16) & 0xFF);
         byte b1 = (byte)((input >> 8) & 0xFF);
-        byte b0 = (byte)((input >> 0) & 0xFF);
+        byte b0 = (byte)((input) & 0xFF);
         return new byte[]{b2, b1, b0};
     }
 

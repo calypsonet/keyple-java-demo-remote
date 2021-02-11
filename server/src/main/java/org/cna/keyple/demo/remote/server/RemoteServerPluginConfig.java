@@ -35,7 +35,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.enterprise.context.ApplicationScoped;
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.Executors;
 
@@ -158,7 +157,6 @@ public class RemoteServerPluginConfig implements ObservablePlugin.PluginObserver
 
     return new AnalyzeContractsOutput()
             .setValidContracts(validContracts)
-            .setValidContractsCounters(Arrays.asList(cardContent.getCounter()))
             .setStatusCode(0);
   }
 

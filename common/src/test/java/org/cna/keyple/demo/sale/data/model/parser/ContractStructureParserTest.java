@@ -14,7 +14,7 @@ import static org.junit.Assert.*;
 public class ContractStructureParserTest {
 
 
-    private String DATA_CONTRACT_1 =
+    private final String DATA_CONTRACT_1 =
             "01 01 0F BF 0F DD 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00";
 
     @Test

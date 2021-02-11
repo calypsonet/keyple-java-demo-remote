@@ -13,7 +13,7 @@ import static org.junit.Assert.*;
 public class EnvironmentHolderStructureParserTest {
 
 
-    private String DATA_ENV_2 =
+    private final String DATA_ENV_2 =
         "01 00 00 00 01 0F BF 18 4E 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00";
 
     @Test

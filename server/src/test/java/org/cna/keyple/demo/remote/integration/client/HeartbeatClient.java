@@ -11,16 +11,10 @@
  ************************************************************************************** */
 package org.cna.keyple.demo.remote.integration.client;
 
-import org.cna.keyple.demo.remote.server.endpoint.EndpointServer;
-import org.eclipse.keyple.distributed.MessageDto;
-import org.eclipse.keyple.distributed.spi.SyncEndpointClient;
 import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 
 import javax.ws.rs.GET;
-import javax.ws.rs.POST;
 import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import java.util.List;
 
 /**
  * Heartbeat tests client

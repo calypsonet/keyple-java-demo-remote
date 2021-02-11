@@ -1,8 +1,11 @@
 package org.cna.keyple.demo.remote.server.card;
 
+
 import org.cna.keyple.demo.remote.server.util.CalypsoClassicInfo;
 import org.cna.keyple.demo.remote.server.util.CalypsoUtils;
-import org.cna.keyple.demo.sale.data.model.*;
+import org.cna.keyple.demo.sale.data.model.ContractStructureDto;
+import org.cna.keyple.demo.sale.data.model.EnvironmentHolderStructureDto;
+import org.cna.keyple.demo.sale.data.model.EventStructureDto;
 import org.cna.keyple.demo.sale.data.model.parser.ContractStructureParser;
 import org.cna.keyple.demo.sale.data.model.parser.CounterStructureParser;
 import org.cna.keyple.demo.sale.data.model.parser.EnvironmentHolderStructureParser;
@@ -104,7 +107,7 @@ public class CardController {
         // prepare the PO Transaction
         PoTransaction poTransaction =
                 new PoTransaction(
-                        new CardResource<CalypsoPo>(this.poReader, this.calypsoPo),
+                        new CardResource<>(this.poReader, this.calypsoPo),
                         CalypsoUtils.getSecuritySettings(this.samResource));
 
         /*
@@ -130,9 +133,16 @@ public class CardController {
         poTransaction.prepareReadRecordFile(
                 SFI_Contracts, CalypsoClassicInfo.RECORD_NUMBER_4);
 
-        // Prepare reading of counter record
+        // Prepare reading of simulated counter record
         poTransaction.prepareReadCounterFile(
-                SFI_Counters, CalypsoClassicInfo.RECORD_NUMBER_1);
+                SFI_Counters_1, CalypsoClassicInfo.RECORD_NUMBER_1);
+        poTransaction.prepareReadCounterFile(
+                SFI_Counters_2, CalypsoClassicInfo.RECORD_NUMBER_1);
+        poTransaction.prepareReadCounterFile(
+                SFI_Counters_3, CalypsoClassicInfo.RECORD_NUMBER_1);
+        poTransaction.prepareReadCounterFile(
+                SFI_Counters_4, CalypsoClassicInfo.RECORD_NUMBER_1);
+
 
         logger.info("Read Card...");
 
@@ -166,10 +176,23 @@ public class CardController {
         /* Update contract records */
         if(!cardContent.getContractUpdated().isEmpty()){
             for(int i=0;i<4;i++){
+
                 ContractStructureDto contract = cardContent.getContracts().get(i);
+
                 if(cardContent.getContractUpdated().contains(contract)){
                    //update contract
-                    poTransaction.prepareUpdateRecord(SFI_Contracts, i+1, ContractStructureParser.unparse(contract));
+                    poTransaction.prepareUpdateRecord(
+                            SFI_Contracts,
+                            i+1,
+                            ContractStructureParser.unparse(contract));
+
+                    //update counter
+                    if(contract.getCounter() != null){
+                        poTransaction.prepareUpdateRecord(
+                                SFI_Counters_simulated.get(i),
+                                1,
+                                CounterStructureParser.unparse(contract.getCounter()));
+                    }
                 }
             }
         }
@@ -178,12 +201,6 @@ public class CardController {
         if(cardContent.isEventUpdated()){
             poTransaction.prepareUpdateRecord(SFI_EventLog, 1,
                     EventStructureParser.unparse(buildEvent(cardContent.getEvent(), cardContent.getContracts())));
-        }
-
-        /* Update counter */
-        if(cardContent.isCounterUpdated()){
-            poTransaction.prepareUpdateRecord(SFI_Counters, 1,
-                    CounterStructureParser.unparse(cardContent.getCounter()));
         }
 
         /* Close Session */
@@ -200,7 +217,7 @@ public class CardController {
         // prepare the PO Transaction
         PoTransaction poTransaction =
                 new PoTransaction(
-                        new CardResource<CalypsoPo>(poReader, calypsoPo),
+                        new CardResource<>(poReader, calypsoPo),
                         CalypsoUtils.getSecuritySettings(samResource));
 
         /*

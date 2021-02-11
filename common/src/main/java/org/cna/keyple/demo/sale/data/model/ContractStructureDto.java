@@ -18,6 +18,9 @@ public class ContractStructureDto {
     private DateCompact contactSaleDate;
     private DateCompact contractValidityEndDate;
 
+    //associated counter
+    CounterStructureDto counter;
+
     //optional
     private Integer contractSaleSam;
     private Integer contractSaleCounter;
@@ -228,6 +231,24 @@ public class ContractStructureDto {
         this.contractPadding = contractPadding;
     }
 
+
+    /**
+     * Sets a counter for this contract.
+     * @param counter the counter associated to this contract
+     */
+    public void setCounter(CounterStructureDto counter){
+        this.counter = counter;
+    }
+
+    /**
+     * Get the counter associated to this contract.
+     *
+     * @return nullable value of a counter
+     */
+    public CounterStructureDto getCounter(){
+        return this.counter;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -263,6 +284,7 @@ public class ContractStructureDto {
                 ", contractAuthKvc=" + contractAuthKvc +
                 ", contractAuthenticator=" + contractAuthenticator +
                 ", contractPadding=" + Arrays.toString(contractPadding) +
+                ", counter=" + counter +
                 '}';
     }
 

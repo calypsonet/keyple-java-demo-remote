@@ -256,7 +256,6 @@ public class EventStructureDto {
      * Set contract priority by its index.
      *
      * @param index should be between 1 and 4 (included)
-     * @return An instance of PriorityCode. Cannot be null.
      * @throws IllegalArgumentException if index is out of range
      */
     public void setContractPriorityAt(int index, PriorityCode contractPriority) {

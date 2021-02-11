@@ -2,6 +2,9 @@ package org.cna.keyple.demo.sale.data.endpoint;
 
 import org.cna.keyple.demo.sale.data.model.type.PriorityCode;
 
+/**
+ * Input object of the
+ */
 public class WriteContractInput {
 
     //mandatory

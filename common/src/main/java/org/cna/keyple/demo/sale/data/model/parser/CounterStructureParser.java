@@ -11,7 +11,7 @@ import java.nio.ByteBuffer;
  */
 public class CounterStructureParser {
 
-    private static Integer COUNTER_VALUE_SIZE = 3;
+    private static final Integer COUNTER_VALUE_SIZE = 3;
 
     /**
      * Unparse dto to an array of byte
