@@ -2,20 +2,21 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import AppBar from '@material-ui/core/AppBar';
 import Avatar from '@material-ui/core/Avatar';
-import Button from '@material-ui/core/Button';
+//import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
-import HelpIcon from '@material-ui/icons/Help';
+//import HelpIcon from '@material-ui/icons/Help';
 import Hidden from '@material-ui/core/Hidden';
 import IconButton from '@material-ui/core/IconButton';
 import Link from '@material-ui/core/Link';
 import MenuIcon from '@material-ui/icons/Menu';
-import NotificationsIcon from '@material-ui/icons/Notifications';
+//import NotificationsIcon from '@material-ui/icons/Notifications';
 import Tab from '@material-ui/core/Tab';
 import Tabs from '@material-ui/core/Tabs';
 import Toolbar from '@material-ui/core/Toolbar';
-import Tooltip from '@material-ui/core/Tooltip';
+//import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
 import { withStyles } from '@material-ui/core/styles';
+import logo from '../img/logo.png';
 
 const lightColor = 'rgba(255, 255, 255, 0.7)';
 
@@ -90,10 +91,18 @@ function Header(props) {
         elevation={0}
       >
         <Toolbar>
-          <Grid container alignItems="center" spacing={1}>
-            <Grid item xs>
+          <Grid container spacing={2} alignItems="center" >
+            <Grid item>
+
+              {/*
+              */}
+              <img
+                src={logo} alt="Logo" style={{
+                display:'block'}}/>
+            </Grid>
+            <Grid item >
               <Typography color="inherit" variant="h5" component="h1">
-                Transactions
+                Open Source API for Smart Ticketing
               </Typography>
             </Grid>
             {/*<Grid item>
@@ -119,10 +128,10 @@ function Header(props) {
         elevation={0}
       >
         <Tabs value={0} textColor="inherit">
-          <Tab textColor="inherit" label="Today" />
+          <Tab textColor="inherit" label="Logs" />
           <Tab textColor="inherit" label="Full history" />
           <Tab textColor="inherit" label="In error" />
-          <Tab textColor="inherit" label="Export" />
+          {/*<Tab textColor="inherit" label="Export" />*/}
         </Tabs>
       </AppBar>
     </React.Fragment>

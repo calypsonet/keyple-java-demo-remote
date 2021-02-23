@@ -8,6 +8,8 @@ import Link from '@material-ui/core/Link';
 import Navigator from './Navigator';
 import Content from './Content';
 import Header from './Header';
+import background from '../img/background.png';
+import './App.css';
 
 function Copyright() {
   return (
@@ -26,11 +28,12 @@ let theme = createMuiTheme({
   palette: {
     primary: {
       light: '#63ccff',
-      main: '#009be5',
+      main: '#1A87C7',
       dark: '#006db3',
     },
   },
   typography: {
+    fontFamily:'Work Sans',
     h5: {
       fontWeight: 500,
       fontSize: 26,
@@ -57,7 +60,8 @@ theme = {
   overrides: {
     MuiDrawer: {
       paper: {
-        backgroundColor: '#18202c',
+        //backgroundColor: '#18202c',
+        backgroundColor: '#000000',
       },
     },
     MuiButton: {
@@ -132,7 +136,8 @@ theme = {
   },
 };
 
-const drawerWidth = 256;
+const drawerWidth = 0;
+//const drawerWidth = 220;
 
 const styles = {
   root: {
@@ -153,11 +158,18 @@ const styles = {
   main: {
     flex: 1,
     padding: theme.spacing(6, 4),
-    background: '#eaeff1',
-  },
+    //background: '#eaeff1',
+    background: '#fff',
+    backgroundImage: `url(${background})`,
+    backgroundRepeat: 'no-repeat',
+    backgroundSize: 'cover',
+    //padding: '20px 0'
+
+},
   footer: {
     padding: theme.spacing(2),
-    background: '#eaeff1',
+    //background: '#eaeff1',
+    background: '#fff'
   },
 };
 
