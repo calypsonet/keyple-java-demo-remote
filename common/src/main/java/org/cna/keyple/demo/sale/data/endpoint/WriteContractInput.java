@@ -10,6 +10,7 @@ public class WriteContractInput {
     //mandatory
     PriorityCode contractTariff;
     Integer ticketToLoad;
+    String pluginType;
 
     public PriorityCode getContractTariff() {
         return contractTariff;
@@ -24,6 +25,19 @@ public class WriteContractInput {
 
     public WriteContractInput setTicketToLoad(Integer ticketToLoad) {
         this.ticketToLoad = ticketToLoad;
+        return this;
+    }
+
+    /**
+     * Return the type of plugin used for the po reader
+     * @return not null plugin type
+     */
+    public String getPluginType() {
+        return pluginType;
+    }
+
+    public WriteContractInput setPluginType(String pluginType) {
+        this.pluginType = pluginType;
         return this;
     }
 }

@@ -31,3 +31,5 @@ nb-configuration.xml
 # Gradle
 .gradle/
 build/
+/dashboard-app/yarn.lock
+/dashboard-app/.gitignore

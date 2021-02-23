@@ -74,6 +74,11 @@ public class TransactionTest {
 
     @Test
     public void execute_successful_load_tickets() {
+        load_tickets(poReader);
+    }
+
+    @Test
+    public void execute_successful_load_pass() {
         /* Select PO */
         CalypsoPo calypsoPo = CalypsoUtils.selectPo(poReader);
 
@@ -111,8 +116,7 @@ public class TransactionTest {
 
         WriteContractInput writeContractInput =
                 new WriteContractInput()
-                        .setContractTariff(PriorityCode.MULTI_TRIP_TICKET)
-                        .setTicketToLoad(TICKETS_TO_LOAD);
+                        .setContractTariff(PriorityCode.SEASON_PASS);
 
 
         /* Execute Remote Service : Write Title */
@@ -145,7 +149,14 @@ public class TransactionTest {
     }
 
     @Test
-    public void execute_successful_load_pass() {
+    public void execute_successful_load_tickets_N_times() {
+        final int N = 3;
+        for (int i=0;i<N;i++){
+            execute_successful_load_tickets();
+        }
+    }
+
+    static void load_tickets(Reader poReader){
         /* Select PO */
         CalypsoPo calypsoPo = CalypsoUtils.selectPo(poReader);
 
@@ -182,7 +193,8 @@ public class TransactionTest {
 
         WriteContractInput writeContractInput =
                 new WriteContractInput()
-                        .setContractTariff(PriorityCode.SEASON_PASS);
+                        .setContractTariff(PriorityCode.MULTI_TRIP_TICKET)
+                        .setTicketToLoad(TICKETS_TO_LOAD);
 
 
         /* Execute Remote Service : Write Title */
@@ -213,15 +225,5 @@ public class TransactionTest {
         assertEquals(PriorityCode.SEASON_PASS, writtenContract.getContractTariff());
         assertEquals(0,writtenContract.getCounter().getCounterValue());
     }
-
-    @Test
-    public void execute_successful_load_tickets_N_times() {
-        final int N = 3;
-        for (int i=0;i<N;i++){
-            execute_successful_load_tickets();
-        }
-    }
-
-
 
 }

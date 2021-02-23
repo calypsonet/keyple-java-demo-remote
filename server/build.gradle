@@ -32,6 +32,7 @@ dependencies {
     implementation project(":common")
 
     /* Quarkus */
+
     implementation 'io.quarkus:quarkus-resteasy-jsonb'
     implementation 'io.quarkus:quarkus-resteasy'
     implementation 'io.quarkus:quarkus-rest-client'
