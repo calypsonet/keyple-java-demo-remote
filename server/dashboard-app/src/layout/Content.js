@@ -17,20 +17,22 @@ const styles = (theme) => ({
 
 
 const columns = [
-  { field: 'id', headerName: 'ID', width: 70     ,sortable: false
+ /*
+  */
+ { field: 'id', headerName: 'ID', width: 70     ,sortable: false
   },
-  { field: 'startedAt', headerName: 'Started at', width: 200},
+  { field: 'startedAt', headerName: 'Started at', width: 140},
   {
     field: 'status',
     headerName: 'Status',
     width: 100,
   },
-  { field: 'poSn', headerName: 'Card S/N', width: 200 ,sortable: false},
+  { field: 'type', headerName: 'Action', width: 120,sortable: false },
+  { field: 'poSn', headerName: 'Card S/N', width: 170 ,sortable: false},
   // { field: 'deviceId', headerName: 'Device', width: 100 },
   { field: 'plugin', headerName: 'Plugin', width: 150 ,sortable: false},
-  { field: 'type', headerName: 'Type', width: 200,sortable: false },
   {
-    field: 'contract',
+    field: 'contractLoaded',
     headerName: 'Contract loaded',
     description: 'This column has a value getter and is not sortable.',
     sortable: false,
@@ -41,9 +43,9 @@ const columns = [
 ];
 
  const rows_init = [
- { id: '2101',startedAt : '2021-02-17 12:00:21',deviceId:'x23d45F',plugin:'NFC', type: 'RELOAD',    poSn: 'D4AAA0203A2', status :'SUCCESS', contract: 'SEASON_PASS' },
- { id: '2102',startedAt : '2021-02-17 12:01:11',deviceId:'x23d45F',plugin:'OMAPI', type: 'ISSUANCE',  poSn: 'D4AAA0203A2', status :'SUCCESS',contract: ''},
- { id: '2106',startedAt : '2021-02-17 12:05:55',deviceId:'x23d45F',plugin:'NFC', type: 'RELOAD', poSn: 'D4AAA0203A2', status :'SUCCESS',contract: 'MULTI-TRIP : 10' }
+ { id: '23c4',startedAt : '23/02/21 10:32',deviceId:'x23d45F',plugin:'Android NFC', type: 'RELOAD',    poSn: '00000000C16B293E', status :'SUCCESS', contractLoaded: 'SEASON_PASS' },
+ { id: '998a',startedAt : '23/02/21 10:31',deviceId:'x23d45F',plugin:'Android OMAPI', type: 'ISSUANCE',  poSn: '00000000C16B293E', status :'ERROR',contractLoaded: ''},
+ { id: 'b2b2',startedAt : '23/02/21 10:31',deviceId:'x23d45F',plugin:'Android Wizway', type: 'RELOAD', poSn: '00000000C16B293E ', status :'SUCCESS',contractLoaded: 'MULTI-TRIP : 10' }
  ];
 
 /*
@@ -55,8 +57,7 @@ function Content(props) {
   const { classes } = props;
   const [rows, setRows] = useState(rows_init);
 
-  // Simiar to componentDidMount and componentDidUpdate
-  // Update
+  // subscribe to transaction notification
   useEffect(() => {
     subscribeTransactionWait()
   });
@@ -65,8 +66,8 @@ function Content(props) {
   const addRow = transaction => {
     console.log("adding a new row to table")
     setRows(rows =>[
-      ...rows,
-      transaction
+      transaction,
+      ...rows
     ]);
   };
 
@@ -74,10 +75,7 @@ function Content(props) {
   const subscribeTransactionWait = async function () {
     try {
       let response = await fetch(process.env.REACT_APP_API_URL+"/dashboard/transaction/wait");
-      if (response.status === 502) {
-        console.log("Received a Connection Timeout Error response from server: " + response.status)
-        await subscribeTransactionWait();
-      } else if (response.status === 204) {
+      if (response.status === 204) {
         console.log("Received a No-Content response from server: " + response.status)
         await subscribeTransactionWait();
       } else if (response.status === 200) {
@@ -99,9 +97,12 @@ function Content(props) {
 
   return (
     <Paper className={classes.paper}>
-      <div style={{ height: 400, width: '100%'}}>
+      <div style={{ height: 450, width: '100%'}}>
 
-        <DataGrid rows={rows} columns={columns} pageSize={5}  />
+        <DataGrid rows={rows} columns={columns} pageSize={8}  />
+
+
+
       </div>
       {/*<div>
         <form onSubmit={addRow}>

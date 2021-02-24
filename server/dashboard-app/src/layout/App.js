@@ -15,7 +15,7 @@ function Copyright() {
   return (
     <Typography variant="body2" color="textSecondary" align="center">
       {'Eclipse Keyple © '}
-      <Link color="inherit" href="https://material-ui.com/">
+      <Link color="inherit">
         Calypso Network Association
       </Link>{' '}
       {new Date().getFullYear()}
@@ -27,9 +27,10 @@ function Copyright() {
 let theme = createMuiTheme({
   palette: {
     primary: {
-      light: '#63ccff',
-      main: '#1A87C7',
-      dark: '#006db3',
+      //light: '#63ccff',
+      //main: '#1A87C7',
+      main: '#fff',
+      //dark: '#006db3',
     },
   },
   typography: {
@@ -61,7 +62,8 @@ theme = {
     MuiDrawer: {
       paper: {
         //backgroundColor: '#18202c',
-        backgroundColor: '#000000',
+        //backgroundColor: '#000000',
+        backgroundColor: '#1A87C7',
       },
     },
     MuiButton: {
@@ -110,7 +112,8 @@ theme = {
     },
     MuiDivider: {
       root: {
-        backgroundColor: '#404854',
+        //backgroundColor: '#404854',
+        backgroundColor: '#fff',
       },
     },
     MuiListItemText: {
@@ -136,8 +139,8 @@ theme = {
   },
 };
 
-const drawerWidth = 0;
-//const drawerWidth = 220;
+//const drawerWidth = 0;
+const drawerWidth = 200;
 
 const styles = {
   root: {
@@ -154,6 +157,9 @@ const styles = {
     flex: 1,
     display: 'flex',
     flexDirection: 'column',
+    //backgroundImage: `url(${background})`,
+    //backgroundRepeat: 'no-repeat',
+    //backgroundSize: 'cover',
   },
   main: {
     flex: 1,

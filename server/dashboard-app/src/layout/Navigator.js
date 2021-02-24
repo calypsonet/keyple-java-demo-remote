@@ -50,8 +50,10 @@ const styles = (theme) => ({
     },
   },
   itemCategory: {
-    backgroundColor: '#232f3e',
-    boxShadow: '0 -1px 0 #404854 inset',
+    //backgroundColor: '#232f3e',
+    backgroundColor: '#1A87C7',
+    //boxShadow: '0 -1px 0 #404854 inset',
+    boxShadow: '0 -1px 0 #fff inset',
     paddingTop: theme.spacing(2),
     paddingBottom: theme.spacing(2),
   },
@@ -61,10 +63,10 @@ const styles = (theme) => ({
     color: theme.palette.common.white,
   },
   itemActiveItem: {
-    color: '#4fc3f7',
+    color: '#232f3e',
   },
   subtitle: {
-    fontSize: 18,
+    fontSize: 17,
     textAlign:'center'
   },
   itemPrimary: {
@@ -103,7 +105,8 @@ function Navigator(props) {
               primary: classes.subtitle,
             }}
           >
-            Open Source API for Smart Ticketing <br/> DEMO
+            Open Source API for Smart Ticketing
+            {/*<br/> DEMO*/}
           </ListItemText>
         </ListItem>
         {categories.map(({ id, children }) => (

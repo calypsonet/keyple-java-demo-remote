@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect }  from 'react';
 import PropTypes from 'prop-types';
 import AppBar from '@material-ui/core/AppBar';
 import Avatar from '@material-ui/core/Avatar';
@@ -44,8 +44,40 @@ const styles = (theme) => ({
 
 function Header(props) {
   const { classes, onDrawerToggle } = props;
+  const [isSamReady, setIsSamReady] = useState(false);
 
-  return (
+
+  // Start polling
+  useEffect(() => {
+    pollSamReady()
+  });
+
+  const pollSamReady = async function () {
+    try {
+      let response = await fetch(process.env.REACT_APP_API_URL + "/sam");
+      if (response.status === 200) {
+        if (!isSamReady) {
+          setIsSamReady(true)
+        }
+      } else if (response.status === 404) {
+        if (isSamReady) {
+          setIsSamReady(false)
+        }
+      } else {
+        if (isSamReady) {
+          setIsSamReady(false)
+          console.log("Unexpected status code")
+        }
+      }
+    }catch (e){
+      console.log("Error while connection to server : "+ e)
+    }
+    setTimeout(pollSamReady, 3000)
+  }
+
+
+
+    return (
     <React.Fragment>
       <AppBar color="primary" position="sticky" elevation={0}>
         <Toolbar>
@@ -64,9 +96,12 @@ function Header(props) {
             </Hidden>
             <Grid item xs />
             <Grid item>
-              <Link className={classes.link} href="#" variant="body2">
+              {/*<Link className={classes.link} href="#" variant="body2">
                 Sam Resource is ready
-              </Link>
+              </Link>*/}
+              <Typography>
+                {isSamReady?"Sam Resource is ready":"Sam is NOT Ready"}
+              </Typography>
             </Grid>
             {/*<Grid item>
               <Tooltip title="Alerts • No alerts">
@@ -95,14 +130,19 @@ function Header(props) {
             <Grid item>
 
               {/*
-              */}
               <img
                 src={logo} alt="Logo" style={{
                 display:'block'}}/>
+              */}
             </Grid>
             <Grid item >
+              {/*
               <Typography color="inherit" variant="h5" component="h1">
                 Open Source API for Smart Ticketing
+              </Typography>
+              */}
+              <Typography color="inherit" variant="h5" component="h1">
+                Ticketing Transactions
               </Typography>
             </Grid>
             {/*<Grid item>
@@ -128,10 +168,11 @@ function Header(props) {
         elevation={0}
       >
         <Tabs value={0} textColor="inherit">
+        {/*
           <Tab textColor="inherit" label="Logs" />
           <Tab textColor="inherit" label="Full history" />
           <Tab textColor="inherit" label="In error" />
-          {/*<Tab textColor="inherit" label="Export" />*/}
+        */}
         </Tabs>
       </AppBar>
     </React.Fragment>
