@@ -1,6 +1,6 @@
 package org.cna.keyple.demo.remote.card;
 
-import org.cna.keyple.demo.remote.server.SamResourceManagerConfig;
+import org.cna.keyple.demo.remote.server.SamResourceService;
 import org.cna.keyple.demo.remote.server.card.CardContent;
 import org.cna.keyple.demo.remote.server.card.CardController;
 import org.cna.keyple.demo.remote.server.util.CalypsoUtils;
@@ -35,7 +35,7 @@ public class CardControllerTest {
 
     @BeforeAll
     public static void staticSetUp(){
-        samResourceManager = new SamResourceManagerConfig().samResourceManager();
+        samResourceManager = new SamResourceService().getSamResourceManager();
     }
 
     @BeforeEach

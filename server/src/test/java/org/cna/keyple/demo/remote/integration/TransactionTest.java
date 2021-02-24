@@ -52,7 +52,7 @@ public class TransactionTest {
 
 
     @Test
-    public void basicTest() {
+    public void is_sam_ready() {
         assertTrue("ok".equals(heartbeatClient.ping()));
     }
 

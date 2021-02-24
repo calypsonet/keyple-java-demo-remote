@@ -58,9 +58,9 @@ public class RemoteServerPluginConfig implements ObservablePlugin.PluginObserver
   @Inject
   TransactionStore transactionStore;
 
-  SamResourceManager samResourceManager;
+  SamResourceService samResourceService;
 
-  public RemoteServerPluginConfig(SamResourceManager samResourceManager){
+  public RemoteServerPluginConfig(SamResourceService samResourceService){
     logger.info("Init RemoteServerPluginConfig...");
 
     // Init the remote plugin factory with a sync node and a remote plugin observer.
@@ -76,7 +76,7 @@ public class RemoteServerPluginConfig implements ObservablePlugin.PluginObserver
     // Register the remote plugin to the smart card service using the factory.
     SmartCardService.getInstance().registerPlugin(factory);
 
-    this.samResourceManager = samResourceManager;
+    this.samResourceService = samResourceService;
   }
 
   /** {@inheritDoc} */
@@ -141,7 +141,7 @@ public class RemoteServerPluginConfig implements ObservablePlugin.PluginObserver
     CalypsoPo calypsoPo = reader.getInitialCardContent(CalypsoPo.class);
     AnalyzeContractsInput input = reader.getUserInputData(AnalyzeContractsInput.class);
 
-    CardResource<CalypsoSam> samResource = samResourceManager.allocateSamResource(
+    CardResource<CalypsoSam> samResource = samResourceService.getSamResourceManager().allocateSamResource(
             SamResourceManager.AllocationMode.BLOCKING,
             new SamIdentifier.SamIdentifierBuilder().serialNumber("").samRevision(SamRevision.AUTO).groupReference(".*").build());
 
@@ -161,11 +161,11 @@ public class RemoteServerPluginConfig implements ObservablePlugin.PluginObserver
     transactionStore.store(new Transaction()
             .setPlugin(input.getPluginType()==null?"n/a":input.getPluginType())
             .setStatus("SUCCESS")
-            .setType("SECURE READ")
+            .setType("SECURED READ")
             .setPoSn(calypsoPo.getApplicationSerialNumber())
     );
 
-    samResourceManager.freeSamResource(samResource);
+    samResourceService.getSamResourceManager().freeSamResource(samResource);
 
     return new AnalyzeContractsOutput()
             .setValidContracts(validContracts)
@@ -185,7 +185,7 @@ public class RemoteServerPluginConfig implements ObservablePlugin.PluginObserver
     WriteContractInput writeContractInput = reader.getUserInputData(WriteContractInput.class);
     CalypsoPo calypsoPo = reader.getInitialCardContent(CalypsoPo.class);
 
-    CardResource<CalypsoSam> samResource = samResourceManager.allocateSamResource(
+    CardResource<CalypsoSam> samResource = samResourceService.getSamResourceManager().allocateSamResource(
             SamResourceManager.AllocationMode.BLOCKING,
             new SamIdentifier.SamIdentifierBuilder().serialNumber("").samRevision(SamRevision.AUTO).groupReference(".*").build());
 
@@ -211,14 +211,15 @@ public class RemoteServerPluginConfig implements ObservablePlugin.PluginObserver
 
     int statusCode = cardController.writeCard(cardContent);
 
-    samResourceManager.freeSamResource(samResource);
+    samResourceService.getSamResourceManager().freeSamResource(samResource);
 
     //store transaction information
     transactionStore.store(new Transaction()
             .setPlugin(writeContractInput.getPluginType()==null?"n/a":writeContractInput.getPluginType())
             .setStatus("SUCCESS")
-            .setType("WRITE CONTRACT")
+            .setType("RELOAD")
             .setPoSn(calypsoPo.getApplicationSerialNumber())
+            .setContractLoaded(writeContractInput.getContractTariff()+ " " + writeContractInput.getTicketToLoad())
     );
 
     return new WriteContractOutput().setStatusCode(statusCode);
@@ -233,7 +234,7 @@ public class RemoteServerPluginConfig implements ObservablePlugin.PluginObserver
 
     CalypsoPo calypsoPo = reader.getInitialCardContent(CalypsoPo.class);
 
-    CardResource<CalypsoSam> samResource = samResourceManager.allocateSamResource(
+    CardResource<CalypsoSam> samResource = samResourceService.getSamResourceManager().allocateSamResource(
             SamResourceManager.AllocationMode.BLOCKING,
             new SamIdentifier.SamIdentifierBuilder().serialNumber("").samRevision(SamRevision.AUTO).groupReference(".*").build());
 
@@ -246,7 +247,7 @@ public class RemoteServerPluginConfig implements ObservablePlugin.PluginObserver
     //init card
     cardController.initCard();
 
-    samResourceManager.freeSamResource(samResource);
+    samResourceService.getSamResourceManager().freeSamResource(samResource);
 
     return new CardIssuanceOutput().setStatusCode(0);
   }

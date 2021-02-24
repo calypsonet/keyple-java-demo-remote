@@ -4,7 +4,6 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
-import java.util.Locale;
 import java.util.UUID;
 
 /**
@@ -18,6 +17,7 @@ public class Transaction {
     String startedAt;
     String type;
     String status;
+    String contractLoaded;
 
     /**
      * Default contructor
@@ -41,8 +41,8 @@ public class Transaction {
      */
     private String generateTimestamp(){
         DateTimeFormatter formatter =
-                DateTimeFormatter.ofLocalizedDateTime( FormatStyle.MEDIUM )
-                        .withLocale( Locale.UK )
+                DateTimeFormatter.ofLocalizedDateTime( FormatStyle.SHORT )
+                        //.withLocale( Locale.UK )
                         .withZone( ZoneId.systemDefault() );
 
         return formatter.format(Instant.now());
@@ -72,6 +72,10 @@ public class Transaction {
         return startedAt;
     }
 
+    public String getContractLoaded() {
+        return contractLoaded;
+    }
+
     public Transaction setPoSn(String poSn) {
         this.poSn = poSn;
         return this;
@@ -89,6 +93,11 @@ public class Transaction {
 
     public Transaction setStatus(String status) {
         this.status = status;
+        return this;
+    }
+
+    public Transaction setContractLoaded(String contractLoaded) {
+        this.contractLoaded = contractLoaded;
         return this;
     }
 }

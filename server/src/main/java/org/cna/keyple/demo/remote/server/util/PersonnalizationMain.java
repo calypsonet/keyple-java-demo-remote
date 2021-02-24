@@ -1,6 +1,6 @@
 package org.cna.keyple.demo.remote.server.util;
 
-import org.cna.keyple.demo.remote.server.SamResourceManagerConfig;
+import org.cna.keyple.demo.remote.server.SamResourceService;
 import org.cna.keyple.demo.remote.server.card.CardController;
 import org.cna.keyple.demo.sale.data.model.EnvironmentHolderStructureDto;
 import org.cna.keyple.demo.sale.data.model.parser.EnvironmentHolderStructureParser;
@@ -21,7 +21,7 @@ public class PersonnalizationMain {
     private static final Logger logger = LoggerFactory.getLogger(PersonnalizationMain.class);
 
     public static void main(String[] args) {
-        SamResourceManager samResourceManager = new SamResourceManagerConfig().samResourceManager();
+        SamResourceManager samResourceManager = new SamResourceService().getSamResourceManager();
 
         /*
          * Init readers
