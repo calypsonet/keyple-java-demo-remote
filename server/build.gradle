@@ -8,8 +8,30 @@ repositories {
     mavenCentral()
 }
 
-task('runServer',  group:'keyple'){
+task('runDevServer',  group:'keyple'){
     dependsOn 'quarkusDev'
+}
+
+task('runExecutableServer',  group:'keyple',type:Exec){
+    workingDir 'build'
+    commandLine 'java', '-jar', 'keyple-java-demo-remote-server-1.0.0-SNAPSHOT-runner.jar'
+}
+
+task('buildServerExecutable', group:'keyple'){
+    dependsOn 'copyDashboard', 'quarkusBuild'
+}
+
+task buildDashboard(type:Exec,group:'keyple'){
+    workingDir 'dashboard-app'
+    //executable 'npm'
+    //args ['-l']
+    commandLine 'npm', 'run', 'build'
+}
+
+task copyDashboard(type:Copy ,group:'keyple'){
+    from 'dashboard-app/build'
+    into 'src/main/resources/META-INF/resources'
+    dependsOn 'buildDashboard'
 }
 
 ext {
@@ -32,6 +54,7 @@ dependencies {
     implementation project(":common")
 
     /* Quarkus */
+
     implementation 'io.quarkus:quarkus-resteasy-jsonb'
     implementation 'io.quarkus:quarkus-resteasy'
     implementation 'io.quarkus:quarkus-rest-client'

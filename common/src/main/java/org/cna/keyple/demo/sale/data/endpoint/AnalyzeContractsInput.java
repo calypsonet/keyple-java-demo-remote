@@ -20,7 +20,7 @@ public class AnalyzeContractsInput {
 
   /**
    * Return the type of plugin used for the po reader
-   * @return not null plugin type
+   * @return nullable plugin type
    */
   public String getPluginType() {
     return pluginType;

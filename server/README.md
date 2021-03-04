@@ -1,4 +1,6 @@
 
+# Keyple distributed demo - Server
+
 ## Running the server
 
 This example is based on the Quarkus framework. To execute the example, you need to install Quarkus dependencies : 
