@@ -74,7 +74,8 @@ function Content(props) {
 
   const subscribeTransactionWait = async function () {
     try {
-      let response = await fetch(process.env.REACT_APP_API_URL+"/dashboard/transaction/wait");
+      //let response = await fetch(process.env.REACT_APP_API_URL+"/dashboard/transaction/wait");
+      let response = await fetch("/dashboard/transaction/wait");
       if (response.status === 204) {
         console.log("Received a No-Content response from server: " + response.status)
         await subscribeTransactionWait();

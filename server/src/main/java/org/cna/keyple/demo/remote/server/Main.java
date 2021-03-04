@@ -14,8 +14,12 @@ package org.cna.keyple.demo.remote.server;
 import io.quarkus.runtime.Quarkus;
 import io.quarkus.runtime.QuarkusApplication;
 import io.quarkus.runtime.annotations.QuarkusMain;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.awt.*;
+import java.net.URI;
 
 @QuarkusMain
 public class Main {
@@ -29,10 +33,17 @@ public class Main {
   /** Main class of the server application. */
   public static class DemoApp implements QuarkusApplication {
 
+    @ConfigProperty(name = "quarkus.http.port")
+    Integer assignedPort;
+
+
     /** {@inheritDoc} */
     @Override
-    public int run(String... args) {
-      logger.info("Keyple Demo Remote Server Started.");
+    public int run(String... args)  throws Exception  {
+      URI webappUri = new URI("http://localhost:" + assignedPort + "/");
+
+      Desktop.getDesktop().browse(webappUri);
+      logger.info("Keyple Demo Remote Server Started at port : {}", assignedPort);
       Quarkus.waitForExit();
       return 0;
     }

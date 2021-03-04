@@ -54,7 +54,8 @@ function Header(props) {
 
   const pollSamReady = async function () {
     try {
-      let response = await fetch(process.env.REACT_APP_API_URL + "/sam");
+      //let response = await fetch(process.env.REACT_APP_API_URL + "/sam");
+      let response = await fetch("/sam");
       if (response.status === 200) {
         if (!isSamReady) {
           setIsSamReady(true)
@@ -100,7 +101,7 @@ function Header(props) {
                 Sam Resource is ready
               </Link>*/}
               <Typography>
-                {isSamReady?"Sam Resource is ready":"Sam is NOT Ready"}
+                {isSamReady?"Sam Resource is ready":"Sam Resource is NOT Ready"}
               </Typography>
             </Grid>
             {/*<Grid item>

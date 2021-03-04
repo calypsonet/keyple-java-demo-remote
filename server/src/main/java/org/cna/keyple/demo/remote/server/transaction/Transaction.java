@@ -7,7 +7,7 @@ import java.time.format.FormatStyle;
 import java.util.UUID;
 
 /**
- * Transaction logs
+ * Transaction log
  */
 public class Transaction {
 

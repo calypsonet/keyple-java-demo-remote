@@ -35,8 +35,15 @@ public class SamResourceService {
 
     private Plugin samPlugin(){
 
+        SmartCardService smartCardService = SmartCardService.getInstance();
+
+        //return plugin is already register
+        if(smartCardService.isRegistered("PcscPlugin")){
+           return smartCardService.getPlugin("PcscPlugin");
+        }
+
         // Registers the plugin to the smart card service.
-        Plugin plugin = SmartCardService.getInstance().registerPlugin(
+        Plugin plugin = smartCardService.registerPlugin(
                 new PcscPluginFactory(new PluginObservationExceptionHandler() {
                     @Override
                     public void onPluginObservationError(String pluginName, Throwable e) {

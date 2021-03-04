@@ -4,12 +4,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * Store transaction logs in server cache
+ */
 @ApplicationScoped
 public class TransactionStore {
 
@@ -31,7 +35,11 @@ public class TransactionStore {
         return (List<Transaction>) ((ArrayList<Transaction>) transactions).clone();
     }
 
-    public void store(Transaction t){
+    /**
+     * Store a new transaction.
+     * @param t
+     */
+    public void store(@NotNull Transaction t){
         //store the new transaction
         transactions.add(t);
 
