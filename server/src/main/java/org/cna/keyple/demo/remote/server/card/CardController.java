@@ -110,6 +110,9 @@ public class CardController {
                         new CardResource<>(this.poReader, this.calypsoPo),
                         CalypsoUtils.getSecuritySettings(this.samResource));
 
+        //We release the channel after reading
+        poTransaction.prepareReleasePoChannel();
+
         /*
          * Open Calypso session
          */
