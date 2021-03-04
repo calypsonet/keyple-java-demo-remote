@@ -10,7 +10,6 @@ import org.eclipse.keyple.distributed.impl.LocalServiceClientFactory;
 import org.eclipse.microprofile.rest.client.RestClientBuilder;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -50,7 +49,7 @@ public class WaitTransactionTest {
         poReader = PcscReaderUtils.initPoReader(PO_READER_FILTER);
     }
 
-    @Test
+    //@Test
     public void execute_wait_for_po() throws InterruptedException {
 
         ((ObservableReader)poReader).addObserver(new ObservableReader.ReaderObserver() {

@@ -53,7 +53,7 @@ public class TransactionTest {
 
     @Test
     public void is_sam_ready() {
-        assertTrue("ok".equals(heartbeatClient.ping()));
+        assertEquals("{}", heartbeatClient.ping());
     }
 
 
@@ -144,8 +144,7 @@ public class TransactionTest {
         assertEquals(0, passExpected.getStatusCode());
         assertEquals(1, passExpected.getValidContracts().size());
         ContractStructureDto writtenContract = passExpected.getValidContracts().get(0);
-        assertEquals(PriorityCode.MULTI_TRIP_TICKET, writtenContract.getContractTariff());
-        assertEquals(TICKETS_TO_LOAD, writtenContract.getCounter().getCounterValue());
+        assertEquals(PriorityCode.SEASON_PASS, writtenContract.getContractTariff());
     }
 
     @Test
@@ -222,8 +221,8 @@ public class TransactionTest {
         assertEquals(0, passExpected.getStatusCode());
         assertEquals(1, passExpected.getValidContracts().size());
         ContractStructureDto writtenContract = passExpected.getValidContracts().get(0);
-        assertEquals(PriorityCode.SEASON_PASS, writtenContract.getContractTariff());
-        assertEquals(0,writtenContract.getCounter().getCounterValue());
+        assertEquals(PriorityCode.MULTI_TRIP_TICKET, writtenContract.getContractTariff());
+        assertEquals(TICKETS_TO_LOAD,writtenContract.getCounter().getCounterValue());
     }
 
 }

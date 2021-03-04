@@ -19,6 +19,7 @@ import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
 import java.util.List;
 
 /**
@@ -31,7 +32,7 @@ public interface EndpointClient extends SyncEndpointClient {
 
   @POST
   @Path("/remote-plugin")
-  @Produces("application/json")
+  @Produces(MediaType.APPLICATION_JSON)
   @Override
   List<MessageDto> sendRequest(MessageDto messageDto);
 }

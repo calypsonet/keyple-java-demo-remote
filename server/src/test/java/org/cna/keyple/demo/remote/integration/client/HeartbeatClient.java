@@ -13,8 +13,10 @@ package org.cna.keyple.demo.remote.integration.client;
 
 import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 
+import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.core.MediaType;
 
 /**
  * Heartbeat tests client
@@ -23,6 +25,7 @@ import javax.ws.rs.Path;
 public interface HeartbeatClient {
 
   @GET
-  @Path("/heartbeat")
+  @Path("/sam")
+  @Consumes(MediaType.APPLICATION_JSON)
   String ping();
 }

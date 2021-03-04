@@ -11,7 +11,6 @@
  ************************************************************************************** */
 package org.cna.keyple.demo.remote.server.endpoint;
 
-import javax.ws.rs.*;
 import org.cna.keyple.demo.remote.server.SamResourceService;
 import org.eclipse.keyple.core.service.exception.KeypleReaderNotFoundException;
 
@@ -31,12 +30,16 @@ public class EndpointSam {
   @Inject
   SamResourceService samResourceService;
 
+  /**
+   * Check if sam is present
+   * @return status:200 if sam is found, status:404 else
+   */
   @GET
   @Produces(MediaType.APPLICATION_JSON)
   public Response isSamReady() {
     try{
       if(samResourceService.getSamReader().isCardPresent()){
-        return Response.ok().build();
+        return Response.ok("{}").build();
       }
     }catch (KeypleReaderNotFoundException e){}
     return Response.status(Response.Status.NOT_FOUND).build();
