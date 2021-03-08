@@ -9,11 +9,16 @@ import Navigator from './Navigator';
 import Content from './Content';
 import Header from './Header';
 import background from '../img/background.png';
+import logo_eclipse_fondation from '../img/logo_eclipse_fondation_black.png';
 import './App.css';
+import useInterval from './util/useInterval'
 
 function Copyright() {
   return (
     <Typography variant="body2" color="textSecondary" align="center">
+      <div >
+        <img src={logo_eclipse_fondation} width="100px" id="logo-eclipse-fondation"/>
+      </div>
       {'Eclipse Keyple © '}
       <Link color="inherit">
         Calypso Network Association
@@ -24,6 +29,7 @@ function Copyright() {
   );
 }
 
+//Create base Theme with Material UI
 let theme = createMuiTheme({
   palette: {
     primary: {
@@ -56,6 +62,7 @@ let theme = createMuiTheme({
   },
 });
 
+//Add more style to theme
 theme = {
   ...theme,
   overrides: {
@@ -139,7 +146,6 @@ theme = {
   },
 };
 
-//const drawerWidth = 0;
 const drawerWidth = 200;
 
 const styles = {
@@ -157,24 +163,17 @@ const styles = {
     flex: 1,
     display: 'flex',
     flexDirection: 'column',
-    //backgroundImage: `url(${background})`,
-    //backgroundRepeat: 'no-repeat',
-    //backgroundSize: 'cover',
   },
   main: {
     flex: 1,
-    padding: theme.spacing(6, 4),
-    //background: '#eaeff1',
+    padding: theme.spacing(3, 4),
     background: '#fff',
     backgroundImage: `url(${background})`,
     backgroundRepeat: 'no-repeat',
     backgroundSize: 'cover',
-    //padding: '20px 0'
-
 },
   footer: {
     padding: theme.spacing(2),
-    //background: '#eaeff1',
     background: '#fff'
   },
 };
@@ -182,10 +181,43 @@ const styles = {
 function Paperbase(props) {
   const { classes } = props;
   const [mobileOpen, setMobileOpen] = React.useState(false);
+  const [isSamReady, setIsSamReady] = React.useState(true);
+  const [isServerReady, setIsServerReady] = React.useState(true);
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
   };
+
+  const pollIsSamReady = async function () {
+    var requestOptions = {
+      method: 'GET'
+    };
+
+    return fetch("/sam", requestOptions)
+      .then(response => {
+        if(response.status === 200){
+          if(!isServerReady){setIsServerReady(true);}
+          return response.json()
+        }else{
+          throw 'Request status : ' + response.status;
+        }
+      })
+      .then(json => {
+        console.log("Is Sam Ready : " + json.isSamReady);
+        if(isSamReady !== json.isSamReady){
+          setIsSamReady(json.isSamReady)
+        }
+      })
+      .catch(error =>{
+        console.log('Fetch error', error)
+        if(isServerReady){setIsServerReady(false)}
+
+      });
+  }
+
+  useInterval(() => {
+    pollIsSamReady()
+  }, 3000);
 
   return (
     <ThemeProvider theme={theme}>
@@ -205,7 +237,7 @@ function Paperbase(props) {
           </Hidden>
         </nav>
         <div className={classes.app}>
-          <Header onDrawerToggle={handleDrawerToggle} />
+          <Header onDrawerToggle={handleDrawerToggle} isSamReady={isSamReady} isServerReady={isServerReady}/>
           <main className={classes.main}>
             <Content />
           </main>

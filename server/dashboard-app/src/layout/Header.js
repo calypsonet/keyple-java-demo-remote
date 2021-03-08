@@ -1,4 +1,4 @@
-import React, { useState, useEffect }  from 'react';
+import React, { useState, useEffect,componentDidMount }  from 'react';
 import PropTypes from 'prop-types';
 import AppBar from '@material-ui/core/AppBar';
 import Avatar from '@material-ui/core/Avatar';
@@ -7,17 +7,17 @@ import Grid from '@material-ui/core/Grid';
 //import HelpIcon from '@material-ui/icons/Help';
 import Hidden from '@material-ui/core/Hidden';
 import IconButton from '@material-ui/core/IconButton';
-import Link from '@material-ui/core/Link';
+//import Link from '@material-ui/core/Link';
 import MenuIcon from '@material-ui/icons/Menu';
 //import NotificationsIcon from '@material-ui/icons/Notifications';
-import Tab from '@material-ui/core/Tab';
-import Tabs from '@material-ui/core/Tabs';
+//import Tab from '@material-ui/core/Tab';
+//import Tabs from '@material-ui/core/Tabs';
 import Toolbar from '@material-ui/core/Toolbar';
 //import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
 import { withStyles } from '@material-ui/core/styles';
-import logo from '../img/logo.png';
-
+//import logo from '../img/logo.png';
+import AlertDialog from './AlertDialog'
 const lightColor = 'rgba(255, 255, 255, 0.7)';
 
 const styles = (theme) => ({
@@ -42,44 +42,14 @@ const styles = (theme) => ({
   },
 });
 
+
 function Header(props) {
-  const { classes, onDrawerToggle } = props;
-  const [isSamReady, setIsSamReady] = useState(false);
-
-
-  // Start polling
-  useEffect(() => {
-    pollSamReady()
-  });
-
-  const pollSamReady = async function () {
-    try {
-      //let response = await fetch(process.env.REACT_APP_API_URL + "/sam");
-      let response = await fetch("/sam");
-      if (response.status === 200) {
-        if (!isSamReady) {
-          setIsSamReady(true)
-        }
-      } else if (response.status === 404) {
-        if (isSamReady) {
-          setIsSamReady(false)
-        }
-      } else {
-        if (isSamReady) {
-          setIsSamReady(false)
-          console.log("Unexpected status code")
-        }
-      }
-    }catch (e){
-      console.log("Error while connection to server : "+ e)
-    }
-    setTimeout(pollSamReady, 3000)
-  }
-
-
+  const { classes, onDrawerToggle,isSamReady,isServerReady } = props;
 
     return (
     <React.Fragment>
+      <AlertDialog show={isServerReady && !isSamReady} title="SAM Resource is not available" text="Please ensure that the SAM is inserted into the SAM Reader"/>
+      <AlertDialog show={!isServerReady} title="Can not reach Keyple Distributed Server" text="Keyple Distributed server is not reachable. Please ensure that the Server process is running. Restart it if needed."/>
       <AppBar color="primary" position="sticky" elevation={0}>
         <Toolbar>
           <Grid container spacing={1} alignItems="center">
@@ -101,7 +71,7 @@ function Header(props) {
                 Sam Resource is ready
               </Link>*/}
               <Typography>
-                {isSamReady?"Sam Resource is ready":"Sam Resource is NOT Ready"}
+                {props.isSamReady?"Sam Resource is ready":"Sam Resource is NOT Ready"}
               </Typography>
             </Grid>
             {/*<Grid item>
@@ -113,7 +83,7 @@ function Header(props) {
             </Grid>*/}
             <Grid item>
               <IconButton color="inherit" className={classes.iconButtonAvatar}>
-                <Avatar src="/static/images/avatar/1.jpg" alt="My Avatar" />
+                <Avatar alt="My Avatar" />
               </IconButton>
             </Grid>
           </Grid>
@@ -161,6 +131,7 @@ function Header(props) {
           </Grid>
         </Toolbar>
       </AppBar>
+        {/*
       <AppBar
         component="div"
         className={classes.secondaryBar}
@@ -169,13 +140,12 @@ function Header(props) {
         elevation={0}
       >
         <Tabs value={0} textColor="inherit">
-        {/*
           <Tab textColor="inherit" label="Logs" />
           <Tab textColor="inherit" label="Full history" />
           <Tab textColor="inherit" label="In error" />
-        */}
         </Tabs>
       </AppBar>
+        */}
     </React.Fragment>
   );
 }
@@ -183,6 +153,8 @@ function Header(props) {
 Header.propTypes = {
   classes: PropTypes.object.isRequired,
   onDrawerToggle: PropTypes.func.isRequired,
+  isSamReady: PropTypes.bool,
+  isServerReady: PropTypes.bool
 };
 
 export default withStyles(styles)(Header);

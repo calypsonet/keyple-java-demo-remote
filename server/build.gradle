@@ -12,7 +12,7 @@ task('runDevServer',  group:'keyple'){
     dependsOn 'quarkusDev'
 }
 
-task('runExecutableServer',  group:'keyple',type:Exec){
+task('runServerExecutable',  group:'keyple',type:Exec){
     workingDir 'build'
     commandLine 'java', '-jar', 'keyple-java-demo-remote-server-1.0.0-SNAPSHOT-runner.jar'
 }
@@ -21,14 +21,14 @@ task('buildServerExecutable', group:'keyple'){
     dependsOn 'copyDashboard', 'quarkusBuild'
 }
 
-task buildDashboard(type:Exec,group:'keyple'){
+task buildDashboard(type:Exec){
     workingDir 'dashboard-app'
     //executable 'npm'
     //args ['-l']
     commandLine 'npm', 'run', 'build'
 }
 
-task copyDashboard(type:Copy ,group:'keyple'){
+task copyDashboard(type:Copy){
     from 'dashboard-app/build'
     into 'src/main/resources/META-INF/resources'
     dependsOn 'buildDashboard'
@@ -80,4 +80,5 @@ java {
 test {
     systemProperty "java.util.logging.manager", "org.jboss.logmanager.LogManager"
     systemProperty "quarkus.log.level", "INFO"
+    exclude '**/**WaitTransactionTest.java'
 }

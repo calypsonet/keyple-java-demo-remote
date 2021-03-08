@@ -5,8 +5,6 @@ import Paper from '@material-ui/core/Paper';
 import { withStyles } from '@material-ui/core/styles';
 
 
-
-
 const styles = (theme) => ({
   paper: {
     margin: 'auto',
@@ -87,7 +85,7 @@ function Content(props) {
         await subscribeTransactionWait();
       } else {
         //unexpected error connect again
-        await subscribeTransactionWait();
+        throw "Exception, response status : "+ response.status
       }
     }catch(e){
       console.log("Error while connection to server : "+ e)
@@ -98,23 +96,9 @@ function Content(props) {
 
   return (
     <Paper className={classes.paper}>
-      <div style={{ height: 450, width: '100%'}}>
-
+      <div style={{ height: 430, width: '100%'}}>
         <DataGrid rows={rows} columns={columns} pageSize={8}  />
-
-
-
       </div>
-      {/*<div>
-        <form onSubmit={addRow}>
-          <input
-            name="item"
-            type="text"
-            value="2"
-          />
-          <button>Submit</button>
-        </form>
-      </div>*/}
     </Paper>
   );
 }

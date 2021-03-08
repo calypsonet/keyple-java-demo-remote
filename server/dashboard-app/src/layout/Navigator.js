@@ -15,6 +15,7 @@ import TimerIcon from '@material-ui/icons/Timer';
 import SettingsIcon from '@material-ui/icons/Settings';
 import logo from '../img/logo.png';
 
+
 const categories = [
   {
     id: 'Monitoring',
@@ -94,11 +95,6 @@ function Navigator(props) {
            marginRight: 'auto'}}/>
         </ListItem>
         <ListItem className={clsx(classes.keyple,classes.item, classes.itemCategory)}>
-{/*
-          <ListItemIcon className={classes.itemIcon}>
-            <HomeIcon />
-          </ListItemIcon>
-*/}
 
           <ListItemText
             classes={{
@@ -106,7 +102,6 @@ function Navigator(props) {
             }}
           >
             Open Source API for Smart Ticketing
-            {/*<br/> DEMO*/}
           </ListItemText>
         </ListItem>
         {categories.map(({ id, children }) => (
