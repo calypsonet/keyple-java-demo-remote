@@ -1,0 +1,10 @@
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="oval">
+    <size
+        android:width="@dimen/connection_status_size"
+        android:height="@dimen/connection_status_size" />
+    <stroke
+        android:width="@dimen/connection_status_contour"
+        android:color="@color/green" />
+    <solid android:color="@color/green" />
+</shape>

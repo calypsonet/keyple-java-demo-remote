@@ -1,46 +1,50 @@
-/*
- * Copyright (c) 2020 Calypso Networks Association https://www.calypsonet-asso.org/
+/********************************************************************************
+ * Copyright (c) 2021 Calypso Networks Association https://www.calypsonet-asso.org/
  *
- * See the NOTICE file(s) distributed with this work for additional information
- * regarding copyright ownership.
+ * See the NOTICE file(s) distributed with this work for additional information regarding copyright
+ * ownership.
  *
- * This program and the accompanying materials are made available under the terms of the
- * Eclipse Public License 2.0 which is available at http://www.eclipse.org/legal/epl-2.0
+ * This program and the accompanying materials are made available under the terms of the Eclipse
+ * Public License 2.0 which is available at http://www.eclipse.org/legal/epl-2.0
  *
  * SPDX-License-Identifier: EPL-2.0
- */
+ ********************************************************************************/
 package org.eclipse.keyple.demo.remote.data
 
+import android.annotation.SuppressLint
 import android.content.SharedPreferences
 import javax.inject.Inject
 import org.eclipse.keyple.demo.remote.di.scopes.AppScoped
 
 @AppScoped
 class SharedPrefData @Inject constructor(var prefs: SharedPreferences) {
+    @SuppressLint("ApplySharedPref")
     fun saveServerIP(serverIp: String?) {
         val editor = prefs.edit()
         editor.putString(SERVER_IP_KEY, serverIp)
-        editor.apply()
+        editor.commit() // We need to use commit instead of apply because the app is restard just after the change of this pref
     }
 
     fun loadServerIP(): String? {
         return prefs.getString(SERVER_IP_KEY, DEFAULT_SERVER_IP_KEY)
     }
 
+    @SuppressLint("ApplySharedPref")
     fun saveServerPort(serverPort: Int?) {
         val editor = prefs.edit()
         editor.putInt(SERVER_PORT_KEY, serverPort!!)
-        editor.apply()
+        editor.commit() // We need to use commit instead of apply because the app is restard just after the change of this pref
     }
 
     fun loadServerPort(): Int {
         return prefs.getInt(SERVER_PORT_KEY, DEFAULT_PORT)
     }
 
+    @SuppressLint("ApplySharedPref")
     fun saveServerProtocol(serverProtocol: String?) {
         val editor = prefs.edit()
         editor.putString(SERVER_PROTOCOL_KEY, serverProtocol)
-        editor.apply()
+        editor.commit() // We need to use commit instead of apply because the app is restard just after the change of this pref
     }
 
     fun loadServerProtocol(): String? {
@@ -57,7 +61,7 @@ class SharedPrefData @Inject constructor(var prefs: SharedPreferences) {
         return prefs.getString(DEVICE_TYPE, "")
     }
 
-    fun saveContactlessConfigurationVisibility(visibility: Visibility){
+    fun saveContactlessConfigurationVisibility(visibility: Visibility) {
         val editor = prefs.edit()
         editor.putString(SETTING_CONTACTLESS_VISIBILITY, visibility.text)
         editor.apply()
@@ -101,15 +105,22 @@ class SharedPrefData @Inject constructor(var prefs: SharedPreferences) {
             .toUpperCase())
     }
 
+    fun saveLastStatus(up: Boolean) {
+        val editor = prefs.edit()
+        editor.putBoolean(SETTING_SERVER_LAST_STATUS_UP, up)
+        editor.apply()
+    }
+
+    fun loadLastStatus(): Boolean {
+        return prefs.getBoolean(SETTING_SERVER_LAST_STATUS_UP, false)
+    }
+
     companion object {
         private const val SERVER_IP_KEY = "server_ip_key"
         private const val SERVER_PORT_KEY = "server_port_key"
         private const val SERVER_PROTOCOL_KEY = "server_protocol_key"
         private const val DEVICE_TYPE = "device_type"
         private const val DEFAULT_SERVER_IP_KEY = "192.168.11.179"
-
-        // private static final String DEFAULT_SERVER_IP_KEY = "192.168.0.14";
-        // private static final String DEFAULT_SERVER_IP_KEY = "192.168.1.5";
         private const val DEFAULT_PORT = 8881
         private const val DEFAULT_PROTOCOL = "http://"
 
@@ -117,7 +128,9 @@ class SharedPrefData @Inject constructor(var prefs: SharedPreferences) {
         private const val SETTING_SIM_VISIBILITY = "setting_sim_visibility"
         private const val SETTING_WEARABLE_VISIBILITY = "setting_wearable_visibility"
         private const val SETTING_EMBEDDED_VISIBILITY = "setting_embedded_visibility"
+        private const val SETTING_SERVER_LAST_STATUS_UP = "setting_server_last_status_up"
+        private const val SETTING_IS_PERSO = "setting_is_perso"
 
-        enum class Visibility constructor(val text: String) { ENABLE("enable"), DISABLE("disable"), HIDE("hide")}
+        enum class Visibility constructor(val text: String) { ENABLE("enable"), DISABLE("disable"), HIDE("hide") }
     }
 }

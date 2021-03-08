@@ -1,36 +1,36 @@
-/*
- * Copyright (c) 2020 Calypso Networks Association https://www.calypsonet-asso.org/
+/********************************************************************************
+ * Copyright (c) 2021 Calypso Networks Association https://www.calypsonet-asso.org/
  *
- * See the NOTICE file(s) distributed with this work for additional information
- * regarding copyright ownership.
+ * See the NOTICE file(s) distributed with this work for additional information regarding copyright
+ * ownership.
  *
- * This program and the accompanying materials are made available under the terms of the
- * Eclipse Public License 2.0 which is available at http://www.eclipse.org/legal/epl-2.0
+ * This program and the accompanying materials are made available under the terms of the Eclipse
+ * Public License 2.0 which is available at http://www.eclipse.org/legal/epl-2.0
  *
  * SPDX-License-Identifier: EPL-2.0
- */
+ ********************************************************************************/
 package org.eclipse.keyple.demo.remote.ui
 
 import android.content.Intent
 import android.os.Bundle
-import dagger.android.support.DaggerAppCompatActivity
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import kotlinx.android.synthetic.main.activity_checkout.expiryValue
 import kotlinx.android.synthetic.main.activity_checkout.selectionLabel
 import kotlinx.android.synthetic.main.activity_checkout.selectionPrice
 import kotlinx.android.synthetic.main.activity_checkout.validateBtn
+import org.cna.keyple.demo.sale.data.model.type.PriorityCode
 import org.eclipse.keyple.demo.remote.R
 
-class CheckoutActivity : DaggerAppCompatActivity() {
+class CheckoutActivity : AbstractDemoActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_checkout)
 
-        val ticketNumberCount: Int = intent.getIntExtra(TICKETS_NUMBER, 0)
-        val seasonPass: Boolean = intent.getBooleanExtra(SEASON_PASS, false)
+        val selectedTicketPriorityCode = PriorityCode.valueOf(intent.getByteExtra(SelectTicketsActivity.SELECTED_TICKET_PRIORITY_CODE, PriorityCode.MULTI_TRIP_TICKET.code))
+        val ticketNumberCount: Int = intent.getIntExtra(SelectTicketsActivity.TICKETS_NUMBER, 0)
 
-        if(seasonPass){
+        if (selectedTicketPriorityCode == PriorityCode.SEASON_PASS) {
             selectionLabel.text =
                 getString(R.string.season_pass_title)
             selectionPrice.text = getString(R.string.ticket_price, 20)
@@ -45,17 +45,13 @@ class CheckoutActivity : DaggerAppCompatActivity() {
         }
         validateBtn.setOnClickListener {
             val intent = Intent(this, PaymentValidatedActivity::class.java)
-            intent.putExtra(TICKETS_NUMBER, ticketNumberCount)
+            intent.putExtras(getIntent())
             startActivity(intent)
+            this@CheckoutActivity.finish()
         }
 
         val now = Calendar.getInstance().time
         val sdf = SimpleDateFormat("MM/yy")
         expiryValue.text = sdf.format(now)
-    }
-
-    companion object {
-        const val TICKETS_NUMBER = "ticketsNumber"
-        const val SEASON_PASS = "seasonPass"
     }
 }

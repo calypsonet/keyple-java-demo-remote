@@ -1,14 +1,14 @@
-/*
- * Copyright (c) 2020 Calypso Networks Association https://www.calypsonet-asso.org/
+/********************************************************************************
+ * Copyright (c) 2021 Calypso Networks Association https://www.calypsonet-asso.org/
  *
- * See the NOTICE file(s) distributed with this work for additional information
- * regarding copyright ownership.
+ * See the NOTICE file(s) distributed with this work for additional information regarding copyright
+ * ownership.
  *
- * This program and the accompanying materials are made available under the terms of the
- * Eclipse Public License 2.0 which is available at http://www.eclipse.org/legal/epl-2.0
+ * This program and the accompanying materials are made available under the terms of the Eclipse
+ * Public License 2.0 which is available at http://www.eclipse.org/legal/epl-2.0
  *
  * SPDX-License-Identifier: EPL-2.0
- */
+ ********************************************************************************/
 package org.eclipse.keyple.demo.remote.ui
 
 import android.content.Intent
@@ -16,7 +16,6 @@ import android.media.MediaPlayer
 import android.os.Bundle
 import android.view.View
 import com.airbnb.lottie.LottieDrawable
-import dagger.android.support.DaggerAppCompatActivity
 import java.util.Timer
 import java.util.TimerTask
 import kotlinx.android.synthetic.main.activity_charge_result.animation
@@ -26,10 +25,10 @@ import kotlinx.android.synthetic.main.activity_charge_result.cancelBtn
 import kotlinx.android.synthetic.main.activity_charge_result.mainBackground
 import kotlinx.android.synthetic.main.activity_charge_result.tryBtn
 import kotlinx.android.synthetic.main.toolbar.toolbarLogo
-import org.eclipse.keyple.demo.remote.data.model.Status
 import org.eclipse.keyple.demo.remote.R
+import org.eclipse.keyple.demo.remote.data.model.Status
 
-class ChargeResultActivity : DaggerAppCompatActivity() {
+class ChargeResultActivity : AbstractDemoActivity() {
     private val timer = Timer()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -43,6 +42,9 @@ class ChargeResultActivity : DaggerAppCompatActivity() {
         cancelBtn.setOnClickListener {
             val intent = Intent(this, HomeActivity::class.java)
             startActivity(intent)
+        }
+
+        if (intent.getBooleanExtra(IS_PERSONNALIZATION_RESULT, false)) {
         }
 
         when (status) {
@@ -60,11 +62,18 @@ class ChargeResultActivity : DaggerAppCompatActivity() {
                 bigText.setText(R.string.charging_success_label)
                 bigText.visibility = View.VISIBLE
                 btnLayout.visibility = View.INVISIBLE
+
+                if (intent.getBooleanExtra(IS_PERSONNALIZATION_RESULT, false)) {
+                    bigText.setText(R.string.perso_success_label)
+                } else {
+                    bigText.setText(R.string.charging_success_label)
+                }
+
                 val intent = Intent(this, HomeActivity::class.java)
                 timer.schedule(object : TimerTask() {
                     override fun run() {
                         runOnUiThread {
-                            startActivity(intent)
+                            this@ChargeResultActivity.finish()
                         }
                     }
                 }, RETURN_DELAY_MS.toLong())
@@ -74,7 +83,12 @@ class ChargeResultActivity : DaggerAppCompatActivity() {
                 animation.setAnimation("error_white.json")
                 animation.repeatCount = 0
                 animation.playAnimation()
-                bigText.setText(R.string.transaction_cancelled_label)
+
+                if (intent.getBooleanExtra(IS_PERSONNALIZATION_RESULT, false)) {
+                    bigText.setText(R.string.perso_failed_label)
+                } else {
+                    bigText.setText(R.string.transaction_cancelled_label)
+                }
                 bigText.visibility = View.VISIBLE
                 btnLayout.visibility = View.VISIBLE
             }
@@ -91,8 +105,9 @@ class ChargeResultActivity : DaggerAppCompatActivity() {
     }
 
     companion object {
-        private const val RETURN_DELAY_MS = 10000
+        private const val RETURN_DELAY_MS = 5000
         const val TICKETS_NUMBER = "ticketsNumber"
         const val STATUS = "status"
+        const val IS_PERSONNALIZATION_RESULT = "isPersonnalizationResult"
     }
 }

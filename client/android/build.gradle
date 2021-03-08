@@ -1,28 +1,24 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
+apply plugin: "com.diffplug.gradle.spotless"
 
 buildscript {
-    ext.kotlin_version = '1.3.71'
+    ext.kotlin_version = '1.4.20'
 
     repositories {
         google()
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.6.3'
+        classpath 'com.android.tools.build:gradle:4.1.1'
         classpath "com.diffplug.spotless:spotless-plugin-gradle:3.27.1"
         classpath "org.jetbrains.dokka:dokka-gradle-plugin:0.10.0"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath "com.diffplug.spotless:spotless-plugin-gradle:3.27.1"
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
     }
 }
-
-//needed by keyple-example
-plugins {
-    id "com.diffplug.gradle.spotless" version "3.14.0"
-}
-
 
 allprojects {
     group 'org.eclipse.keyple'
@@ -38,18 +34,38 @@ allprojects {
 }
 
 spotless {
-    java {
-        target "app/src/**/*.java"
-        licenseHeaderFile '.build/spotless.license.txt'
-        importOrder 'java', 'javax', 'org', 'com', 'com.diffplug', ''
-        removeUnusedImports()
-        eclipse().configFile '.build/spotless.eclipseformat.xml'
+    kotlin {
+        target "**/*.kt"
+        ktlint()
+        trimTrailingWhitespace()
+        indentWithSpaces()
+        endWithNewline()
+
+        // also supports license headers
+        licenseHeader '/********************************************************************************\n' +
+                ' * Copyright (c) $YEAR Calypso Networks Association https://www.calypsonet-asso.org/\n' +
+                ' *\n' +
+                ' * See the NOTICE file(s) distributed with this work for additional information regarding copyright\n' +
+                ' * ownership.\n' +
+                ' *\n' +
+                ' * This program and the accompanying materials are made available under the terms of the Eclipse\n' +
+                ' * Public License 2.0 which is available at http://www.eclipse.org/legal/epl-2.0\n' +
+                ' *\n' +
+                ' * SPDX-License-Identifier: EPL-2.0\n' +
+                ' ********************************************************************************/'
     }
 
     format 'misc', {
-        target 'app/**/*.java', 'app/**/*.gradle', 'app/**/*.yml', 'app/**/*.md'
-
+        target '**/*.gradle', '**/*.md', '**/.gitignore'
         indentWithSpaces()
+        trimTrailingWhitespace()
+        endWithNewline()
+    }
+
+    format 'xml', {
+        target '**/*.xml'
+        indentWithSpaces()
+        trimTrailingWhitespace()
         endWithNewline()
     }
 }
@@ -61,9 +77,9 @@ ext {
     compileSdkVersion = 29
 
     // App dependencies
-    appcompat_version = '1.1.0'
-    core_ktx_version = '1.2.0'
-    coroutines_version = '1.3.3'
+    appcompat_version = '1.2.0'
+    core_ktx_version = '1.3.2'
+    coroutines_version = '1.3.7'
     android_material_version = '1.1.0'
     constraintlayout_version = '1.1.3'
 
@@ -79,5 +95,5 @@ ext {
     dexmakerVersion = '2.2.0'
     androidTestSupportVersion = '1.0.2'
     espressoVersion = '3.0.2'
-    mockitoVersion = '2.13.0'
+    mockitoVersion = '2.23.4'
 }

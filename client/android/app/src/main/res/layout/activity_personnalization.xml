@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:background="@drawable/ic_keyple_background_2">
+
+    <include
+        layout="@layout/toolbar"
+        android:id="@+id/appBarLayout" />
+
+    <TextView
+        android:id="@+id/homeDescription"
+        android:layout_width="@dimen/home_text_width"
+        android:layout_height="wrap_content"
+        android:text="@string/splash_title"
+        style="@style/mediumRegularBlue"
+        android:gravity="center"
+        app:layout_constraintTop_toBottomOf="@id/appBarLayout"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline_top"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.25" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline_bottom"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.70" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline_left"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.15" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline_right"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.85" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline_anim_left"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.3"/>
+
+    <com.airbnb.lottie.LottieAnimationView
+        android:id="@+id/cardAnimation"
+        android:layout_width="@dimen/reading_animation_size"
+        android:layout_height="0dp"
+        app:lottie_fileName="anim_card_scan.json"
+        app:lottie_loop="true"
+        app:layout_constraintDimensionRatio="1:1"
+        app:layout_constraintStart_toStartOf="@id/guideline_anim_left"
+        app:layout_constraintTop_toTopOf="@id/guideline_top"
+        app:layout_constraintBottom_toTopOf="@id/presentTxt" />
+
+    <com.airbnb.lottie.LottieAnimationView
+        android:id="@+id/loadingAnimation"
+        android:layout_width="@dimen/reading_animation_size"
+        android:layout_height="0dp"
+        app:lottie_fileName="loading_anim.json"
+        app:lottie_loop="true"
+        android:visibility="invisible"
+        app:layout_constraintDimensionRatio="1:1"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/guideline_top"
+        app:layout_constraintBottom_toTopOf="@id/presentTxt"/>
+
+    <TextView
+        android:id="@+id/presentTxt"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="@string/present_card_personnalisation"
+        android:gravity="center"
+        style="@style/bigBoldBlue"
+        app:layout_constraintTop_toBottomOf="@id/loadingAnimation"
+        app:layout_constraintLeft_toLeftOf="@id/guideline_left"
+        app:layout_constraintRight_toRightOf="@id/guideline_right"
+        app:layout_constraintBottom_toBottomOf="@id/guideline_bottom"/>
+
+    <ImageView
+        android:id="@+id/eclipseLogo"
+        android:layout_width="@dimen/eclipse_logo_width"
+        android:layout_height="@dimen/eclipse_logo_height"
+        android:src="@drawable/ic_logo_eclipse"
+        android:scaleType="center"
+        android:background="@android:color/transparent"
+        android:contentDescription="@string/eclipse_foundation"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginBottom="@dimen/home_element_margin" />
+</androidx.constraintlayout.widget.ConstraintLayout>

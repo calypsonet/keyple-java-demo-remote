@@ -1,36 +1,30 @@
-/*
- * Copyright (c) 2020 Calypso Networks Association https://www.calypsonet-asso.org/
+/********************************************************************************
+ * Copyright (c) 2021 Calypso Networks Association https://www.calypsonet-asso.org/
  *
- * See the NOTICE file(s) distributed with this work for additional information
- * regarding copyright ownership.
+ * See the NOTICE file(s) distributed with this work for additional information regarding copyright
+ * ownership.
  *
- * This program and the accompanying materials are made available under the terms of the
- * Eclipse Public License 2.0 which is available at http://www.eclipse.org/legal/epl-2.0
+ * This program and the accompanying materials are made available under the terms of the Eclipse
+ * Public License 2.0 which is available at http://www.eclipse.org/legal/epl-2.0
  *
  * SPDX-License-Identifier: EPL-2.0
- */
-
+ ********************************************************************************/
 package org.eclipse.keyple.demo.remote.ui
 
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.core.content.ContextCompat
-import dagger.android.support.DaggerAppCompatActivity
-import javax.inject.Inject
 import kotlinx.android.synthetic.main.activity_home.contactlessCardBtn
 import kotlinx.android.synthetic.main.activity_home.embeddedElemBtn
 import kotlinx.android.synthetic.main.activity_home.simCardBtn
 import kotlinx.android.synthetic.main.activity_home.wearableBtn
-import kotlinx.android.synthetic.main.toolbar.menuBtn
+import kotlinx.android.synthetic.main.toolbar.*
 import org.eclipse.keyple.demo.remote.R
 import org.eclipse.keyple.demo.remote.data.SharedPrefData
 import org.eclipse.keyple.demo.remote.data.model.DeviceEnum
 
-class HomeActivity : DaggerAppCompatActivity() {
-    @Inject
-    lateinit var prefData: SharedPrefData
-
+class HomeActivity : AbstractDemoActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_home)
@@ -41,7 +35,7 @@ class HomeActivity : DaggerAppCompatActivity() {
         }
     }
 
-    override fun onResume(){
+    override fun onResume() {
         super.onResume()
 
         setupBtn(contactlessCardBtn, prefData.loadContactlessConfigurationVisibility(), DeviceEnum.CONTACTLESS_CARD)
@@ -50,10 +44,15 @@ class HomeActivity : DaggerAppCompatActivity() {
         setupBtn(embeddedElemBtn, prefData.loadEmbeddedConfigurationVisibility(), DeviceEnum.EMBEDDED)
     }
 
-    private fun setupBtn(btn: View, visibility: SharedPrefData.Companion.Visibility, type: DeviceEnum){
+    private fun setupBtn(btn: View, visibility: SharedPrefData.Companion.Visibility, type: DeviceEnum) {
         btn.setOnClickListener {
             prefData.saveDeviceType(type.toString())
-            startActivity(Intent(this, CardReaderActivity::class.java))
+            if (intent.getBooleanExtra(CHOOSE_DEVICE_FOR_PERSO, false)) {
+                intent.putExtras(intent)
+                startActivity(Intent(this, PersonnalizationActivity::class.java))
+                this.finish()
+            } else
+                startActivity(Intent(this, CardReaderActivity::class.java))
         }
 
         when (visibility) {
@@ -73,5 +72,9 @@ class HomeActivity : DaggerAppCompatActivity() {
                 btn.visibility = View.GONE
             }
         }
+    }
+
+    companion object {
+        val CHOOSE_DEVICE_FOR_PERSO = "CHOOSE_DEVICE_FOR_PERSO"
     }
 }

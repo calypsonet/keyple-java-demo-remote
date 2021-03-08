@@ -92,33 +92,6 @@
         app:layout_constraintRight_toRightOf="@id/guideline_right"
         app:layout_constraintBottom_toBottomOf="@id/guideline_bottom"/>
 
-    <Button
-        android:id="@+id/caseEmpty"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/device_empty"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/caseInvalid"
-        app:layout_constraintTop_toBottomOf="@id/guideline_bottom"/>
-
-    <Button
-        android:id="@+id/caseInvalid"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/device_invalid"
-        app:layout_constraintStart_toEndOf="@id/caseEmpty"
-        app:layout_constraintEnd_toStartOf="@id/caseValid"
-        app:layout_constraintTop_toBottomOf="@id/guideline_bottom" />
-
-    <Button
-        android:id="@+id/caseValid"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/device_with_tickets"
-        app:layout_constraintStart_toEndOf="@id/caseInvalid"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/guideline_bottom" />
-
     <ImageView
         android:id="@+id/eclipseLogo"
         android:layout_width="@dimen/eclipse_logo_width"

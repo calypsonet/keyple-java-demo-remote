@@ -25,7 +25,7 @@
         android:id="@+id/server_ip_edit"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="@={viewModel.serverIp}"
+        android:text=""
         android:singleLine="true"
         android:gravity="end"
         style="@style/buy_text_info_medium"
@@ -59,9 +59,10 @@
         app:layout_constraintBottom_toBottomOf="@id/port_line"/>
 
     <EditText
+        android:id="@+id/server_port_edit"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="@={@={`` + viewModel.serverPort}}"
+        android:text=""
         android:inputType="number"
         android:singleLine="true"
         android:gravity="end"
@@ -96,9 +97,10 @@
         app:layout_constraintBottom_toBottomOf="@id/protocol_line"/>
 
     <EditText
+        android:id="@+id/server_protocol_edit"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="@={viewModel.serverProtocol}"
+        android:text=""
         android:singleLine="true"
         android:gravity="end"
         style="@style/buy_text_info_medium"
@@ -134,6 +136,7 @@
          />
 
     <TextView
+        android:id="@+id/ping_result_text"
         android:layout_width="0dp"
         android:layout_height="0dp"
         style="@style/buy_text_info_reg_small"
@@ -145,6 +148,7 @@
         app:layout_constraintBottom_toTopOf="@id/restart"/>
 
     <ProgressBar
+        android:id="@+id/ping_progress_bar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:visibility="invisible"

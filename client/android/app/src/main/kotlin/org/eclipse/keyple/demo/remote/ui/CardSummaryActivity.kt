@@ -1,14 +1,14 @@
-/*
- * Copyright (c) 2020 Calypso Networks Association https://www.calypsonet-asso.org/
+/********************************************************************************
+ * Copyright (c) 2021 Calypso Networks Association https://www.calypsonet-asso.org/
  *
- * See the NOTICE file(s) distributed with this work for additional information
- * regarding copyright ownership.
+ * See the NOTICE file(s) distributed with this work for additional information regarding copyright
+ * ownership.
  *
- * This program and the accompanying materials are made available under the terms of the
- * Eclipse Public License 2.0 which is available at http://www.eclipse.org/legal/epl-2.0
+ * This program and the accompanying materials are made available under the terms of the Eclipse
+ * Public License 2.0 which is available at http://www.eclipse.org/legal/epl-2.0
  *
  * SPDX-License-Identifier: EPL-2.0
- */
+ ********************************************************************************/
 package org.eclipse.keyple.demo.remote.ui
 
 import android.content.Intent
@@ -16,8 +16,6 @@ import android.media.MediaPlayer
 import android.os.Bundle
 import android.view.View
 import androidx.recyclerview.widget.LinearLayoutManager
-import dagger.android.support.DaggerAppCompatActivity
-import javax.inject.Inject
 import kotlinx.android.synthetic.main.activity_card_summary.animation
 import kotlinx.android.synthetic.main.activity_card_summary.bigText
 import kotlinx.android.synthetic.main.activity_card_summary.buyBtn
@@ -29,14 +27,11 @@ import kotlinx.android.synthetic.main.activity_card_summary.titlesList
 import org.eclipse.keyple.demo.remote.R
 import org.eclipse.keyple.demo.remote.adapters.TitlesRecyclerAdapter
 import org.eclipse.keyple.demo.remote.adapters.ValidationsRecyclerAdapter
-import org.eclipse.keyple.demo.remote.data.SharedPrefData
 import org.eclipse.keyple.demo.remote.data.model.CardReaderResponse
 import org.eclipse.keyple.demo.remote.data.model.Status
 import org.eclipse.keyple.demo.remote.setDivider
 
-class CardSummaryActivity : DaggerAppCompatActivity() {
-    @Inject
-    lateinit var prefData: SharedPrefData
+class CardSummaryActivity : AbstractDemoActivity() {
 
     private lateinit var validationLinearLayoutManager: LinearLayoutManager
     private lateinit var titleLinearLayoutManager: LinearLayoutManager
@@ -47,7 +42,7 @@ class CardSummaryActivity : DaggerAppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_card_summary)
 
-        val cardContent: CardReaderResponse = intent.getParcelableExtra(CARD_CONTENT)
+        val cardContent: CardReaderResponse = intent.getParcelableExtra(AbstractCardActivity.CARD_CONTENT)!!
 
         validationLinearLayoutManager = LinearLayoutManager(this)
         lastValidationList.layoutManager = validationLinearLayoutManager
@@ -58,7 +53,6 @@ class CardSummaryActivity : DaggerAppCompatActivity() {
         validationsAdapter = ValidationsRecyclerAdapter(cardContent.lastValidationsList)
         lastValidationList.adapter = validationsAdapter
         lastValidationList.setDivider(R.drawable.recycler_view_divider)
-
 
         titlesAdapter = TitlesRecyclerAdapter(cardContent.titlesList)
         titlesList.adapter = titlesAdapter
@@ -117,12 +111,11 @@ class CardSummaryActivity : DaggerAppCompatActivity() {
         mp.start()
         buyBtn.setOnClickListener {
             val intent = Intent(this, SelectTicketsActivity::class.java)
+            getIntent().getStringExtra(AbstractCardActivity.CARD_APPLICATION_NUMBER)?.let {
+                intent.putExtra(AbstractCardActivity.CARD_APPLICATION_NUMBER, it)
+            }
             startActivity(intent)
+            this@CardSummaryActivity.finish()
         }
-    }
-
-    companion object {
-        private val TAG: String = CardSummaryActivity::class.java.simpleName
-        const val CARD_CONTENT = "cardContent"
     }
 }

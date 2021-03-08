@@ -1,19 +1,18 @@
-/*
- * Copyright (c) 2020 Calypso Networks Association https://www.calypsonet-asso.org/
+/********************************************************************************
+ * Copyright (c) 2021 Calypso Networks Association https://www.calypsonet-asso.org/
  *
- * See the NOTICE file(s) distributed with this work for additional information
- * regarding copyright ownership.
+ * See the NOTICE file(s) distributed with this work for additional information regarding copyright
+ * ownership.
  *
- * This program and the accompanying materials are made available under the terms of the
- * Eclipse Public License 2.0 which is available at http://www.eclipse.org/legal/epl-2.0
+ * This program and the accompanying materials are made available under the terms of the Eclipse
+ * Public License 2.0 which is available at http://www.eclipse.org/legal/epl-2.0
  *
  * SPDX-License-Identifier: EPL-2.0
- */
+ ********************************************************************************/
 package org.eclipse.keyple.demo.remote.ui
 
 import android.content.Intent
 import android.os.Bundle
-import dagger.android.support.DaggerAppCompatActivity
 import kotlinx.android.synthetic.main.activity_select_tickets.seasonPassBtn
 import kotlinx.android.synthetic.main.activity_select_tickets.seasonPassPrice
 import kotlinx.android.synthetic.main.activity_select_tickets.ticket1Btn
@@ -28,9 +27,10 @@ import kotlinx.android.synthetic.main.activity_select_tickets.ticket3Price
 import kotlinx.android.synthetic.main.activity_select_tickets.ticket4Btn
 import kotlinx.android.synthetic.main.activity_select_tickets.ticket4Label
 import kotlinx.android.synthetic.main.activity_select_tickets.ticket4Price
+import org.cna.keyple.demo.sale.data.model.type.PriorityCode
 import org.eclipse.keyple.demo.remote.R
 
-class SelectTicketsActivity : DaggerAppCompatActivity() {
+class SelectTicketsActivity : AbstractDemoActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_select_tickets)
@@ -46,30 +46,38 @@ class SelectTicketsActivity : DaggerAppCompatActivity() {
         seasonPassPrice.text = getString(R.string.ticket_price, 20)
 
         ticket1Btn.setOnClickListener {
-            val intent = Intent(this, CheckoutActivity::class.java)
-            intent.putExtra(CheckoutActivity.TICKETS_NUMBER, 1)
-            startActivity(intent)
+            startCheckoutActivity(PriorityCode.MULTI_TRIP_TICKET, 1)
         }
         ticket2Btn.setOnClickListener {
-            val intent = Intent(this, CheckoutActivity::class.java)
-            intent.putExtra(CheckoutActivity.TICKETS_NUMBER, 2)
-            startActivity(intent)
+            startCheckoutActivity(PriorityCode.MULTI_TRIP_TICKET, 2)
         }
         ticket3Btn.setOnClickListener {
-            val intent = Intent(this, CheckoutActivity::class.java)
-            intent.putExtra(CheckoutActivity.TICKETS_NUMBER, 3)
-            startActivity(intent)
+            startCheckoutActivity(PriorityCode.MULTI_TRIP_TICKET, 3)
         }
         ticket4Btn.setOnClickListener {
-            val intent = Intent(this, CheckoutActivity::class.java)
-            intent.putExtra(CheckoutActivity.TICKETS_NUMBER, 4)
-            startActivity(intent)
+            startCheckoutActivity(PriorityCode.MULTI_TRIP_TICKET, 4)
         }
 
         seasonPassBtn.setOnClickListener {
-            val intent = Intent(this, CheckoutActivity::class.java)
-            intent.putExtra(CheckoutActivity.SEASON_PASS, true)
-            startActivity(intent)
+            startCheckoutActivity(PriorityCode.SEASON_PASS)
         }
+    }
+
+    private fun startCheckoutActivity(priorityCode: PriorityCode, ticketNumber: Int? = null) {
+        val intent = Intent(this, CheckoutActivity::class.java)
+        intent.putExtra(SELECTED_TICKET_PRIORITY_CODE, priorityCode.code)
+        if (ticketNumber != null) {
+            intent.putExtra(TICKETS_NUMBER, ticketNumber)
+        }
+        getIntent().getStringExtra(AbstractCardActivity.CARD_APPLICATION_NUMBER)?.let {
+            intent.putExtra(AbstractCardActivity.CARD_APPLICATION_NUMBER, it)
+        }
+        startActivity(intent)
+        this@SelectTicketsActivity.finish()
+    }
+
+    companion object {
+        const val SELECTED_TICKET_PRIORITY_CODE = "SELECTED_TICKET_PRIORITY_CODE"
+        const val TICKETS_NUMBER = "TICKETS_NUMBER"
     }
 }

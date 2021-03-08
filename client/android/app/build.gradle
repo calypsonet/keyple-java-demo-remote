@@ -25,7 +25,7 @@ android {
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode versionMajor * 1000000 + versionMinor * 10000 + versionPatch * 100 + versionBeta
         versionName "${versionMajor}.${versionMinor}.${versionPatch}"
-        testInstrumentationRunner "org.cna.keyple.demo.sale.android.nfc.slave.util.TestRunner"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
 
@@ -34,9 +34,9 @@ android {
         if (properties.containsKey("path_to_se_registered_keystore")) {
             release {
                 storeFile file(properties["path_to_se_registered_keystore"])
-                keyAlias 'keyplewizway'
-                keyPassword 'keyplewizway'
-                storePassword 'keyplewizway'
+                storePassword properties["store_password"]
+                keyAlias properties["key_alias"]
+                keyPassword properties["key_password"]
             }
         }
     }
@@ -76,9 +76,17 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
 
+    kotlinOptions {
+        jvmTarget = JavaVersion.VERSION_1_8.toString()
+    }
+
     sourceSets {
         main.java.srcDirs += 'src/main/kotlin'
+        test.java.srcDirs += 'src/test/kotlin'
+        androidTest.java.srcDirs += 'src/androidTest/kotlin'
     }
+
+    testOptions.unitTests.includeAndroidResources = true
 
     /* fixes espresso conflict with supportAnnotation and androidSupport new versions */
     configurations.all {
@@ -125,30 +133,17 @@ dependencies {
     // Keyple Java Component
     implementation group: 'org.eclipse.keyple', name: 'keyple-java-core', version: keyple_version
     implementation group: 'org.eclipse.keyple', name: 'keyple-java-calypso', version: keyple_version
-    implementation group: 'org.eclipse.keyple', name: 'keyple-java-plugin-remotese', version: keyple_version
+    implementation group: 'org.eclipse.keyple', name: 'keyple-java-distributed-local', version: keyple_version
+    implementation group: 'org.eclipse.keyple', name: 'keyple-java-distributed-remote', version: keyple_version
     implementation(group: 'org.eclipse.keyple', name: 'keyple-android-plugin-nfc', version: keyple_version)
+    implementation(group: 'org.eclipse.keyple', name: 'keyple-android-plugin-omapi', version: keyple_version)
 
-//    // example for remotese
-//    implementation (project(path: ":calypso:example-calypso-remotese")){
-//        exclude group: 'org.slf4j'
-//    }
-
-    /*
-     * Add wizway plugin
-     */
-//    implementation (project(path: ':keyple-plugin-android-wizway')){
-//        exclude group: 'org.slf4j'
-//    }
-
-//    implementation project(':nfcLib-1.1.12-release')
+    implementation project(":common")
 
     //keyple logging
     implementation group: 'org.slf4j', name: 'slf4j-api', version: '1.7.25'
     implementation 'com.jakewharton.timber:timber:4.7.1'
     implementation 'com.arcao:slf4j-timber:3.1@aar' //SLF4J binding for Timber
-//    implementation ('com.github.tony19:logback-android:1.1.1-12'){
-//        exclude group: 'org.slf4j'
-//    }
 
     // RxJava
     implementation "io.reactivex.rxjava2:rxjava:$rxjavaVersion"
@@ -160,12 +155,9 @@ dependencies {
     implementation "com.squareup.retrofit2:converter-scalars:$retrofitVersion"
     implementation "com.squareup.retrofit2:adapter-rxjava2:$retrofitVersion"
     implementation 'com.squareup.okhttp3:logging-interceptor:3.9.1'
-    implementation 'com.google.code.gson:gson:2.8.5'
+    implementation 'com.google.code.gson:gson:2.8.6'
 
     implementation "org.java-websocket:Java-WebSocket:1.3.9"
-
-    implementation "com.squareup.retrofit2:retrofit:2.4.0"
-    implementation "com.squareup.retrofit2:converter-gson:2.4.0"
 
     // Android Architecture components dependencies
     implementation "androidx.lifecycle:lifecycle-runtime:$lifecycle_version"
@@ -177,8 +169,15 @@ dependencies {
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutines_version"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutines_version"
 
+    //WorkManager
+    implementation "androidx.work:work-runtime-ktx:2.5.0"
+    implementation "org.greenrobot:eventbus:3.2.0" //to easily handle server status change
+
+
     //Multidex
     implementation 'com.android.support:multidex:1.0.3'
+
+    implementation 'joda-time:joda-time:2.10.9'
 
     // Dagger dependencies
     kapt "com.google.dagger:dagger-compiler:$daggerVersion"
@@ -194,12 +193,19 @@ dependencies {
     implementation 'com.airbnb.android:lottie:3.4.4'
 
     // Testing
-    testImplementation 'junit:junit:4.12'
-    testImplementation "org.mockito:mockito-core:$mockitoVersion"
+    testImplementation 'junit:junit:4.13.1'
+    testImplementation 'org.robolectric:robolectric:4.4'
+    testImplementation "io.mockk:mockk:1.10.0"
+    testImplementation 'androidx.test:core-ktx:1.3.0'
+    testImplementation 'androidx.test.ext:junit-ktx:1.1.2'
     testImplementation 'androidx.arch.core:core-testing:2.1.0'
+    testImplementation 'androidx.test.ext:junit:1.1.2'
+    testImplementation 'androidx.test:rules:1.3.0'
+    testImplementation 'androidx.test.espresso:espresso-core:3.3.0'
+    testImplementation 'androidx.test.espresso:espresso-intents:3.1.0'
     androidTestImplementation 'androidx.arch.core:core-testing:2.1.0'
     androidTestImplementation "com.linkedin.dexmaker:dexmaker-mockito:$dexmakerVersion"
-    androidTestImplementation 'androidx.test.ext:junit:1.1.1'
-    androidTestImplementation 'androidx.test:rules:1.1.1'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.0'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.2'
+    androidTestImplementation 'androidx.test:rules:1.3.0'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
 }

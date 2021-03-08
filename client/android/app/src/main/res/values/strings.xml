@@ -14,6 +14,8 @@
     <string name="no_valid_label">No title</string>
     <string name="no_valid_desc">Please load a title</string>
     <string name="error_label">An error occurred</string>
+    <string name="perso_success_label">Card personalized</string>
+    <string name="perso_failed_label">Personalization failed</string>
 
     <string name="contactless_card">Contactless support</string>
     <string name="sim_card">SIM card</string>
@@ -45,6 +47,9 @@
 
     <string name="present_card">Please present the contactless support to load</string>
 
+    <string name="present_card_personnalisation">Please present a contactless support to personnalize</string>
+    <string name="perso_in_progress">Personnalizing in progress</string>
+
     <string name="season_pass_title">Monthly Season Pass</string>
     <string name="ticket_price">%d,00 €</string>
     <plurals name="x_tickets">
@@ -56,6 +61,7 @@
     <string name="action_settings">Settings</string>
     <string name="server_setting">Server</string>
     <string name="configuration_setting">Configuration</string>
+    <string name="personnalization_setting">Personalization</string>
 
     <string name="server_ip">Server IP</string>
     <string name="server_port">Server Port</string>
@@ -66,6 +72,9 @@
     <string name="enable">Enable</string>
     <string name="disable">Disable</string>
     <string name="hide">Hide</string>
+
+    <string name="ping_success">Ping Success</string>
+    <string name="ping_failed">Ping failed</string>
 
     <!-- CardContent screen -->
     <string name="content_title">Content</string>
