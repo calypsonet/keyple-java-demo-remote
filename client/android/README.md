@@ -1,6 +1,37 @@
 # Keyple Java Demo Remote - Android Client's repository
 
-This source code belongs to the Android client of Java demo remote.  
+This is the repository for the 'Eclipse Keyple' Android Remote Client control application.
+
+It implements simultaneously multiple plugins for handling mutiple multiple readers of the device :
+
+* [NFC Reader](https://github.com/calypsonet/keyple-android-plugin-nfc/)
+* [Sim card reader](https://github.com/calypsonet/keyple-android-plugin-omapi/)
+* [eSE (powered by Wizway)](https://github.com/calypsonet/keyple-android-plugin-wizway/)
+
+## Screens
+
+- SplashScreen (SplashScreenActivity) Setup Screen
+- Home (HomeActivity): Display a menu allowing to chose the Card reader to user.
+    - 'Contactless support': uses native Android NFC reader and is available for any android smartphone.
+    - 'SIM Card': uses native Android Sim card reader and is available for any android smartphone. (Work in progress)
+    - 'Embedded Secure Element': Uses Wizway Solution to access to eSE. (Work in progress)     
+- Settings (SettingsMenuActivity)
+    - Server (ServerSettingsActivity): Settings for server connexion.
+    - Configuration (ConfigurationSettingsActivity): Activate/Deactivate each reader availability.
+    - Personalization (PersonalizationActivity): Reset a card (clean contracts).
+- Card Reader (CardReaderActivity): Will try to read Card using selected card reader
+    - Initialize Keyple plugin regarding selected Reader.
+    - Connect to remote server
+    - With remote server connected to a SAM, proceed to a secured reading of card content.
+- Card Summary (CardSummaryActivity): Will present the read content of the Card.
+    - Card content can be one way tickets or season pass.
+- Select Tickets (Select Tickets Activity): The remote server will returns a list of available tickets to buy for this Card. This list presented in this view.
+- Checkout (CheckoutActivity): This screen siumulate a payment done with a credit card
+- Charge (ChargeActivity): This screen presents the process of loading the build ticket.
+    - Block loading if card has been swapped
+    - Initialize Keyple plugin regarding selected Reader.
+    - Connect to remote server
+    - With remote server connected to a SAM, proceed to a Card writing.
 
 ## Features
 Associated with a running instance of the server application within the same git repository, 
@@ -11,18 +42,6 @@ This application demonstrates:
 * Reseting a ticketing application (clear titles, only for demo purpose)
 
 A reader with a SAM connected to device running the server is, for now, mandatory.
-
-## Keyple plugins
-To interact with applets, this demo relies on following Android's Keyple plugins:
-
-* 'keyple-android-plugin-nfc': Used when 'Contactless support' is chosen at demo's launch. This plugin uses native Android
-NFC reader's library and is available for any android smartphone.
-
-* 'keyple-android-plugin-omapi': Used when 'SIM Card' is chosen at demo's launch. This plugin uses native Android
-OMAPI reader's library and is available for any android smartphone.
-
-* (Work in progress) 'keyple-android-plugin-wizway': Used when 'Embedded Secure Element' is chosen at demo's launch. 
-This plugin uses Wizway platform to provide access to the eSE.
 
 ## Calypso applications
 This demo evolves to provide wide Calypso applet support. For now this demo can support:
@@ -53,25 +72,3 @@ Keyple Wizway Plugin and the Android application can benefit from Keyple toolkit
 
 Please refer to [Keyple Android Wizway Plugin](https://github.com/calypsonet/keyple-android-plugin-wizway/) and
 [Wizway Solutions](https://www.wizwaysolutions.com) for more informations.
-
-## Screens
-
-- SplashScreen (SplashScreenActivity) Setup Screen
-- Home (HomeActivity): Display a menu allowing to chose the Card reader to user.
-- Settings (SettingsMenuActivity)
-    - Server (ServerSettingsActivity): Settings for server connexion.
-    - Configuration (ConfigurationSettingsActivity): Activate/Deactivate each reader availability.
-    - Personalization (PersonalizationActivity): Reset a card (clean contracts).
-- Card Reader (CardReaderActivity): Will try to read Card using selected card reader
-    - Initialize Keyple plugin regarding selected Reader.
-    - Connect to remote server
-    - With remote server connected to a SAM, proceed to a secured reading of card content.
-- Card Summary (CardSummaryActivity): Will present the read content of the Card.
-    - Card content can be one way tickets or season pass.
-- Select Tickets (Select Tickets Activity): The remote server will returns a list of available tickets to buy for this Card. This list presented in this view.
-- Checkout (CheckoutActivity): This screen siumulate a payment done with a credit card
-- Charge (ChargeActivity): This screen presents the process of loading the build ticket.
-    - Block loading if card has been swapped
-    - Initialize Keyple plugin regarding selected Reader.
-    - Connect to remote server
-    - With remote server connected to a SAM, proceed to a Card writing.
