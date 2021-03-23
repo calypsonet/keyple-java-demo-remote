@@ -39,7 +39,7 @@ This application demonstrates:
 
 * Secured reading of a ticketing application
 * Loading of titles in a ticketing application
-* Reseting a ticketing application (clear titles, only for demo purpose)
+* Resets a ticketing application (clear titles, only for demo purpose)
 
 A reader with a SAM connected to device running the server is, for now, mandatory.
 
@@ -72,3 +72,14 @@ Keyple Wizway Plugin and the Android application can benefit from Keyple toolkit
 
 Please refer to [Keyple Android Wizway Plugin](https://github.com/calypsonet/keyple-android-plugin-wizway/) and
 [Wizway Solutions](https://www.wizwaysolutions.com) for more informations.
+
+## Ticketing implementation
+
+Ticketing procedures and session's management are handled by server side.
+
+This client provides remote PO readers to the server
+
+All Ticketing process is server side executed (reading/loading/personalization)
+
+## Keyple Manager
+
