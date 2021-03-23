@@ -59,7 +59,7 @@ public class TransactionLogStore {
      */
     public TransactionLog waitForNew() {
         try {
-            return transactionLogQueue.poll(2, TimeUnit.SECONDS);
+            return transactionLogQueue.poll(10, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
             return null;
         }
