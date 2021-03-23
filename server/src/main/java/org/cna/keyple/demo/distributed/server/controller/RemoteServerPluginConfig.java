@@ -25,6 +25,7 @@ import org.eclipse.keyple.core.card.selection.CardResource;
 import org.eclipse.keyple.core.service.SmartCardService;
 import org.eclipse.keyple.core.service.event.ObservablePlugin;
 import org.eclipse.keyple.core.service.event.PluginEvent;
+import org.eclipse.keyple.core.service.exception.KeypleException;
 import org.eclipse.keyple.distributed.RemotePluginServer;
 import org.eclipse.keyple.distributed.RemoteReaderServer;
 import org.eclipse.keyple.distributed.impl.RemotePluginServerFactory;
@@ -132,42 +133,61 @@ public class RemoteServerPluginConfig implements ObservablePlugin.PluginObserver
    * @return a nullable reference to the user output data to transmit to the client.
    */
   private AnalyzeContractsOutput analyzeContracts(RemoteReaderServer reader) {
-
     /*
      * Retrieves the compatibleContractInput and initial calypsoPO specified by the client when executing the remote service.
      */
     CalypsoPo calypsoPo = reader.getInitialCardContent(CalypsoPo.class);
     AnalyzeContractsInput input = reader.getUserInputData(AnalyzeContractsInput.class);
 
-    CardResource<CalypsoSam> samResource = samResourceService.getSamResourceManager().allocateSamResource(
-            SamResourceManager.AllocationMode.BLOCKING,
-            new SamIdentifier.SamIdentifierBuilder().serialNumber("").samRevision(SamRevision.AUTO).groupReference(".*").build());
+    CardResource<CalypsoSam> samResource = null;
 
-    CalypsoPoController calypsoPoController = CalypsoPoController.newBuilder()
-            .withCalypsoPo(calypsoPo)
-            .withReader(reader)
-            .withSamResource(samResource)
-            .build();
+    try{
 
-    CalypsoPoContent calypsoPoContent = calypsoPoController.readCard();
+      samResource = samResourceService.getSamResourceManager().allocateSamResource(
+              SamResourceManager.AllocationMode.BLOCKING,
+              new SamIdentifier.SamIdentifierBuilder().serialNumber("").samRevision(SamRevision.AUTO).groupReference(".*").build());
 
-    logger.info(calypsoPoContent.toString());
+      CalypsoPoController calypsoPoController = CalypsoPoController.newBuilder()
+              .withCalypsoPo(calypsoPo)
+              .withReader(reader)
+              .withSamResource(samResource)
+              .build();
 
-    List<ContractStructureDto> validContracts = calypsoPoContent.listValidContracts();
 
-    //store transaction information
+      CalypsoPoContent calypsoPoContent = calypsoPoController.readCard();
+
+      logger.info(calypsoPoContent.toString());
+
+      List<ContractStructureDto> validContracts = calypsoPoContent.listValidContracts();
+
+      //store transaction information
+
     transactionLogStore.store(new TransactionLog()
-            .setPlugin(input.getPluginType()==null?"n/a":input.getPluginType())
+            .setPlugin(input.getPluginType()==null?"Android NFC":input.getPluginType())
             .setStatus("SUCCESS")
             .setType("SECURED READ")
-            .setPoSn(calypsoPo.getApplicationSerialNumber())
-    );
-
-    samResourceService.getSamResourceManager().freeSamResource(samResource);
+            .setPoSn(calypsoPo.getApplicationSerialNumber()));
 
     return new AnalyzeContractsOutput()
             .setValidContracts(validContracts)
             .setStatusCode(0);
+
+    }catch(KeypleException e){
+      logger.error("An error occurred while analyzing the contracts : {}", e.getMessage());
+      transactionLogStore.store(new TransactionLog()
+              .setPlugin(input.getPluginType()==null?"Android NFC":input.getPluginType())
+              .setStatus("FAIL")
+              .setType("SECURED READ")
+              .setPoSn(calypsoPo.getApplicationSerialNumber()));
+
+      return new AnalyzeContractsOutput()
+              .setStatusCode(1);
+    }finally {
+      //deallocate samResource
+      if(samResource!=null){
+        samResourceService.getSamResourceManager().freeSamResource(samResource);
+      }
+    }
   }
 
   /**
@@ -182,45 +202,68 @@ public class RemoteServerPluginConfig implements ObservablePlugin.PluginObserver
      */
     WriteContractInput writeContractInput = reader.getUserInputData(WriteContractInput.class);
     CalypsoPo calypsoPo = reader.getInitialCardContent(CalypsoPo.class);
+    CardResource<CalypsoSam> samResource = null;
 
-    CardResource<CalypsoSam> samResource = samResourceService.getSamResourceManager().allocateSamResource(
-            SamResourceManager.AllocationMode.BLOCKING,
-            new SamIdentifier.SamIdentifierBuilder().serialNumber("").samRevision(SamRevision.AUTO).groupReference(".*").build());
+    try{
+       samResource = samResourceService.getSamResourceManager().allocateSamResource(
+              SamResourceManager.AllocationMode.BLOCKING,
+              new SamIdentifier.SamIdentifierBuilder().serialNumber("").samRevision(SamRevision.AUTO).groupReference(".*").build());
 
-    CalypsoPoController calypsoPoController = CalypsoPoController.newBuilder()
-            .withCalypsoPo(calypsoPo)
-            .withReader(reader)
-            .withSamResource(samResource)
-            .build();
+      CalypsoPoController calypsoPoController = CalypsoPoController.newBuilder()
+              .withCalypsoPo(calypsoPo)
+              .withReader(reader)
+              .withSamResource(samResource)
+              .build();
 
-    //re-read card
-    CalypsoPoContent calypsoPoContent = calypsoPoController.readCard();
+      //re-read card
+      CalypsoPoContent calypsoPoContent = calypsoPoController.readCard();
 
-    if(calypsoPoContent ==null){
-      //is card has not been read previously, throw error
-      return new WriteContractOutput().setStatusCode(3);
+      if(calypsoPoContent ==null){
+        //is card has not been read previously, throw error
+        return new WriteContractOutput().setStatusCode(3);
+      }
+
+      logger.info(calypsoPoContent.toString());
+
+      calypsoPoContent.insertNewContract(
+              writeContractInput.getContractTariff(),
+              writeContractInput.getTicketToLoad());
+
+      int statusCode = calypsoPoController.writeCard(calypsoPoContent);
+
+      samResourceService.getSamResourceManager().freeSamResource(samResource);
+
+      //store transaction information
+      transactionLogStore.store(new TransactionLog()
+              //TODO : change default name
+              .setPlugin(writeContractInput.getPluginType()==null?"Android NFC":writeContractInput.getPluginType())
+              .setStatus("SUCCESS")
+              .setType("RELOAD")
+              .setPoSn(calypsoPo.getApplicationSerialNumber())
+              .setContractLoaded(writeContractInput.getContractTariff().toString().replace("_", " ")+
+                      ((writeContractInput.getTicketToLoad()!=null && writeContractInput.getTicketToLoad()!=0)? " : " +writeContractInput.getTicketToLoad():""))
+      );
+
+      return new WriteContractOutput().setStatusCode(statusCode);
+
+    }catch(KeypleException e){
+      logger.error("An error occurred while writing the contract : {}", e.getMessage());
+      //store transaction information
+      transactionLogStore.store(new TransactionLog()
+              //TODO : change default name
+              .setPlugin(writeContractInput.getPluginType()==null?"Android NFC":writeContractInput.getPluginType())
+              .setStatus("FAIL")
+              .setType("RELOAD")
+              .setPoSn(calypsoPo.getApplicationSerialNumber())
+              .setContractLoaded("")
+      );
+      return new WriteContractOutput().setStatusCode(1);
+    }finally {
+      //deallocate samResource
+      if(samResource!=null){
+        samResourceService.getSamResourceManager().freeSamResource(samResource);
+      }
     }
-
-    logger.info(calypsoPoContent.toString());
-
-    calypsoPoContent.insertNewContract(
-            writeContractInput.getContractTariff(),
-            writeContractInput.getTicketToLoad());
-
-    int statusCode = calypsoPoController.writeCard(calypsoPoContent);
-
-    samResourceService.getSamResourceManager().freeSamResource(samResource);
-
-    //store transaction information
-    transactionLogStore.store(new TransactionLog()
-            .setPlugin(writeContractInput.getPluginType()==null?"n/a":writeContractInput.getPluginType())
-            .setStatus("SUCCESS")
-            .setType("RELOAD")
-            .setPoSn(calypsoPo.getApplicationSerialNumber())
-            .setContractLoaded(writeContractInput.getContractTariff()+ " " + writeContractInput.getTicketToLoad())
-    );
-
-    return new WriteContractOutput().setStatusCode(statusCode);
   }
 
   /**
@@ -232,22 +275,41 @@ public class RemoteServerPluginConfig implements ObservablePlugin.PluginObserver
 
     CalypsoPo calypsoPo = reader.getInitialCardContent(CalypsoPo.class);
 
-    CardResource<CalypsoSam> samResource = samResourceService.getSamResourceManager().allocateSamResource(
-            SamResourceManager.AllocationMode.BLOCKING,
-            new SamIdentifier.SamIdentifierBuilder().serialNumber("").samRevision(SamRevision.AUTO).groupReference(".*").build());
+    CardResource<CalypsoSam> samResource = null;
 
-    CalypsoPoController calypsoPoController = CalypsoPoController.newBuilder()
-            .withCalypsoPo(calypsoPo)
-            .withReader(reader)
-            .withSamResource(samResource)
-            .build();
+    try{
+      samResource = samResourceService.getSamResourceManager().allocateSamResource(
+              SamResourceManager.AllocationMode.BLOCKING,
+              new SamIdentifier.SamIdentifierBuilder().serialNumber("").samRevision(SamRevision.AUTO).groupReference(".*").build());
 
-    //init card
-    calypsoPoController.initCard();
+      CalypsoPoController calypsoPoController = CalypsoPoController.newBuilder()
+              .withCalypsoPo(calypsoPo)
+              .withReader(reader)
+              .withSamResource(samResource)
+              .build();
 
-    samResourceService.getSamResourceManager().freeSamResource(samResource);
+      //init card
+      calypsoPoController.initCard();
 
-    return new CardIssuanceOutput().setStatusCode(0);
+
+      transactionLogStore.store(new TransactionLog()
+              .setPlugin("Android NFC")
+              .setStatus("SUCCESS")
+              .setType("ISSUANCE")
+              .setPoSn(calypsoPo.getApplicationSerialNumber()));
+
+      return new CardIssuanceOutput().setStatusCode(0);
+    }catch (KeypleException e){
+
+      transactionLogStore.store(new TransactionLog()
+              .setPlugin("Android NFC")
+              .setStatus("FAIL")
+              .setType("ISSUANCE")
+              .setPoSn(calypsoPo.getApplicationSerialNumber()));
+      return new CardIssuanceOutput().setStatusCode(1);
+    }finally {
+      samResourceService.getSamResourceManager().freeSamResource(samResource);
+    }
   }
 
 }

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect }  from 'react';
 import PropTypes from 'prop-types';
 import { createMuiTheme, ThemeProvider, withStyles } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -6,19 +6,21 @@ import Hidden from '@material-ui/core/Hidden';
 import Typography from '@material-ui/core/Typography';
 import Link from '@material-ui/core/Link';
 import Navigator from './Navigator';
-import Content from './Content';
+//import Content from './Content';
 import Header from './Header';
 import background from '../img/background.png';
 import logo_eclipse_fondation from '../img/logo_eclipse_fondation_black.png';
 import './App.css';
 import useInterval from './util/useInterval'
+import CollapsibleTable from './CollapsibleTable';
 
 function Copyright() {
   return (
-    <Typography variant="body2" color="textSecondary" align="center">
-      <div >
+  <div>
+    <div align="center">
         <img src={logo_eclipse_fondation} width="100px" id="logo-eclipse-fondation"/>
       </div>
+    <Typography variant="body2" color="textSecondary" align="center">
       {'Eclipse Keyple © '}
       <Link color="inherit">
         Calypso Network Association
@@ -26,6 +28,7 @@ function Copyright() {
       {new Date().getFullYear()}
       {'.'}
     </Typography>
+  </div>
   );
 }
 
@@ -183,6 +186,46 @@ function Paperbase(props) {
   const [mobileOpen, setMobileOpen] = React.useState(false);
   const [isSamReady, setIsSamReady] = React.useState(true);
   const [isServerReady, setIsServerReady] = React.useState(true);
+  const [rows, setRows] = useState([]);
+  const [lastRowId, setLastRowId] = useState();
+
+  // subscribe to transaction notification
+  useEffect(() => {
+    subscribeTransactionWait(
+      (transaction)=>{
+        setLastRowId(transaction.id);
+        console.log("Adding a new row to transaction table: " + JSON.stringify(transaction))
+        setRows(rows =>[
+          transaction,
+          ...rows
+        ])
+      })
+  }, [""]);
+
+  useInterval(() => {
+    pollIsSamReady()
+  }, 3000);
+
+  const subscribeTransactionWait = async function (handleResponse) {
+    try {
+      let response = await fetch("/dashboard/transaction/wait");
+      if (response.status === 204) {
+        console.log("Received a No-Content response from server: " + response.status)
+        await subscribeTransactionWait(handleResponse);
+      } else if (response.status === 200) {
+        // Received a new transaction
+        let message = await response.text();
+        handleResponse(JSON.parse(message));
+        await subscribeTransactionWait(handleResponse);
+      } else {
+        //unexpected error connect again
+        throw "Exception, response status : "+ response.status
+      }
+    }catch(e){
+      console.log("Error while connection to server : "+ e)
+      setTimeout(subscribeTransactionWait(handleResponse), 5000)
+    }
+  }
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
@@ -215,9 +258,6 @@ function Paperbase(props) {
       });
   }
 
-  useInterval(() => {
-    pollIsSamReady()
-  }, 3000);
 
   return (
     <ThemeProvider theme={theme}>
@@ -239,7 +279,7 @@ function Paperbase(props) {
         <div className={classes.app}>
           <Header onDrawerToggle={handleDrawerToggle} isSamReady={isSamReady} isServerReady={isServerReady}/>
           <main className={classes.main}>
-            <Content />
+            <CollapsibleTable rows={rows} lastRowId={lastRowId} />
           </main>
           <footer className={classes.footer}>
             <Copyright />

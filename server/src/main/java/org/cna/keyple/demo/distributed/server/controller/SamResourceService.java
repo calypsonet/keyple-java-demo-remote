@@ -24,7 +24,10 @@ public class SamResourceService {
 
     public static String SAM_READER_FILTER = ".*(Cherry TC|SCM Microsystems|Identive|HID|Generic).*";
 
+    //sam resource manager handles ressource allocation
     SamResourceManager samResourceManager;
+
+    //Plugin to use for the SAM
     Plugin plugin;
 
     /**
@@ -33,7 +36,7 @@ public class SamResourceService {
      * @throws KeypleReaderNotFoundException is no Sam Pcsc reader is found
      */
     public SamResourceService(){
-        plugin = getSamPlugin();
+        plugin = initSamPlugin();
         PcscReaderUtils.initSamReader(SAM_READER_FILTER);
         samResourceManager = SamResourceManagerFactory.instantiate(plugin, SAM_READER_FILTER);
     }
@@ -55,8 +58,7 @@ public class SamResourceService {
         return PcscReaderUtils.getReaderByPattern(SAM_READER_FILTER);
     }
 
-    private Plugin getSamPlugin(){
-
+    private Plugin initSamPlugin(){
         SmartCardService smartCardService = SmartCardService.getInstance();
 
         //return plugin is already register

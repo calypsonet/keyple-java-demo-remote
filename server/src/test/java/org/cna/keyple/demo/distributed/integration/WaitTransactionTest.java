@@ -14,11 +14,12 @@ import org.junit.jupiter.api.Test;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Random;
 
 @QuarkusTest
 public class WaitTransactionTest {
 
-    private static String LOCAL_SERVICE_NAME = "TransactionLogTest";
+    private static String LOCAL_SERVICE_NAME = "TransactionTest";
     private static String PO_READER_FILTER = ".*(ASK|ACS).*";
 
     static EndpointClient endpointClient;
@@ -26,7 +27,7 @@ public class WaitTransactionTest {
     static {
         try {
             endpointClient = RestClientBuilder.newBuilder()
-                    .baseUrl(new URL("http://0.0.0.0:8081/"))
+                    .baseUrl(new URL("http://0.0.0.0:8080/"))
                     .build(EndpointClient.class);
         } catch (MalformedURLException e) {
             e.printStackTrace();
@@ -58,8 +59,12 @@ public class WaitTransactionTest {
             public void update(ReaderEvent event) {
                 switch (event.getEventType()){
                     case CARD_INSERTED:
-
-                        TransactionLogTest.load_tickets(poReader);
+                        //Randomly load tickets or season pass
+                        if(new Random().nextInt()%2==0){
+                            TransactionTest.reset_load_tickets(poReader);
+                        }else{
+                            TransactionTest.load_season_pass(poReader);
+                        }
                         break;
                 }
             }

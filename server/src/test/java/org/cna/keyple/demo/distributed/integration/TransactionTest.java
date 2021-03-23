@@ -30,9 +30,9 @@ import static org.junit.jupiter.api.Assertions.*;
  * Test real transactions. Requires a Sam and Po pcsc reader along with a SAM and PO smartcard.
  */
 @QuarkusTest
-public class TransactionLogTest {
+public class TransactionTest {
 
-    private static final String LOCAL_SERVICE_NAME = "TransactionLogTest";
+    private static final String LOCAL_SERVICE_NAME = "TransactionTest";
     private static final String PO_READER_FILTER = ".*(ASK|ACS).*";
     private static final Integer TICKETS_TO_LOAD = 10;
 
@@ -44,7 +44,7 @@ public class TransactionLogTest {
     static {
         try {
             endpointClient = RestClientBuilder.newBuilder()
-                    .baseUrl(new URL("http://0.0.0.0:8081/"))
+                    .baseUrl(new URL("http://0.0.0.0:8080/"))
                     .build(EndpointClient.class);
         } catch (MalformedURLException e) {
             e.printStackTrace();
@@ -75,7 +75,7 @@ public class TransactionLogTest {
 
     @Test
     public void execute_successful_load_tickets() {
-        load_tickets(poReader);
+        reset_load_tickets(poReader);
     }
 
     @Test
@@ -90,7 +90,7 @@ public class TransactionLogTest {
      * Reset card, read valid contract and write a MULTI TRIP CONTRACT with X titles
      * @param poReader
      */
-    static void load_tickets(Reader poReader){
+    static void reset_load_tickets(Reader poReader){
         /* Select PO */
         CalypsoPo calypsoPo = CalypsoUtils.selectPo(poReader);
 
@@ -126,24 +126,7 @@ public class TransactionLogTest {
          * User select the title....
          */
 
-        WriteContractInput writeContractInput =
-                new WriteContractInput()
-                        .setContractTariff(PriorityCode.MULTI_TRIP_TICKET)
-                        .setTicketToLoad(TICKETS_TO_LOAD)
-                        .setPluginType("Android NFC");
-
-
-        /* Execute Remote Service : Write Contract */
-        WriteContractOutput writeTitleOutput = localService.executeRemoteService(
-                RemoteServiceParameters
-                        .builder("WRITE_CONTRACT", poReader)
-                        .withInitialCardContent(calypsoPo)
-                        .withUserInputData(writeContractInput)
-                        .build(),
-                WriteContractOutput.class);
-
-        assertNotNull(writeTitleOutput);
-        assertEquals(0, writeTitleOutput.getStatusCode());
+        load_tickets(poReader);
 
         /* Execute Remote Service : Check that MULTI-TRIP is written in the card */
         AnalyzeContractsOutput passExpected = localService.executeRemoteService(
@@ -163,5 +146,79 @@ public class TransactionLogTest {
 
     }
 
+    /**
+     * write a MULTI TRIP CONTRACT with X titles
+     * @param poReader
+     */
+    static void load_tickets(Reader poReader){
+        /* Select PO */
+        CalypsoPo calypsoPo = CalypsoUtils.selectPo(poReader);
+
+        LocalServiceClient localService = LocalServiceClientUtils.getLocalService(LOCAL_SERVICE_NAME);
+
+        AnalyzeContractsInput compatibleContractInput =
+                new AnalyzeContractsInput().setPluginType("Android NFC");
+
+        /*
+         * User select the title....
+         */
+
+        WriteContractInput writeContractInput =
+                new WriteContractInput()
+                        .setContractTariff(PriorityCode.MULTI_TRIP_TICKET)
+                        .setTicketToLoad(TICKETS_TO_LOAD)
+                        .setPluginType("Android NFC");
+
+
+        /* Execute Remote Service : Write Contract */
+        WriteContractOutput writeTitleOutput = localService.executeRemoteService(
+                RemoteServiceParameters
+                        .builder("WRITE_CONTRACT", poReader)
+                        .withInitialCardContent(calypsoPo)
+                        .withUserInputData(writeContractInput)
+                        .build(),
+                WriteContractOutput.class);
+
+        assertNotNull(writeTitleOutput);
+        assertEquals(0, writeTitleOutput.getStatusCode());
+
+    }
+
+    /**
+     * write a SEASON PASS
+     * @param poReader
+     */
+    static void load_season_pass(Reader poReader){
+        /* Select PO */
+        CalypsoPo calypsoPo = CalypsoUtils.selectPo(poReader);
+
+        LocalServiceClient localService = LocalServiceClientUtils.getLocalService(LOCAL_SERVICE_NAME);
+
+        AnalyzeContractsInput compatibleContractInput =
+                new AnalyzeContractsInput().setPluginType("Android NFC");
+
+        /*
+         * User select the title....
+         */
+
+        WriteContractInput writeContractInput =
+                new WriteContractInput()
+                        .setContractTariff(PriorityCode.SEASON_PASS)
+                        .setPluginType("Android NFC");
+
+
+        /* Execute Remote Service : Write Contract */
+        WriteContractOutput writeTitleOutput = localService.executeRemoteService(
+                RemoteServiceParameters
+                        .builder("WRITE_CONTRACT", poReader)
+                        .withInitialCardContent(calypsoPo)
+                        .withUserInputData(writeContractInput)
+                        .build(),
+                WriteContractOutput.class);
+
+        assertNotNull(writeTitleOutput);
+        assertEquals(0, writeTitleOutput.getStatusCode());
+
+    }
 
 }
