@@ -33,7 +33,7 @@ public class EndpointSam {
 
   /**
    * Check if sam is present
-   * @return status:200 if sam is found, status:404 else
+   * @return {isSamReady:true} is sam is ready
    */
   @GET
   @Produces(MediaType.APPLICATION_JSON)

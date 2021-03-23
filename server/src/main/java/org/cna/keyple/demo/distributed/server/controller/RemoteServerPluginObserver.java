@@ -33,7 +33,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
 import java.util.List;
 import java.util.concurrent.Executors;
 
@@ -50,17 +49,15 @@ import java.util.concurrent.Executors;
  */
 @ApplicationScoped
 @Startup
-public class RemoteServerPluginConfig implements ObservablePlugin.PluginObserver {
+public class RemoteServerPluginObserver implements ObservablePlugin.PluginObserver {
 
-  private static final Logger logger = LoggerFactory.getLogger(RemoteServerPluginConfig.class);
+  private static final Logger logger = LoggerFactory.getLogger(RemoteServerPluginObserver.class);
 
-  @Inject
   TransactionLogStore transactionLogStore;
-
   SamResourceService samResourceService;
 
-  public RemoteServerPluginConfig(SamResourceService samResourceService){
-    logger.info("Init RemoteServerPluginConfig...");
+  public RemoteServerPluginObserver(SamResourceService samResourceService, TransactionLogStore transactionLogStore){
+    logger.info("Init RemoteServerPluginObserver...");
 
     // Init the remote plugin factory with a sync node and a remote plugin observer.
     RemotePluginServerFactory factory =
@@ -76,6 +73,7 @@ public class RemoteServerPluginConfig implements ObservablePlugin.PluginObserver
     SmartCardService.getInstance().registerPlugin(factory);
 
     this.samResourceService = samResourceService;
+    this.transactionLogStore = transactionLogStore;
   }
 
   /** {@inheritDoc} */
@@ -142,7 +140,7 @@ public class RemoteServerPluginConfig implements ObservablePlugin.PluginObserver
     CardResource<CalypsoSam> samResource = null;
 
     try{
-
+      //allocate a sam resource using the Sam Resource Manager
       samResource = samResourceService.getSamResourceManager().allocateSamResource(
               SamResourceManager.AllocationMode.BLOCKING,
               new SamIdentifier.SamIdentifierBuilder().serialNumber("").samRevision(SamRevision.AUTO).groupReference(".*").build());
@@ -160,9 +158,8 @@ public class RemoteServerPluginConfig implements ObservablePlugin.PluginObserver
 
       List<ContractStructureDto> validContracts = calypsoPoContent.listValidContracts();
 
-      //store transaction information
-
-    transactionLogStore.store(new TransactionLog()
+      //push a transaction log
+    transactionLogStore.push(new TransactionLog()
             .setPlugin(input.getPluginType()==null?"Android NFC":input.getPluginType())
             .setStatus("SUCCESS")
             .setType("SECURED READ")
@@ -174,7 +171,8 @@ public class RemoteServerPluginConfig implements ObservablePlugin.PluginObserver
 
     }catch(KeypleException e){
       logger.error("An error occurred while analyzing the contracts : {}", e.getMessage());
-      transactionLogStore.store(new TransactionLog()
+      //push a transaction log
+      transactionLogStore.push(new TransactionLog()
               .setPlugin(input.getPluginType()==null?"Android NFC":input.getPluginType())
               .setStatus("FAIL")
               .setType("SECURED READ")
@@ -205,6 +203,7 @@ public class RemoteServerPluginConfig implements ObservablePlugin.PluginObserver
     CardResource<CalypsoSam> samResource = null;
 
     try{
+      //allocate a sam resource using the Sam Resource Manager
        samResource = samResourceService.getSamResourceManager().allocateSamResource(
               SamResourceManager.AllocationMode.BLOCKING,
               new SamIdentifier.SamIdentifierBuilder().serialNumber("").samRevision(SamRevision.AUTO).groupReference(".*").build());
@@ -231,10 +230,8 @@ public class RemoteServerPluginConfig implements ObservablePlugin.PluginObserver
 
       int statusCode = calypsoPoController.writeCard(calypsoPoContent);
 
-      samResourceService.getSamResourceManager().freeSamResource(samResource);
-
-      //store transaction information
-      transactionLogStore.store(new TransactionLog()
+      //push a transaction log
+      transactionLogStore.push(new TransactionLog()
               //TODO : change default name
               .setPlugin(writeContractInput.getPluginType()==null?"Android NFC":writeContractInput.getPluginType())
               .setStatus("SUCCESS")
@@ -248,8 +245,9 @@ public class RemoteServerPluginConfig implements ObservablePlugin.PluginObserver
 
     }catch(KeypleException e){
       logger.error("An error occurred while writing the contract : {}", e.getMessage());
-      //store transaction information
-      transactionLogStore.store(new TransactionLog()
+
+      //push a transaction log
+      transactionLogStore.push(new TransactionLog()
               //TODO : change default name
               .setPlugin(writeContractInput.getPluginType()==null?"Android NFC":writeContractInput.getPluginType())
               .setStatus("FAIL")
@@ -259,8 +257,9 @@ public class RemoteServerPluginConfig implements ObservablePlugin.PluginObserver
       );
       return new WriteContractOutput().setStatusCode(1);
     }finally {
-      //deallocate samResource
+      //deallocate samResource if needed
       if(samResource!=null){
+        //release the sam resource using the Sam Resource Manager
         samResourceService.getSamResourceManager().freeSamResource(samResource);
       }
     }
@@ -278,10 +277,12 @@ public class RemoteServerPluginConfig implements ObservablePlugin.PluginObserver
     CardResource<CalypsoSam> samResource = null;
 
     try{
+      //allocate a sam resource using the Sam Resource Manager
       samResource = samResourceService.getSamResourceManager().allocateSamResource(
               SamResourceManager.AllocationMode.BLOCKING,
               new SamIdentifier.SamIdentifierBuilder().serialNumber("").samRevision(SamRevision.AUTO).groupReference(".*").build());
 
+      //Create a Calypso PO controller
       CalypsoPoController calypsoPoController = CalypsoPoController.newBuilder()
               .withCalypsoPo(calypsoPo)
               .withReader(reader)
@@ -291,8 +292,8 @@ public class RemoteServerPluginConfig implements ObservablePlugin.PluginObserver
       //init card
       calypsoPoController.initCard();
 
-
-      transactionLogStore.store(new TransactionLog()
+      //push a transaction log
+      transactionLogStore.push(new TransactionLog()
               .setPlugin("Android NFC")
               .setStatus("SUCCESS")
               .setType("ISSUANCE")
@@ -301,14 +302,18 @@ public class RemoteServerPluginConfig implements ObservablePlugin.PluginObserver
       return new CardIssuanceOutput().setStatusCode(0);
     }catch (KeypleException e){
 
-      transactionLogStore.store(new TransactionLog()
+      transactionLogStore.push(new TransactionLog()
               .setPlugin("Android NFC")
               .setStatus("FAIL")
               .setType("ISSUANCE")
               .setPoSn(calypsoPo.getApplicationSerialNumber()));
       return new CardIssuanceOutput().setStatusCode(1);
     }finally {
-      samResourceService.getSamResourceManager().freeSamResource(samResource);
+      //deallocate samResource if needed
+      if(samResource!=null){
+        //release the sam resource using the Sam Resource Manager
+        samResourceService.getSamResourceManager().freeSamResource(samResource);
+      }
     }
   }
 

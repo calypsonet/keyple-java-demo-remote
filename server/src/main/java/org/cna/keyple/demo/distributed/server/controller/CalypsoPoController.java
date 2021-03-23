@@ -17,6 +17,7 @@ import org.eclipse.keyple.calypso.transaction.CalypsoSam;
 import org.eclipse.keyple.calypso.transaction.PoTransaction;
 import org.eclipse.keyple.core.card.selection.CardResource;
 import org.eclipse.keyple.core.service.Reader;
+import org.eclipse.keyple.core.util.Assert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,6 +57,7 @@ public class CalypsoPoController {
          * @return next step of configuration
          */
         public Builder withCalypsoPo(CalypsoPo calypsoPo){
+            Assert.getInstance().notNull(calypsoPo,"calypsoPo");
             this.calypsoPo = calypsoPo;
             return this;
         }
@@ -66,6 +68,7 @@ public class CalypsoPoController {
          * @return next step of configuration
          */
         public Builder withReader(Reader poReader){
+            Assert.getInstance().notNull(poReader,"poReader");
             this.poReader = poReader;
             return this;
         }
@@ -75,6 +78,7 @@ public class CalypsoPoController {
          * @return next step of configuration
          */
         public Builder withSamResource(CardResource<CalypsoSam> samResource){
+            Assert.getInstance().notNull(samResource,"samResource");
             this.samResource = samResource;
             return this;
         }
@@ -174,12 +178,12 @@ public class CalypsoPoController {
         poTransaction.processOpening(PoTransaction.SessionSetting.AccessLevel.SESSION_LVL_LOAD);
 
         /* Update contract records */
-        if(!calypsoPoContent.getContractUpdated().isEmpty()){
+        if(!calypsoPoContent.getUpdatedContracts().isEmpty()){
             for(int i=0;i<4;i++){
 
                 ContractStructureDto contract = calypsoPoContent.getContracts().get(i);
 
-                if(calypsoPoContent.getContractUpdated().contains(contract)){
+                if(calypsoPoContent.getUpdatedContracts().contains(contract)){
                    //update contract
                     poTransaction.prepareUpdateRecord(
                             SFI_Contracts,
@@ -261,7 +265,7 @@ public class CalypsoPoController {
 
 
     /**
-     *
+     * Return a init environment structure
      * @return environment structure init
      */
     public static EnvironmentHolderStructureDto getEnvironmentInit() {

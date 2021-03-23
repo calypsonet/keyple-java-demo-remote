@@ -32,7 +32,7 @@ public class EndpointDashboard {
      * Long Polling API to get a new transaction
      * http 200 : new transaction is available
      * http 204 : timeout, please renew request
-     * @return a new transaction when it occurs
+     * @return a {@link TransactionLog} if a new log is push
      */
     @GET
     @Path("/transaction/wait")
