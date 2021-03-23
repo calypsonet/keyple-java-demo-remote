@@ -14,7 +14,7 @@ task('runDevServer',  group:'keyple'){
 
 task('runServerExecutable',  group:'keyple',type:Exec){
     workingDir 'build'
-    commandLine 'java', '-jar', 'keyple-java-demo-remote-server-1.0.0-SNAPSHOT-runner.jar'
+    commandLine 'java', '-jar', 'keyple-java-demo-remote-server-1.0.1-SNAPSHOT-runner.jar'
 }
 
 task('buildServerExecutable', group:'keyple'){
@@ -65,7 +65,7 @@ dependencies {
 }
 
 group 'org.cna.keyple.demo.remote.server'
-version '1.0.0-SNAPSHOT'
+version '1.0.1-SNAPSHOT'
 
 compileJava {
     options.encoding = 'UTF-8'
