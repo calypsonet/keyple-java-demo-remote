@@ -26,6 +26,10 @@ import org.eclipse.keyple.core.service.exception.KeypleAllocationNoReaderExcepti
 import org.eclipse.keyple.core.service.exception.KeypleReaderIOException
 import org.eclipse.keyple.core.service.exception.KeypleReaderNotFoundException
 
+/**
+ * Manager provided to encapsulate slight differences
+ * between readers provide methods to improve code readability.
+ */
 object KeypleManager {
 
     var aidEnum = AidEnum.CDLIGHT_GTML
@@ -34,14 +38,23 @@ object KeypleManager {
     // On devices with multi sim, native SIM reader can be identified by SIM1 on the device.
     private const val OMAPI_SIM_1_READER_NAME = "SIM1"
 
+    /**
+     * Register any keyple plugin
+     */
     public fun registerPlugin(factory: PluginFactory) {
         SmartCardService.getInstance().registerPlugin(factory)
     }
 
+    /**
+     * Un register any keyple plugin
+     */
     public fun unregisterPlugin(pluginName: String) {
         SmartCardService.getInstance().unregisterPlugin(pluginName)
     }
 
+    /**
+     * Retrieve a registered reader
+     */
     @Throws(KeypleAllocationNoReaderException::class)
     public fun getReader(readerName: String): Reader {
         var reader: Reader? = null
@@ -59,6 +72,9 @@ object KeypleManager {
         return reader ?: throw KeypleReaderNotFoundException("$readerName not found")
     }
 
+    /**
+     * Retrieve a registered observable reader.
+     */
     @Throws(KeypleAllocationNoReaderException::class)
     public fun getObservableReader(readerName: String): ObservableReader {
         val reader = getReader(readerName)
