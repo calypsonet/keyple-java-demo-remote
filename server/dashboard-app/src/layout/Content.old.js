@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { DataGrid } from '@material-ui/data-grid';
 import Paper from '@material-ui/core/Paper';
 import { withStyles } from '@material-ui/core/styles';
-
+import CollapsibleTable from './CollapsibleTable';
 
 const styles = (theme) => ({
   paper: {
@@ -13,10 +13,10 @@ const styles = (theme) => ({
   }
 });
 
-
+/*
 const columns = [
- /*
-  */
+ /!*
+  *!/
  { field: 'id', headerName: 'ID', width: 70     ,sortable: false
   },
   { field: 'startedAt', headerName: 'Started at', width: 140},
@@ -35,8 +35,8 @@ const columns = [
     description: 'This column has a value getter and is not sortable.',
     sortable: false,
     width: 200,
-    /*valueGetter: (params) =>
-    `${params.getValue('type') || ''} ${params.getValue('poSn') || ''}`,*/
+    /!*valueGetter: (params) =>
+    `${params.getValue('type') || ''} ${params.getValue('poSn') || ''}`,*!/
   },
 ];
 
@@ -44,7 +44,7 @@ const columns = [
  { id: '23c4',startedAt : '23/02/21 10:32',deviceId:'x23d45F',plugin:'Android NFC', type: 'RELOAD',    poSn: '00000000C16B293E', status :'SUCCESS', contractLoaded: 'SEASON_PASS' },
  { id: '998a',startedAt : '23/02/21 10:31',deviceId:'x23d45F',plugin:'Android OMAPI', type: 'ISSUANCE',  poSn: '00000000C16B293E', status :'ERROR',contractLoaded: ''},
  { id: 'b2b2',startedAt : '23/02/21 10:31',deviceId:'x23d45F',plugin:'Android Wizway', type: 'RELOAD', poSn: '00000000C16B293E ', status :'SUCCESS',contractLoaded: 'MULTI-TRIP : 10' }
- ];
+ ];*/
 
 /*
 const rows_init = []
@@ -53,7 +53,7 @@ const rows_init = []
 
 function Content(props) {
   const { classes } = props;
-  const [rows, setRows] = useState(rows_init);
+  /*const [rows, setRows] = useState(rows_init);
 
   // subscribe to transaction notification
   useEffect(() => {
@@ -92,14 +92,10 @@ function Content(props) {
       setTimeout(subscribeTransactionWait, 5000)
     }
   }
-
+*/
 
   return (
-    <Paper className={classes.paper}>
-      <div style={{ height: 430, width: '100%'}}>
-        <DataGrid rows={rows} columns={columns} pageSize={8}  />
-      </div>
-    </Paper>
+    <CollapsibleTable />
   );
 }
 

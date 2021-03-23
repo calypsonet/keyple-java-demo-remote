@@ -12,3 +12,42 @@ img#logo-eclipse-fondation {
     -webkit-filter: grayscale(1); /* Google Chrome, Safari 6+ & Opera 15+ */
     filter: grayscale(1); /* Microsoft Edge and Firefox 35+ */
 }
+
+
+@-o-keyframes fadeItSuccess {
+    0%   { background-color: #FFFFFF; }
+    50%  { background-color: #5ae185; }
+    100% { background-color: #FFFFFF; }
+}
+@keyframes fadeItSuccess {
+    0%   { background-color: #FFFFFF; }
+    50%  { background-color: #5ae185; }
+    100% { background-color: #FFFFFF; }
+}
+
+@-o-keyframes fadeItError {
+    0%   { background-color: #FFFFFF; }
+    50%  { background-color: #ff004a; }
+    100% { background-color: #FFFFFF; }
+}
+@keyframes fadeItError {
+    0%   { background-color: #FFFFFF; }
+    50%  { background-color: #ff004a; }
+    100% { background-color: #FFFFFF; }
+}
+
+.newLineAnimatedSuccess{
+    background-image:none !important;
+    -o-animation: fadeItSuccess 2s ease-in-out;
+    animation: fadeItSuccess 2s ease-in-out;
+    border-bottom: unset;
+
+}
+
+.newLineAnimatedError {
+    background-image:none !important;
+    -o-animation: fadeItError 2s ease-in-out;
+    animation: fadeItError 2s ease-in-out;
+    border-bottom: unset;
+
+}
