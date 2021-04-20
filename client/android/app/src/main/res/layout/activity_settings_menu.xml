@@ -30,12 +30,21 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/appBarLayout"/>
 
+    <TextView
+        android:id="@+id/versionName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/version"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/settingTitle"/>
+
     <View
         android:id="@+id/topLine"
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:background="@color/light_grey"
-        app:layout_constraintTop_toBottomOf="@id/settingTitle"
+        app:layout_constraintTop_toBottomOf="@id/versionName"
         android:layout_marginTop="@dimen/settings_line_top_padding"/>
 
     <androidx.constraintlayout.widget.ConstraintLayout
