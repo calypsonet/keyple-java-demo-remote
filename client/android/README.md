@@ -80,6 +80,3 @@ Ticketing procedures and session's management are handled by server side.
 This client provides remote PO readers to the server
 
 All Ticketing process is server side executed (reading/loading/personalization)
-
-## Keyple Manager
-
