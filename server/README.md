@@ -30,12 +30,13 @@ The application can be packaged using
 
 ```./gradlew buildServerExecutable```
 
-It produces the `keyple-java-demo-remote-server-1.0.0-SNAPSHOT-runner.jar` file in the `build` directory.
+It produces the `keyple-java-demo-remote-server-YYYY.MM-runner.jar` file in the `build` directory (where YYYY and MM are respectively the year and the month of the release)
 Be aware that it is a _über-jar_ as the dependencies are copied inside the jar along with the dashboard-app.
 
 The application is now runnable using :
 
-```java -jar build/keyple-java-demo-remote-server-1.0.0-SNAPSHOT-runner.jar```
+```java -jar build/keyple-java-demo-remote-server-YYYY.MM-runner.jar```
+(where YYYY and MM are respectively the year and the month of the release)
 
 or using the custom gradle task that runs the previous command : 
 
