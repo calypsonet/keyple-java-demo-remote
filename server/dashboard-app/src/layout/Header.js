@@ -2,21 +2,14 @@ import React, { useState, useEffect,componentDidMount }  from 'react';
 import PropTypes from 'prop-types';
 import AppBar from '@material-ui/core/AppBar';
 import Avatar from '@material-ui/core/Avatar';
-//import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
-//import HelpIcon from '@material-ui/icons/Help';
 import Hidden from '@material-ui/core/Hidden';
 import IconButton from '@material-ui/core/IconButton';
-//import Link from '@material-ui/core/Link';
 import MenuIcon from '@material-ui/icons/Menu';
-//import NotificationsIcon from '@material-ui/icons/Notifications';
-//import Tab from '@material-ui/core/Tab';
-//import Tabs from '@material-ui/core/Tabs';
 import Toolbar from '@material-ui/core/Toolbar';
-//import Tooltip from '@material-ui/core/Tooltip';
+
 import Typography from '@material-ui/core/Typography';
 import { withStyles } from '@material-ui/core/styles';
-//import logo from '../img/logo.png';
 import AlertDialog from './AlertDialog'
 const lightColor = 'rgba(255, 255, 255, 0.7)';
 
@@ -42,10 +35,14 @@ const styles = (theme) => ({
   },
 });
 
-
+/**
+ * Header Component
+ * @param props
+ * @returns {XML}
+ * @constructor
+ */
 function Header(props) {
   const { classes, onDrawerToggle,isSamReady,isServerReady } = props;
-
     return (
     <React.Fragment>
       <AlertDialog show={isServerReady && !isSamReady} title="SAM Resource is not available" text="Please ensure that the SAM is inserted into the SAM Reader"/>
@@ -67,20 +64,10 @@ function Header(props) {
             </Hidden>
             <Grid item xs />
             <Grid item>
-              {/*<Link className={classes.link} href="#" variant="body2">
-                Sam Resource is ready
-              </Link>*/}
               <Typography>
                 {props.isSamReady?"Sam Resource is ready":"Sam Resource is NOT Ready"}
               </Typography>
             </Grid>
-            {/*<Grid item>
-              <Tooltip title="Alerts • No alerts">
-                <IconButton color="inherit">
-                  <NotificationsIcon />
-                </IconButton>
-              </Tooltip>
-            </Grid>*/}
             <Grid item>
               <IconButton color="inherit" className={classes.iconButtonAvatar}>
                 <Avatar alt="My Avatar" />
@@ -99,53 +86,15 @@ function Header(props) {
         <Toolbar>
           <Grid container spacing={2} alignItems="center" >
             <Grid item>
-
-              {/*
-              <img
-                src={logo} alt="Logo" style={{
-                display:'block'}}/>
-              */}
             </Grid>
             <Grid item >
-              {/*
-              <Typography color="inherit" variant="h5" component="h1">
-                Open Source API for Smart Ticketing
-              </Typography>
-              */}
               <Typography color="inherit" variant="h5" component="h1">
                 Ticketing Transactions
               </Typography>
             </Grid>
-            {/*<Grid item>
-              <Button className={classes.button} variant="outlined" color="inherit" size="small">
-                Web setup
-              </Button>
-            </Grid>
-            <Grid item>
-              <Tooltip title="Help">
-                <IconButton color="inherit">
-                  <HelpIcon />
-                </IconButton>
-              </Tooltip>
-            </Grid>*/}
           </Grid>
         </Toolbar>
       </AppBar>
-        {/*
-      <AppBar
-        component="div"
-        className={classes.secondaryBar}
-        color="primary"
-        position="static"
-        elevation={0}
-      >
-        <Tabs value={0} textColor="inherit">
-          <Tab textColor="inherit" label="Logs" />
-          <Tab textColor="inherit" label="Full history" />
-          <Tab textColor="inherit" label="In error" />
-        </Tabs>
-      </AppBar>
-        */}
     </React.Fragment>
   );
 }

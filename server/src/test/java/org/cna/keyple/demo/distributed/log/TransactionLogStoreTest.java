@@ -22,21 +22,23 @@ public class TransactionLogStoreTest {
 
     @Test
     public void wait_for_new_transaction() {
-        storeTransactionAsync();
+        pushTransactionAsync();
         Assertions.assertEquals(t, transactionLogStore.waitForNew());
         Assertions.assertEquals(1, transactionLogStore.list().size());
 
     }
 
-
-    private void storeTransactionAsync(){
+    /**
+     * Push a transaction into the store asynchronously
+     */
+    private void pushTransactionAsync(){
         new Thread(() -> {
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            transactionLogStore.store(t);
+            transactionLogStore.push(t);
         }).start();
     }
 }

@@ -1,263 +1,127 @@
 import React, { useState, useEffect }  from 'react';
 import PropTypes from 'prop-types';
-import { createMuiTheme, ThemeProvider, withStyles } from '@material-ui/core/styles';
+import {ThemeProvider, withStyles } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Hidden from '@material-ui/core/Hidden';
-import Typography from '@material-ui/core/Typography';
-import Link from '@material-ui/core/Link';
 import Navigator from './Navigator';
-//import Content from './Content';
 import Header from './Header';
-import background from '../img/background.png';
-import logo_eclipse_fondation from '../img/logo_eclipse_fondation_black.png';
 import './App.css';
 import useInterval from './util/useInterval'
 import CollapsibleTable from './CollapsibleTable';
+import Copyright from './Copyright'
+import {styles,drawerWidth,theme} from './util/theme'
 
-function Copyright() {
-  return (
-  <div>
-    <div align="center">
-        <img src={logo_eclipse_fondation} width="100px" id="logo-eclipse-fondation"/>
-      </div>
-    <Typography variant="body2" color="textSecondary" align="center">
-      {'Eclipse Keyple © '}
-      <Link color="inherit">
-        Calypso Network Association
-      </Link>{' '}
-      {new Date().getFullYear()}
-      {'.'}
-    </Typography>
-  </div>
-  );
-}
-
-//Create base Theme with Material UI
-let theme = createMuiTheme({
-  palette: {
-    primary: {
-      //light: '#63ccff',
-      //main: '#1A87C7',
-      main: '#fff',
-      //dark: '#006db3',
-    },
-  },
-  typography: {
-    fontFamily:'Work Sans',
-    h5: {
-      fontWeight: 500,
-      fontSize: 26,
-      letterSpacing: 0.5,
-    },
-  },
-  shape: {
-    borderRadius: 8,
-  },
-  props: {
-    MuiTab: {
-      disableRipple: true,
-    },
-  },
-  mixins: {
-    toolbar: {
-      minHeight: 48,
-    },
-  },
-});
-
-//Add more style to theme
-theme = {
-  ...theme,
-  overrides: {
-    MuiDrawer: {
-      paper: {
-        //backgroundColor: '#18202c',
-        //backgroundColor: '#000000',
-        backgroundColor: '#1A87C7',
-      },
-    },
-    MuiButton: {
-      label: {
-        textTransform: 'none',
-      },
-      contained: {
-        boxShadow: 'none',
-        '&:active': {
-          boxShadow: 'none',
-        },
-      },
-    },
-    MuiTabs: {
-      root: {
-        marginLeft: theme.spacing(1),
-      },
-      indicator: {
-        height: 3,
-        borderTopLeftRadius: 3,
-        borderTopRightRadius: 3,
-        backgroundColor: theme.palette.common.white,
-      },
-    },
-    MuiTab: {
-      root: {
-        textTransform: 'none',
-        margin: '0 16px',
-        minWidth: 0,
-        padding: 0,
-        [theme.breakpoints.up('md')]: {
-          padding: 0,
-          minWidth: 0,
-        },
-      },
-    },
-    MuiIconButton: {
-      root: {
-        padding: theme.spacing(1),
-      },
-    },
-    MuiTooltip: {
-      tooltip: {
-        borderRadius: 4,
-      },
-    },
-    MuiDivider: {
-      root: {
-        //backgroundColor: '#404854',
-        backgroundColor: '#fff',
-      },
-    },
-    MuiListItemText: {
-      primary: {
-        fontWeight: theme.typography.fontWeightMedium,
-      },
-    },
-    MuiListItemIcon: {
-      root: {
-        color: 'inherit',
-        marginRight: 0,
-        '& svg': {
-          fontSize: 20,
-        },
-      },
-    },
-    MuiAvatar: {
-      root: {
-        width: 32,
-        height: 32,
-      },
-    },
-  },
-};
-
-const drawerWidth = 200;
-
-const styles = {
-  root: {
-    display: 'flex',
-    minHeight: '100vh',
-  },
-  drawer: {
-    [theme.breakpoints.up('sm')]: {
-      width: drawerWidth,
-      flexShrink: 0,
-    },
-  },
-  app: {
-    flex: 1,
-    display: 'flex',
-    flexDirection: 'column',
-  },
-  main: {
-    flex: 1,
-    padding: theme.spacing(3, 4),
-    background: '#fff',
-    backgroundImage: `url(${background})`,
-    backgroundRepeat: 'no-repeat',
-    backgroundSize: 'cover',
-},
-  footer: {
-    padding: theme.spacing(2),
-    background: '#fff'
-  },
-};
 
 function Paperbase(props) {
   const { classes } = props;
-  const [mobileOpen, setMobileOpen] = React.useState(false);
-  const [isSamReady, setIsSamReady] = React.useState(true);
-  const [isServerReady, setIsServerReady] = React.useState(true);
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [isSamReady, setIsSamReady] = useState(true);
+  const [isServerReady, setIsServerReady] = useState(true);
   const [rows, setRows] = useState([]);
   const [lastRowId, setLastRowId] = useState();
+  const [shouldPoll, setShouldPoll] = useState(1);
 
-  // subscribe to transaction notification
+  /*
+   * Use Effect Hook to long poll a new transaction
+    * useEffect will executed only once when component is mounted
+   */
+
   useEffect(() => {
-    subscribeTransactionWait(
-      (transaction)=>{
+
+    //activate transaction polling
+    function activateTransactionPoll(handleNewTransaction) {
+      fetch("/dashboard/transaction/wait")
+        .then(response => {
+          if (response.status === 204) {
+            console.log("Received a No-Content response from server: " + response.status);
+            //return null;
+          } else if (response.status === 200) {
+            // Received a new transaction
+            return response.json()
+          } else {
+            //unexpected error connect again
+            throw "Exception, response status : "+ response.status
+          }
+        })
+        .then((json)=>{
+          if(json){
+            handleNewTransaction(json);
+          }
+          console.log("Polling iteration: " + shouldPoll);
+          setShouldPoll(shouldPoll+1);//update shouldPoll value to rerun the useEffect
+        })
+        .catch(e =>{
+          console.log("Error while connection to server : "+ e)
+          setTimeout(()=>{
+            console.log("Timeout polling iteration : " + shouldPoll);
+            setShouldPoll(shouldPoll+1)//update shouldPoll value to rerun the useEffect
+          },5000);
+        })
+    }
+
+    function handleNewTransaction(transaction){
         setLastRowId(transaction.id);
-        console.log("Adding a new row to transaction table: " + JSON.stringify(transaction))
+        console.log("Adding a new row to transaction table: " + JSON.stringify(transaction));
         setRows(rows =>[
           transaction,
           ...rows
-        ])
-      })
-  }, [""]);
-
-  useInterval(() => {
-    pollIsSamReady()
-  }, 3000);
-
-  const subscribeTransactionWait = async function (handleResponse) {
-    try {
-      let response = await fetch("/dashboard/transaction/wait");
-      if (response.status === 204) {
-        console.log("Received a No-Content response from server: " + response.status)
-        await subscribeTransactionWait(handleResponse);
-      } else if (response.status === 200) {
-        // Received a new transaction
-        let message = await response.text();
-        handleResponse(JSON.parse(message));
-        await subscribeTransactionWait(handleResponse);
-      } else {
-        //unexpected error connect again
-        throw "Exception, response status : "+ response.status
-      }
-    }catch(e){
-      console.log("Error while connection to server : "+ e)
-      setTimeout(subscribeTransactionWait(handleResponse), 5000)
+        ]);
     }
-  }
+
+    //activate
+    activateTransactionPoll(handleNewTransaction);
+    },
+    //use effect when should poll value is updated
+    [shouldPoll]);
+
+  /*
+   * Use Custom Interval Hook to poll SAM and Server state
+   */
+  useInterval(() => {
+    /*
+     * Fetch the server/sam state and change server/sam status
+     */
+    function fetchIsSamReady () {
+      var requestOptions = {
+        method: 'GET'
+      };
+
+      //request SAM status
+      fetch("/sam", requestOptions)
+        .then(response => {
+          if(response.status === 200){
+            //update server state if required
+            if(!isServerReady){
+              setIsServerReady(true);
+            }
+            return response.json()
+          }else{
+            throw 'Request status : ' + response.status;
+          }
+        })
+        .then(json => {
+          console.log("Is Sam Ready : " + json.isSamReady);
+          //update sam state if required
+          if(isSamReady !== json.isSamReady){
+            setIsSamReady(json.isSamReady)
+          }
+        })
+        .catch(error =>{
+          console.log('Fetch error', error)
+          //update server state if required
+          if(isServerReady){
+            setIsServerReady(false)
+          }
+
+        });
+    }
+
+    fetchIsSamReady()
+  }, 3000);
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
   };
-
-  const pollIsSamReady = async function () {
-    var requestOptions = {
-      method: 'GET'
-    };
-
-    return fetch("/sam", requestOptions)
-      .then(response => {
-        if(response.status === 200){
-          if(!isServerReady){setIsServerReady(true);}
-          return response.json()
-        }else{
-          throw 'Request status : ' + response.status;
-        }
-      })
-      .then(json => {
-        console.log("Is Sam Ready : " + json.isSamReady);
-        if(isSamReady !== json.isSamReady){
-          setIsSamReady(json.isSamReady)
-        }
-      })
-      .catch(error =>{
-        console.log('Fetch error', error)
-        if(isServerReady){setIsServerReady(false)}
-
-      });
-  }
-
 
   return (
     <ThemeProvider theme={theme}>
