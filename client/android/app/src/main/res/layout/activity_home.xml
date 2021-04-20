@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/ic_keyple_background_2">
+
+    <include
+        layout="@layout/toolbar"
+        android:id="@+id/appBarLayout" />
+
+    <TextView
+        android:id="@+id/homeDescription"
+        android:layout_width="@dimen/home_text_width"
+        android:layout_height="wrap_content"
+        android:text="@string/splash_title"
+        style="@style/mediumRegularBlue"
+        android:gravity="center"
+        app:layout_constraintTop_toBottomOf="@id/appBarLayout"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/chooseDeviceTv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/device_selection"
+        style="@style/buy_text_info_regular"
+        android:layout_marginHorizontal="@dimen/home_horizontal_margin"
+        app:layout_constraintTop_toBottomOf="@id/homeDescription"
+        android:layout_marginTop="@dimen/home_choose_margin_top"
+        app:layout_constraintLeft_toLeftOf="parent"/>
+
+    <LinearLayout
+        android:id="@+id/contactlessCardBtn"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/home_device_btn_height"
+        android:orientation="vertical"
+        android:clickable="true"
+        android:focusable="true"
+        android:background="@drawable/white_card"
+        android:layout_marginHorizontal="@dimen/home_horizontal_margin"
+        android:elevation="@dimen/select_ticket_elevation"
+        android:layout_marginTop="@dimen/home_block_vertical_margin"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/chooseDeviceTv"
+        app:layout_constraintBottom_toTopOf="@id/simCardBtn"
+        android:gravity="center">
+
+        <ImageView
+            android:layout_width="@dimen/img_contactless_card_width"
+            android:layout_height="wrap_content"
+            android:adjustViewBounds="true"
+            android:scaleType="centerCrop"
+            android:contentDescription="@string/contactless_card"
+            android:src="@drawable/ic_contactlesscard"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/device_slct_text_top_margin"
+            android:text="@string/contactless_card"
+            style="@style/bigBoldDarkBlue" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/simCardBtn"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/home_device_btn_height"
+        android:orientation="vertical"
+        android:clickable="true"
+        android:focusable="true"
+        android:background="@drawable/white_card"
+        android:layout_marginHorizontal="@dimen/home_horizontal_margin"
+        android:elevation="@dimen/select_ticket_elevation"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/contactlessCardBtn"
+        app:layout_constraintBottom_toTopOf="@id/wearableBtn"
+        android:layout_marginTop="@dimen/home_btn_top_margin"
+        android:gravity="center">
+
+        <ImageView
+            android:layout_width="@dimen/img_sim_width"
+            android:layout_height="wrap_content"
+            android:adjustViewBounds="true"
+            android:scaleType="centerCrop"
+            android:contentDescription="@string/sim_card"
+            android:src="@drawable/ic_simcard" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/device_slct_text_top_margin"
+            android:text="@string/sim_card"
+            style="@style/bigBoldDarkBlue" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/wearableBtn"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/home_device_btn_height"
+        android:orientation="vertical"
+        android:clickable="true"
+        android:focusable="true"
+        android:background="@drawable/white_card"
+        android:layout_marginHorizontal="@dimen/home_horizontal_margin"
+        android:elevation="@dimen/select_ticket_elevation"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/simCardBtn"
+        app:layout_constraintBottom_toTopOf="@id/embeddedElemBtn"
+        android:layout_marginTop="@dimen/home_btn_top_margin"
+        android:gravity="center">
+
+        <ImageView
+            android:layout_width="@dimen/img_bracelet_width"
+            android:layout_height="wrap_content"
+            android:adjustViewBounds="true"
+            android:scaleType="centerCrop"
+            android:contentDescription="@string/wearable"
+            android:src="@drawable/ic_bracelet" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/device_slct_text_top_margin"
+            android:text="@string/wearable"
+            style="@style/bigBoldDarkBlue" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/embeddedElemBtn"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/home_device_btn_height"
+        android:orientation="vertical"
+        android:clickable="true"
+        android:focusable="true"
+        android:background="@drawable/white_card"
+        android:layout_marginHorizontal="@dimen/home_horizontal_margin"
+        android:elevation="@dimen/select_ticket_elevation"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/wearableBtn"
+        android:layout_marginTop="@dimen/home_btn_top_margin"
+        android:gravity="center">
+
+        <ImageView
+            android:layout_width="@dimen/img_embedded_width"
+            android:layout_height="wrap_content"
+            android:adjustViewBounds="true"
+            android:scaleType="centerCrop"
+            android:contentDescription="@string/embedded_secure_elem"
+            android:src="@drawable/ic_embedded" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/device_slct_text_top_margin"
+            android:text="@string/embedded_secure_elem"
+            android:gravity="center"
+            style="@style/bigBoldDarkBlue" />
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/eclipseLogo"
+        android:layout_width="@dimen/eclipse_logo_width"
+        android:layout_height="@dimen/eclipse_logo_height"
+        android:src="@drawable/ic_logo_eclipse"
+        android:scaleType="center"
+        android:background="@android:color/transparent"
+        android:contentDescription="@string/eclipse_foundation"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginBottom="@dimen/home_element_margin" />
+</androidx.constraintlayout.widget.ConstraintLayout>

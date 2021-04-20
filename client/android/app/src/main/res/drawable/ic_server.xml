@@ -1,0 +1,24 @@
+<!--
+  ~ Copyright (c) 2020 Calypso Networks Association https://www.calypsonet-asso.org/
+  ~
+  ~ See the NOTICE file(s) distributed with this work for additional information
+  ~ regarding copyright ownership.
+  ~
+  ~ This program and the accompanying materials are made available under the terms of the
+  ~ Eclipse Public License 2.0 which is available at http://www.eclipse.org/legal/epl-2.0
+  ~
+  ~ SPDX-License-Identifier: EPL-2.0
+  -->
+
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="20dp"
+    android:height="18dp"
+    android:viewportWidth="20"
+    android:viewportHeight="18">
+  <path
+      android:pathData="M18,0H2C0.897,0 0,0.897 0,2V6C0,7.103 0.897,8 2,8H18C19.103,8 20,7.103 20,6V2C20,0.897 19.103,0 18,0ZM2,6V2H18L18.002,6H2ZM18,10H2C0.897,10 0,10.897 0,12V16C0,17.103 0.897,18 2,18H18C19.103,18 20,17.103 20,16V12C20,10.897 19.103,10 18,10ZM2,16V12H18L18.002,16H2Z"
+      android:fillColor="#213B6C"/>
+  <path
+      android:pathData="M15,3H17V5H15V3ZM12,3H14V5H12V3ZM15,13H17V15H15V13ZM12,13H14V15H12V13Z"
+      android:fillColor="#213B6C"/>
+</vector>

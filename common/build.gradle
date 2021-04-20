@@ -1,0 +1,17 @@
+plugins {
+    id 'java'
+}
+
+group 'org.cna.keyple.demo.sale.data.model'
+version '2021.04'
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile group: 'org.eclipse.keyple', name: 'keyple-java-core', version: '+'
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+}

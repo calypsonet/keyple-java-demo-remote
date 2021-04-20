@@ -1,0 +1,75 @@
+<resources>
+    <dimen name="splash_title">18sp</dimen>
+    <dimen name="elevation">4dp</dimen>
+
+    <dimen name="big_text_size">20sp</dimen>
+    <dimen name="medium_text_size">18sp</dimen>
+    <dimen name="small_text_size">17.3sp</dimen>
+    <dimen name="smaller_text_size">12sp</dimen>
+    <dimen name="smallest_text_size">10sp</dimen>
+
+    <dimen name="tickets_block_space">10dp</dimen>
+    <dimen name="tickets_btn_height">90dp</dimen>
+    <dimen name="cc_padding">30dp</dimen>
+    <dimen name="cc_help_size">17dp</dimen>
+
+    <dimen name="settings_margin">15dp</dimen>
+    <dimen name="settings_edit_padding">7dp</dimen>
+
+    <dimen name="device_slct_text_top_margin">10dp</dimen>
+
+    <dimen name="select_ticket_elevation">4dp</dimen>
+    <dimen name="card_summary_desc_top_margin">20dp</dimen>
+    <dimen name="content_top_margin">20dp</dimen>
+    <dimen name="content_last_validation_vertical_margin">10dp</dimen>
+    <dimen name="card_validation_height">32dp</dimen>
+    <dimen name="card_validation_horizontal_margin">13dp</dimen>
+    <dimen name="card_validation_title_left_margin">13dp</dimen>
+
+    <dimen name="img_contactless_card_width">30dp</dimen>
+    <dimen name="img_sim_width">20dp</dimen>
+    <dimen name="img_bracelet_width">31dp</dimen>
+    <dimen name="img_embedded_width">23dp</dimen>
+
+    <dimen name="connection_status_size">12dp</dimen>
+    <dimen name="connection_status_contour">3dp</dimen>
+
+
+    <dimen name="toolbar_margin_top">10dp</dimen>
+    <dimen name="toolbar_logo_padding">12dp</dimen>
+    <dimen name="toolbar_menu_width">25dp</dimen>
+
+    <dimen name="eclipse_logo_width">163dp</dimen>
+    <dimen name="eclipse_logo_height">52dp</dimen>
+
+    <dimen name="home_element_margin">20dp</dimen>
+    <dimen name="home_btn_top_margin">10dp</dimen>
+    <dimen name="home_text_width">200dp</dimen>
+    <dimen name="home_horizontal_margin">38dp</dimen>
+    <dimen name="home_block_vertical_margin">10dp</dimen>
+    <dimen name="home_choose_margin_top">7dp</dimen>
+    <dimen name="home_device_btn_height">70dp</dimen>
+
+    <dimen name="settings_line_top_padding">72dp</dimen>
+    <dimen name="settings_btn_padding_horizontal">38dp</dimen>
+    <dimen name="settings_btn_padding_vertical">20dp</dimen>
+    <dimen name="settings_icon_size">20dp</dimen>
+    <dimen name="settings_arrow_width">12dp</dimen>
+    <dimen name="settings_btn_text_margin_left">12dp</dimen>
+    <dimen name="settings_config_top_margin">20dp</dimen>
+    <dimen name="settings_radio_size">15dp</dimen>
+    <dimen name="settings_radio_text_margin">20dp</dimen>
+    <dimen name="settings_radio_vertical_margin">15dp</dimen>
+    <dimen name="settings_back_btn_width">30dp</dimen>
+
+    <dimen name="main_btn_horizontal_margin">19dp</dimen>
+    <dimen name="main_btn_margin_bottom">20dp</dimen>
+    <dimen name="main_btn_vertical_padding">32dp</dimen>
+
+    <dimen name="card_title_item_height">90dp</dimen>
+    <dimen name="card_title_text_width">120dp</dimen>
+    <dimen name="card_title_margin_bottom">20dp</dimen>
+    <dimen name="content_title_padding">42dp</dimen>
+
+    <dimen name="reading_animation_size">150dp</dimen>
+</resources>

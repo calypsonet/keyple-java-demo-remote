@@ -1,0 +1,53 @@
+@font-face {
+    font-family: 'Work Sans';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url(../fonts/QGY_z_wNahGAdqQ43RhVcIgYT2Xz5u32K0nXBi8JoI3ZKyHaQQ.woff) format('woff');
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+img#logo-eclipse-fondation {
+    filter: gray; /* IE6-9 */
+    -webkit-filter: grayscale(1); /* Google Chrome, Safari 6+ & Opera 15+ */
+    filter: grayscale(1); /* Microsoft Edge and Firefox 35+ */
+}
+
+
+@-o-keyframes fadeItSuccess {
+    0%   { background-color: #FFFFFF; }
+    50%  { background-color: #5ae185; }
+    100% { background-color: #FFFFFF; }
+}
+@keyframes fadeItSuccess {
+    0%   { background-color: #FFFFFF; }
+    50%  { background-color: #5ae185; }
+    100% { background-color: #FFFFFF; }
+}
+
+@-o-keyframes fadeItError {
+    0%   { background-color: #FFFFFF; }
+    50%  { background-color: #ff004a; }
+    100% { background-color: #FFFFFF; }
+}
+@keyframes fadeItError {
+    0%   { background-color: #FFFFFF; }
+    50%  { background-color: #ff004a; }
+    100% { background-color: #FFFFFF; }
+}
+
+.newRowSuccess{
+    background-image:none !important;
+    -o-animation: fadeItSuccess 2s ease-in-out;
+    animation: fadeItSuccess 2s ease-in-out;
+    border-bottom: unset;
+
+}
+
+.newRowError {
+    background-image:none !important;
+    -o-animation: fadeItError 2s ease-in-out;
+    animation: fadeItError 2s ease-in-out;
+    border-bottom: unset;
+
+}

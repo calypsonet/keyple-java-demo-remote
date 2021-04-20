@@ -1,0 +1,2 @@
+configurations.maybeCreate("default")
+artifacts.add("default", file('nfcLib-1.1.12-release.aar'))

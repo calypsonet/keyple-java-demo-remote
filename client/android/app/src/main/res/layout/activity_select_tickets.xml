@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="@dimen/tickets_block_space"
+    android:clipToPadding="false">
+
+    <include
+        layout="@layout/toolbar"
+        android:id="@+id/appBarLayout" />
+
+    <TextView
+        android:id="@+id/chooseTicketsTv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/choose_trips"
+        style="@style/buy_text_info_regular"
+        android:layout_marginHorizontal="@dimen/home_horizontal_margin"
+        app:layout_constraintTop_toBottomOf="@id/appBarLayout"
+        android:layout_marginTop="@dimen/home_choose_margin_top"
+        app:layout_constraintLeft_toLeftOf="parent" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/ticket1Btn"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/tickets_btn_height"
+        android:clickable="true"
+        android:focusable="true"
+        android:background="@drawable/btn_blue_light"
+        android:elevation="@dimen/select_ticket_elevation"
+        android:layout_marginStart="@dimen/content_title_padding"
+        android:layout_marginEnd="@dimen/content_title_padding"
+        app:layout_constraintTop_toBottomOf="@id/chooseTicketsTv"
+        app:layout_constraintBottom_toTopOf="@id/ticket2Btn"
+        app:layout_constraintVertical_chainStyle="spread"
+        android:gravity="center">
+
+        <TextView
+            android:id="@+id/ticket1Label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/buy_text_info_bold"
+            android:text="@string/ticket_price"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/ticket1Price"
+            app:layout_constraintVertical_chainStyle="packed"/>
+
+        <TextView
+            android:id="@+id/ticket1Price"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/buy_text_info_reg_small"
+            android:text="@string/ticket_price"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/ticket1Label"
+            app:layout_constraintBottom_toBottomOf="parent"/>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/ticket2Btn"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/tickets_btn_height"
+        android:clickable="true"
+        android:focusable="true"
+        android:background="@drawable/btn_blue_light"
+        android:elevation="@dimen/select_ticket_elevation"
+        android:layout_marginStart="@dimen/content_title_padding"
+        android:layout_marginEnd="@dimen/content_title_padding"
+        app:layout_constraintTop_toBottomOf="@id/ticket1Btn"
+        app:layout_constraintBottom_toTopOf="@id/ticket3Btn"
+        android:gravity="center">
+
+        <TextView
+            android:id="@+id/ticket2Label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/buy_text_info_bold"
+            android:text="@string/ticket_price"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/ticket2Price"
+            app:layout_constraintVertical_chainStyle="packed"/>
+
+        <TextView
+            android:id="@+id/ticket2Price"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/buy_text_info_reg_small"
+            android:text="@string/ticket_price"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/ticket2Label"
+            app:layout_constraintBottom_toBottomOf="parent"/>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/ticket3Btn"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/tickets_btn_height"
+        android:clickable="true"
+        android:focusable="true"
+        android:background="@drawable/btn_blue_light"
+        android:elevation="@dimen/select_ticket_elevation"
+        android:layout_marginStart="@dimen/content_title_padding"
+        android:layout_marginEnd="@dimen/content_title_padding"
+        app:layout_constraintTop_toBottomOf="@id/ticket2Btn"
+        app:layout_constraintBottom_toTopOf="@id/ticket4Btn"
+        android:gravity="center">
+
+        <TextView
+            android:id="@+id/ticket3Label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/buy_text_info_bold"
+            android:text="@string/ticket_price"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/ticket3Price"
+            app:layout_constraintVertical_chainStyle="packed"/>
+
+        <TextView
+            android:id="@+id/ticket3Price"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/buy_text_info_reg_small"
+            android:text="@string/ticket_price"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/ticket3Label"
+            app:layout_constraintBottom_toBottomOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/ticket4Btn"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/tickets_btn_height"
+        android:clickable="true"
+        android:focusable="true"
+        android:background="@drawable/btn_blue_light"
+        android:elevation="@dimen/select_ticket_elevation"
+        android:layout_marginStart="@dimen/content_title_padding"
+        android:layout_marginEnd="@dimen/content_title_padding"
+        app:layout_constraintTop_toBottomOf="@id/ticket3Btn"
+        app:layout_constraintBottom_toTopOf="@+id/seasonPassBtn"
+        android:gravity="center">
+
+        <TextView
+            android:id="@+id/ticket4Label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/buy_text_info_bold"
+            android:text="@string/ticket_price"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/ticket4Price"
+            app:layout_constraintVertical_chainStyle="packed"/>
+
+        <TextView
+            android:id="@+id/ticket4Price"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/buy_text_info_reg_small"
+            android:text="@string/ticket_price"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/ticket4Label"
+            app:layout_constraintBottom_toBottomOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/seasonPassBtn"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/tickets_btn_height"
+        android:clickable="true"
+        android:focusable="true"
+        android:background="@drawable/btn_blue_light"
+        android:elevation="@dimen/select_ticket_elevation"
+        android:layout_marginStart="@dimen/content_title_padding"
+        android:layout_marginEnd="@dimen/content_title_padding"
+        app:layout_constraintTop_toBottomOf="@id/ticket4Btn"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:gravity="center">
+
+        <TextView
+            android:id="@+id/seasonPassLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/buy_text_info_bold"
+            android:text="@string/season_pass_title"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/seasonPassPrice"
+            app:layout_constraintVertical_chainStyle="packed"/>
+
+        <TextView
+            android:id="@+id/seasonPassPrice"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/buy_text_info_reg_small"
+            android:text="@string/ticket_price"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/seasonPassLabel"
+            app:layout_constraintBottom_toBottomOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

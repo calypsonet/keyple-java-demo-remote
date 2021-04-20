@@ -1,0 +1,59 @@
+<!--
+  ~ Copyright (c) 2020 Calypso Networks Association https://www.calypsonet-asso.org/
+  ~
+  ~ See the NOTICE file(s) distributed with this work for additional information
+  ~ regarding copyright ownership.
+  ~
+  ~ This program and the accompanying materials are made available under the terms of the
+  ~ Eclipse Public License 2.0 which is available at http://www.eclipse.org/legal/epl-2.0
+  ~
+  ~ SPDX-License-Identifier: EPL-2.0
+  -->
+
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="27dp"
+    android:height="40dp"
+    android:viewportWidth="27"
+    android:viewportHeight="40">
+  <path
+      android:pathData="M7.1711,2V10.5981"
+      android:strokeWidth="3"
+      android:fillColor="#00000000"
+      android:strokeColor="#213B6C"
+      android:strokeLineCap="round"/>
+  <path
+      android:pathData="M7.1711,29.1519V37.75"
+      android:strokeWidth="3"
+      android:fillColor="#00000000"
+      android:strokeColor="#213B6C"
+      android:strokeLineCap="round"/>
+  <path
+      android:pathData="M13.1855,2V10.5981"
+      android:strokeWidth="3"
+      android:fillColor="#00000000"
+      android:strokeColor="#213B6C"
+      android:strokeLineCap="round"/>
+  <path
+      android:pathData="M13.1855,29.1519V37.75"
+      android:strokeWidth="3"
+      android:fillColor="#00000000"
+      android:strokeColor="#213B6C"
+      android:strokeLineCap="round"/>
+  <path
+      android:pathData="M18.7991,2V10.5981"
+      android:strokeWidth="3"
+      android:fillColor="#00000000"
+      android:strokeColor="#213B6C"
+      android:strokeLineCap="round"/>
+  <path
+      android:pathData="M18.7991,29.1519V37.75"
+      android:strokeWidth="3"
+      android:fillColor="#00000000"
+      android:strokeColor="#213B6C"
+      android:strokeLineCap="round"/>
+  <path
+      android:pathData="M5.3549,10.3354L21.8182,10.3354A3,3 0,0 1,24.8182 13.3354L24.8182,25.962A3,3 0,0 1,21.8182 28.962L5.3549,28.962A3,3 0,0 1,2.3549 25.962L2.3549,13.3354A3,3 0,0 1,5.3549 10.3354z"
+      android:strokeWidth="4"
+      android:fillColor="#00000000"
+      android:strokeColor="#213B6C"/>
+</vector>

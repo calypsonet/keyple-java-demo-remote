@@ -1,0 +1,206 @@
+plugins {
+    id 'com.android.application'
+    id 'kotlin-android'
+    id 'kotlin-android-extensions'
+    id 'kotlin-kapt'
+}
+
+Properties properties = new Properties()
+if (project.rootProject.file("local.properties").exists()) {
+    properties.load(project.rootProject.file("local.properties").newDataInputStream())
+}
+
+android {
+    compileSdkVersion rootProject.ext.compileSdkVersion
+    defaultConfig {
+        applicationId "org.eclipse.keyple.demo.remote"
+        //applicationId "org.keyple.examples.wizway"
+        multiDexEnabled true
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
+        versionCode 1
+        versionName "2021.04"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+
+    signingConfigs {
+        //signing config for wizway
+        if (properties.containsKey("path_to_se_registered_keystore")) {
+            release {
+                storeFile file(properties["path_to_se_registered_keystore"])
+                storePassword properties["store_password"]
+                keyAlias properties["key_alias"]
+                keyPassword properties["key_password"]
+            }
+        }
+    }
+
+    buildTypes {
+        if (properties.containsKey("path_to_se_registered_keystore")) {
+            debug {
+                signingConfig signingConfigs.release
+            }
+        }
+        debug {
+            versionNameSuffix "-DEBUG"
+            //applicationIdSuffix ".debug"
+            resValue "string", "app_name", "Keyple Demo Debug"
+        }
+        release {
+            debuggable false
+            minifyEnabled false
+            shrinkResources false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            resValue "string", "app_name", "Keyple Demo"
+        }
+    }
+
+    lintOptions {
+        checkReleaseBuilds false
+        warningsAsErrors false
+        abortOnError true // Fail early.
+    }
+
+    androidExtensions {
+        experimental = true
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    kotlinOptions {
+        jvmTarget = JavaVersion.VERSION_1_8.toString()
+    }
+
+    sourceSets {
+        main.java.srcDirs += 'src/main/kotlin'
+        test.java.srcDirs += 'src/test/kotlin'
+        androidTest.java.srcDirs += 'src/androidTest/kotlin'
+    }
+
+    testOptions.unitTests.includeAndroidResources = true
+
+    /* fixes espresso conflict with supportAnnotation and androidSupport new versions */
+    configurations.all {
+        resolutionStrategy {
+            force "com.android.support:support-annotations:$supportLibraryVersion"
+            force "com.android.support:appcompat-v7:$supportLibraryVersion"
+            force "com.android.support:design:$supportLibraryVersion"
+            force "com.android.support:recyclerview-v7:$supportLibraryVersion"
+            force "com.android.support:support-compat:$supportLibraryVersion"
+            force "com.android.support:support-core-ui:$supportLibraryVersion"
+            force "com.android.support:support-core-utils:$supportLibraryVersion"
+            force "com.android.support:support-fragment:$supportLibraryVersion"
+        }
+    }
+    packagingOptions {
+        exclude 'simplelogger.properties'
+        exclude 'META-INF/DEPENDENCIES'
+        exclude 'META-INF/LICENSE'
+        exclude 'META-INF/LICENSE.txt'
+        exclude 'META-INF/license.txt'
+        exclude 'META-INF/NOTICE.md'
+        exclude 'META-INF/NOTICE.txt'
+        exclude 'META-INF/notice.txt'
+        exclude 'META-INF/ASL2.0'
+        exclude 'META-INF/keyple-core.properties'
+        exclude 'config.properties'
+    }
+}
+
+preBuild.doFirst {
+    println project.name + " - Using keyple_version parameter with value " + keyple_version
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation "androidx.appcompat:appcompat:$appcompat_version"
+    implementation "androidx.constraintlayout:constraintlayout:$constraintlayout_version"
+    implementation "com.google.android.material:material:1.1.0-rc02"
+
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+    implementation "androidx.core:core-ktx:$core_ktx_version"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+
+    // Keyple Java Component
+    implementation group: 'org.eclipse.keyple', name: 'keyple-java-core', version: keyple_version
+    implementation group: 'org.eclipse.keyple', name: 'keyple-java-calypso', version: keyple_version
+    implementation group: 'org.eclipse.keyple', name: 'keyple-java-distributed-local', version: keyple_version
+    implementation group: 'org.eclipse.keyple', name: 'keyple-java-distributed-remote', version: keyple_version
+    implementation(group: 'org.eclipse.keyple', name: 'keyple-android-plugin-nfc', version: keyple_version)
+    implementation(group: 'org.eclipse.keyple', name: 'keyple-android-plugin-omapi', version: keyple_version)
+
+    implementation project(":common")
+
+    //keyple logging
+    implementation group: 'org.slf4j', name: 'slf4j-api', version: '1.7.25'
+    implementation 'com.jakewharton.timber:timber:4.7.1'
+    implementation 'com.arcao:slf4j-timber:3.1@aar' //SLF4J binding for Timber
+
+    // RxJava
+    implementation "io.reactivex.rxjava2:rxjava:$rxjavaVersion"
+    implementation "io.reactivex.rxjava2:rxandroid:$rxandroidVersion"
+
+    // Retrofit
+    implementation "com.squareup.retrofit2:retrofit:$retrofitVersion"
+    implementation "com.squareup.retrofit2:converter-gson:$retrofitVersion"
+    implementation "com.squareup.retrofit2:converter-scalars:$retrofitVersion"
+    implementation "com.squareup.retrofit2:adapter-rxjava2:$retrofitVersion"
+    implementation 'com.squareup.okhttp3:logging-interceptor:3.9.1'
+    implementation 'com.google.code.gson:gson:2.8.6'
+
+    implementation "org.java-websocket:Java-WebSocket:1.3.9"
+
+    // Android Architecture components dependencies
+    implementation "androidx.lifecycle:lifecycle-runtime:$lifecycle_version"
+    implementation "androidx.lifecycle:lifecycle-extensions:$lifecycle_version"
+    annotationProcessor "androidx.lifecycle:lifecycle-compiler:$lifecycle_version"
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+
+    //Coroutines
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutines_version"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutines_version"
+
+    //WorkManager
+    implementation "androidx.work:work-runtime-ktx:2.5.0"
+    implementation "org.greenrobot:eventbus:3.2.0" //to easily handle server status change
+
+
+    //Multidex
+    implementation 'com.android.support:multidex:1.0.3'
+
+    implementation 'joda-time:joda-time:2.10.9'
+
+    // Dagger dependencies
+    kapt "com.google.dagger:dagger-compiler:$daggerVersion"
+    annotationProcessor "com.google.dagger:dagger-compiler:$daggerVersion"
+    kapt "com.google.dagger:dagger-android-processor:$daggerVersion"
+    annotationProcessor "com.google.dagger:dagger-android-processor:$daggerVersion"
+    implementation "com.google.dagger:dagger:$daggerVersion"
+    implementation "com.google.dagger:dagger-android:$daggerVersion"
+    implementation "com.google.dagger:dagger-android-support:$daggerVersion"
+    compileOnly 'org.glassfish:javax.annotation:10.0-b28'
+
+    // Lottie for animation
+    implementation 'com.airbnb.android:lottie:3.4.4'
+
+    // Testing
+    testImplementation 'junit:junit:4.13.1'
+    testImplementation 'org.robolectric:robolectric:4.4'
+    testImplementation "io.mockk:mockk:1.10.0"
+    testImplementation 'androidx.test:core-ktx:1.3.0'
+    testImplementation 'androidx.test.ext:junit-ktx:1.1.2'
+    testImplementation 'androidx.arch.core:core-testing:2.1.0'
+    testImplementation 'androidx.test.ext:junit:1.1.2'
+    testImplementation 'androidx.test:rules:1.3.0'
+    testImplementation 'androidx.test.espresso:espresso-core:3.3.0'
+    testImplementation 'androidx.test.espresso:espresso-intents:3.1.0'
+    androidTestImplementation 'androidx.arch.core:core-testing:2.1.0'
+    androidTestImplementation "com.linkedin.dexmaker:dexmaker-mockito:$dexmakerVersion"
+    androidTestImplementation 'androidx.test.ext:junit:1.1.2'
+    androidTestImplementation 'androidx.test:rules:1.3.0'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
+}

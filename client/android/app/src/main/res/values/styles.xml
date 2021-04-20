@@ -1,0 +1,116 @@
+<resources>
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/white</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+    </style>
+
+    <style name="AppTheme.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="buy_text_info_regular">
+        <item name="android:fontFamily">@font/worksans_regular</item>
+        <item name="android:textSize">@dimen/small_text_size</item>
+        <item name="android:textColor">@color/dark_blue</item>
+    </style>
+
+    <style name="buy_text_info_medium">
+        <item name="android:fontFamily">@font/worksans_medium</item>
+        <item name="android:textSize">@dimen/small_text_size</item>
+        <item name="android:textColor">@color/dark_blue</item>
+    </style>
+
+    <style name="buy_text_info_bold">
+        <item name="android:fontFamily">@font/worksans_bold</item>
+        <item name="android:textSize">@dimen/small_text_size</item>
+        <item name="android:textColor">@color/dark_blue</item>
+    </style>
+
+    <style name="buy_text_info_reg_small">
+        <item name="android:fontFamily">@font/worksans_regular</item>
+        <item name="android:textSize">@dimen/small_text_size</item>
+        <item name="android:textColor">@color/dark_blue</item>
+    </style>
+
+    <style name="buy_text_info_reg_small_cc">
+        <item name="android:fontFamily">@font/worksans_regular</item>
+        <item name="android:textSize">@dimen/small_text_size</item>
+        <item name="android:textColor">@color/grey</item>
+    </style>
+
+    <style name="mediumRegularBlue">
+        <item name="fontFamily">@font/worksans_regular</item>
+        <item name="android:textSize">@dimen/medium_text_size</item>
+        <item name="android:textColor">@color/blue</item>
+    </style>
+
+    <style name="bigBoldDarkBlue">
+        <item name="fontFamily">@font/worksans_bold</item>
+        <item name="android:textSize">@dimen/big_text_size</item>
+        <item name="android:textColor">@color/dark_blue</item>
+    </style>
+
+    <style name="mediumBoldDarkBlue">
+        <item name="fontFamily">@font/worksans_bold</item>
+        <item name="android:textSize">@dimen/medium_text_size</item>
+        <item name="android:textColor">@color/dark_blue</item>
+    </style>
+
+    <style name="bigBoldBlack">
+        <item name="fontFamily">@font/worksans_bold</item>
+        <item name="android:textSize">@dimen/big_text_size</item>
+        <item name="android:textColor">@color/black</item>
+    </style>
+
+    <style name="bigBoldBlue">
+        <item name="fontFamily">@font/worksans_bold</item>
+        <item name="android:textSize">@dimen/big_text_size</item>
+        <item name="android:textColor">@color/blue</item>
+    </style>
+
+    <style name="bigBoldWhite">
+        <item name="fontFamily">@font/worksans_bold</item>
+        <item name="android:textSize">@dimen/big_text_size</item>
+        <item name="android:textColor">@color/white</item>
+    </style>
+
+    <style name="bigBoldGreen">
+        <item name="fontFamily">@font/worksans_bold</item>
+        <item name="android:textSize">@dimen/big_text_size</item>
+        <item name="android:textColor">@color/green</item>
+    </style>
+
+    <style name="smallRegularDarkBlue">
+        <item name="fontFamily">@font/worksans_regular</item>
+        <item name="android:textSize">@dimen/small_text_size</item>
+        <item name="android:textColor">@color/dark_blue</item>
+    </style>
+
+    <style name="smallBoldBlue">
+        <item name="fontFamily">@font/worksans_bold</item>
+        <item name="android:textSize">@dimen/small_text_size</item>
+        <item name="android:textColor">@color/blue</item>
+    </style>
+
+    <style name="smallerRegularBlue">
+        <item name="fontFamily">@font/worksans_regular</item>
+        <item name="android:textSize">@dimen/smaller_text_size</item>
+        <item name="android:textColor">@color/blue</item>
+    </style>
+
+    <style name="smallestRegularBlue">
+        <item name="fontFamily">@font/worksans_regular</item>
+        <item name="android:textSize">@dimen/smallest_text_size</item>
+        <item name="android:textColor">@color/blue</item>
+    </style>
+
+    <style name="whiteBtnText">
+        <item name="fontFamily">@font/worksans_bold</item>
+        <item name="android:textSize">@dimen/medium_text_size</item>
+        <item name="android:textColor">@color/white</item>
+    </style>
+</resources>

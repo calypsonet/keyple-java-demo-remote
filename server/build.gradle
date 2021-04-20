@@ -1,0 +1,84 @@
+plugins {
+    id 'java'
+    id 'io.quarkus'
+}
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+
+task('runDevServer',  group:'keyple'){
+    dependsOn 'quarkusDev'
+}
+
+task('runServerExecutable',  group:'keyple',type:Exec){
+    workingDir 'build'
+    commandLine 'java', '-jar', 'keyple-java-demo-remote-server-2021.04-runner.jar'
+}
+
+task('buildServerExecutable', group:'keyple'){
+    dependsOn 'copyDashboard', 'quarkusBuild'
+}
+
+task buildDashboard(type:Exec){
+    workingDir 'dashboard-app'
+    //executable 'npm'
+    //args ['-l']
+    commandLine 'npm', 'run', 'build'
+}
+
+task copyDashboard(type:Copy){
+    from 'dashboard-app/build'
+    into 'src/main/resources/META-INF/resources'
+    dependsOn 'buildDashboard'
+}
+
+ext {
+    keyple_v = project.hasProperty("keyple_version") ? keyple_version : "+"
+}
+
+dependencies {
+
+    /* Keyple dependencies */
+    project.logger.lifecycle('Using dependency version: ' + keyple_v)
+    implementation group: 'org.eclipse.keyple', name: 'keyple-java-calypso', version: keyple_v
+    implementation group: 'org.eclipse.keyple', name: 'keyple-java-distributed-local', version: keyple_v
+    implementation group: 'org.eclipse.keyple', name: 'keyple-java-distributed-remote', version: keyple_v
+
+    /* Keyple plugin dependencies */
+    implementation group: 'org.eclipse.keyple', name: 'keyple-java-plugin-stub', version: keyple_v
+    implementation group: 'org.eclipse.keyple', name: 'keyple-java-plugin-pcsc', version: keyple_v
+
+    /* Common lib */
+    implementation project(":common")
+
+    /* Quarkus */
+
+    implementation 'io.quarkus:quarkus-resteasy-jsonb'
+    implementation 'io.quarkus:quarkus-resteasy'
+    implementation 'io.quarkus:quarkus-rest-client'
+    implementation enforcedPlatform("${quarkusPlatformGroupId}:${quarkusPlatformArtifactId}:${quarkusPlatformVersion}")
+
+    testImplementation 'io.quarkus:quarkus-junit5'
+    testImplementation 'io.rest-assured:rest-assured'
+}
+
+group 'org.cna.keyple.demo.remote.server'
+version '2021.04'
+
+compileJava {
+    options.encoding = 'UTF-8'
+    options.compilerArgs << '-parameters'
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+}
+
+test {
+    systemProperty "java.util.logging.manager", "org.jboss.logmanager.LogManager"
+    systemProperty "quarkus.log.level", "INFO"
+    exclude '**/**WaitTransactionTest.java'
+}

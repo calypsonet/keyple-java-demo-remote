@@ -1,0 +1,34 @@
+<!--
+  ~ Copyright (c) 2020 Calypso Networks Association https://www.calypsonet-asso.org/
+  ~
+  ~ See the NOTICE file(s) distributed with this work for additional information
+  ~ regarding copyright ownership.
+  ~
+  ~ This program and the accompanying materials are made available under the terms of the
+  ~ Eclipse Public License 2.0 which is available at http://www.eclipse.org/legal/epl-2.0
+  ~
+  ~ SPDX-License-Identifier: EPL-2.0
+  -->
+
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="35dp"
+    android:height="29dp"
+    android:viewportWidth="35"
+    android:viewportHeight="29">
+  <path
+      android:pathData="M30.9958,29H4.2948C2.4411,29 0.9363,27.1934 0.9363,24.9654V4.4018C0.9363,2.1739 2.441,0.3655 4.2948,0.3655H30.9958C32.8497,0.3655 34.3529,2.174 34.3529,4.4018V24.9654C34.3529,27.1933 32.8496,29 30.9958,29ZM30.9957,25.5413C31.2601,25.5413 31.4749,25.2831 31.4749,24.9654V4.4018C31.4749,4.0834 31.2595,3.8242 30.9957,3.8242H4.2947C4.0303,3.8242 3.8141,4.0841 3.8141,4.4018V24.9654C3.8141,25.2824 4.0297,25.5413 4.2947,25.5413H30.9957Z"
+      android:fillColor="#213B6C"
+      android:fillType="evenOdd"/>
+  <path
+      android:pathData="M14.9637,23.1787H13.4456C13.0096,23.1787 12.6556,22.7532 12.6556,22.2293V20.2907C12.6556,19.7667 13.0096,19.3412 13.4456,19.3412H14.9637C15.3997,19.3412 15.7522,19.7667 15.7522,20.2907V22.2293C15.7522,22.7532 15.3997,23.1787 14.9637,23.1787Z"
+      android:fillColor="#213B6C"
+      android:fillType="evenOdd"/>
+  <path
+      android:pathData="M10.4627,23.1787H7.2193C6.7819,23.1787 6.4293,22.7532 6.4293,22.2293V20.2907C6.4293,19.7667 6.7819,19.3412 7.2193,19.3412H10.4627C10.8987,19.3412 11.2527,19.7667 11.2527,20.2907V22.2293C11.2527,22.7532 10.8987,23.1787 10.4627,23.1787Z"
+      android:fillColor="#213B6C"
+      android:fillType="evenOdd"/>
+  <path
+      android:pathData="M28.9512,13.7349H25.6143C25.2042,13.7349 24.8718,13.3354 24.8718,12.8408V6.8797C24.8718,6.3869 25.2042,5.9874 25.6143,5.9874H28.9512C29.3613,5.9874 29.6937,6.3869 29.6937,6.8797V12.8408C29.6937,13.3354 29.3613,13.7349 28.9512,13.7349Z"
+      android:fillColor="#213B6C"
+      android:fillType="evenOdd"/>
+</vector>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    package="org.cna.keyple.demo.sale.android.nfc.slave">
+
+    <application tools:ignore="GoogleAppIndexingWarning">
+        <activity android:name=".testing.SingleFragmentActivity"></activity>
+    </application>
+
+</manifest>

@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <include
+        layout="@layout/toolbar"
+        android:id="@+id/appBarLayout" />
+
+    <TextView
+        android:id="@+id/contentTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/checkout_title"
+        android:gravity="center"
+        style="@style/bigBoldBlack"
+        android:layout_marginBottom="@dimen/content_top_margin"
+        app:layout_constraintTop_toBottomOf="@id/appBarLayout"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/tickets_btn_height"
+        android:clickable="true"
+        android:focusable="true"
+        android:background="@drawable/btn_blue_light"
+        android:elevation="@dimen/select_ticket_elevation"
+        android:layout_marginStart="@dimen/content_title_padding"
+        android:layout_marginEnd="@dimen/content_title_padding"
+        app:layout_constraintTop_toBottomOf="@id/contentTitle"
+        app:layout_constraintBottom_toTopOf="@id/paymentDetails"
+        android:gravity="center">
+
+        <TextView
+            android:id="@+id/selectionLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/buy_text_info_bold"
+            android:text="@string/ticket_price"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/selectionPrice"
+            app:layout_constraintVertical_chainStyle="packed" />
+
+        <TextView
+            android:id="@+id/selectionPrice"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/buy_text_info_reg_small"
+            android:text="@string/ticket_price"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/selectionLabel"
+            app:layout_constraintBottom_toBottomOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <LinearLayout
+        android:id="@+id/paymentDetails"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="@color/light_blue"
+        android:padding="@dimen/tickets_block_space"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/credit_card_details"
+            style="@style/buy_text_info_bold"
+            android:layout_gravity="center"
+            android:layout_marginTop="@dimen/cc_padding"/>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/white_rounded_rect"
+            android:layout_marginTop="@dimen/cc_padding"
+            android:layout_marginBottom="@dimen/cc_padding">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/firstLine"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toTopOf="parent"
+                android:padding="@dimen/cc_padding">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/card_number"
+                    style="@style/buy_text_info_reg_small_cc"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/prefill_card"
+                    style="@style/buy_text_info_medium"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintRight_toRightOf="parent"/>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <View
+                android:id="@+id/separation"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/light_blue"
+                app:layout_constraintTop_toBottomOf="@id/firstLine" />
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@id/separation"
+                android:padding="@dimen/cc_padding">
+
+                <TextView
+                    android:id="@+id/expiry_label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/expiry"
+                    style="@style/buy_text_info_reg_small_cc"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent" />
+
+                <TextView
+                    android:id="@+id/expiryValue"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/prefill_expiry"
+                    style="@style/buy_text_info_medium"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintLeft_toRightOf="@id/expiry_label"
+                    app:layout_constraintRight_toLeftOf="@id/cvv_label"/>
+
+                <TextView
+                    android:id="@+id/cvv_label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/CVV"
+                    style="@style/buy_text_info_reg_small_cc"
+                    app:layout_constraintLeft_toRightOf="@id/expiryValue"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintRight_toLeftOf="@id/cvv_value"/>
+
+                <TextView
+                    android:id="@+id/cvv_value"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/prefill_cvv"
+                    style="@style/buy_text_info_medium"
+                    app:layout_constraintLeft_toRightOf="@id/cvv_label"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent" />
+
+                <ImageView
+                    android:layout_width="@dimen/cc_help_size"
+                    android:layout_height="@dimen/cc_help_size"
+                    android:src="@drawable/ic_cvv_help"
+                    app:layout_constraintLeft_toRightOf="@id/cvv_value"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <Button
+            android:id="@+id/validateBtn"
+            android:text="@string/pay"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/btn_blue"
+            android:paddingTop="@dimen/main_btn_vertical_padding"
+            android:paddingBottom="@dimen/main_btn_vertical_padding"
+            android:layout_marginStart="@dimen/main_btn_horizontal_margin"
+            android:layout_marginEnd="@dimen/main_btn_horizontal_margin"
+            android:layout_marginBottom="@dimen/main_btn_margin_bottom"
+            style="@style/whiteBtnText" />
+    </LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
