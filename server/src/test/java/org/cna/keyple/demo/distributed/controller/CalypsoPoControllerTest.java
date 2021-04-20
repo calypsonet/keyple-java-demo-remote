@@ -29,11 +29,11 @@ import java.time.Instant;
 public class CalypsoPoControllerTest {
     private static final Logger logger = LoggerFactory.getLogger(CalypsoPoControllerTest.class);
 
-    static SamResourceManager samResourceManager;
-    Reader poReader;
-    CalypsoPoController calypsoPoController;
-    CalypsoPo calypsoPo;
-    CardResource<CalypsoSam> samResource;
+    private static SamResourceManager samResourceManager;
+    private Reader poReader;
+    private CalypsoPoController calypsoPoController;
+    private CalypsoPo calypsoPo;
+    private CardResource<CalypsoSam> samResource;
     private static final String poReaderFilter = ".*(ASK|ACS).*";
 
     @BeforeAll

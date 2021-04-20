@@ -14,6 +14,7 @@ package org.eclipse.keyple.demo.remote.ui
 import android.content.Intent
 import android.os.Bundle
 import kotlinx.android.synthetic.main.activity_settings_menu.*
+import org.eclipse.keyple.demo.remote.BuildConfig
 import org.eclipse.keyple.demo.remote.R
 
 class SettingsMenuActivity : AbstractDemoActivity() {
@@ -36,5 +37,7 @@ class SettingsMenuActivity : AbstractDemoActivity() {
             intent.putExtra(HomeActivity.CHOOSE_DEVICE_FOR_PERSO, true)
             startActivity(intent)
         }
+
+        versionName.text = getString(R.string.version, BuildConfig.VERSION_NAME)
     }
 }

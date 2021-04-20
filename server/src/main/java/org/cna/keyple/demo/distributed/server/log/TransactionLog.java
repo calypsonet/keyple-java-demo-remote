@@ -11,13 +11,13 @@ import java.util.UUID;
  */
 public class TransactionLog {
 
-    String id;
-    String poSn;
-    String plugin;
-    String startedAt;
-    String type;
-    String status;
-    String contractLoaded;
+    String id;//id of the transaction
+    String poSn;//PO Serial Number
+    String plugin;//plugin name
+    String startedAt;//when the transaction started
+    String type;//type of transaction
+    String status;//SUCCESS or FAIL
+    String contractLoaded;//(opt) description of the contract loaded
 
     /**
      * Default contructor

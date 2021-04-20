@@ -36,12 +36,12 @@ public class CalypsoPoContent {
     private final List<ContractStructureDto> contracts ;
     private EnvironmentHolderStructureDto environment;
 
-    private final List<ContractStructureDto> contractUpdated;//Contracts updated in this session
+    private final List<ContractStructureDto> updatedContracts;//Updated contracts in this object
     private Boolean isEventUpdated;
 
     private CalypsoPoContent(){
         contracts = new ArrayList<>();
-        contractUpdated = new ArrayList<>();
+        updatedContracts = new ArrayList<>();
         isEventUpdated = false;
     }
 
@@ -50,7 +50,7 @@ public class CalypsoPoContent {
      * @param calypsoPo not null calypsoPo object
      * @return cardSession not null object
      */
-    static public CalypsoPoContent parse(CalypsoPo calypsoPo){
+    public static CalypsoPoContent parse(CalypsoPo calypsoPo){
         CalypsoPoContent card = new CalypsoPoContent();
 
         //parse event
@@ -71,13 +71,6 @@ public class CalypsoPoContent {
                 }
             }
         }
-
-        //parse counter
-        /*
-        FileData counterFile = calypsoPo.getFileBySfi(SFI_Counters).getData();
-        if(counterFile!=null){
-            counter = CounterStructureParser.parse(counterFile.getContent(RECORD_NUMBER_1));
-        }*/
 
         //parse environment
         card.environment =
@@ -224,14 +217,13 @@ public class CalypsoPoContent {
         return contracts.get(i-1);
     }
 
-    public List<ContractStructureDto> getContractUpdated(){
-        return contractUpdated;
+    public List<ContractStructureDto> getUpdatedContracts(){
+        return updatedContracts;
     }
 
     public Boolean isEventUpdated() {
         return isEventUpdated;
     }
-
 
     @Override
     public String toString() {
@@ -239,31 +231,31 @@ public class CalypsoPoContent {
                 "event=" + event +
                 ", contracts=" + Arrays.deepToString(contracts.toArray()) +
                 ", environment=" + environment +
-                ", contractUpdated=" + contractUpdated +
+                ", contractUpdated=" + updatedContracts +
                 ", eventUpdated=" + isEventUpdated +
                 '}';
     }
 
     /**
-     * (package-private)
-     * Update event
+     * (private)
+     * Update event in this object
      * @param event new event
      */
-    void updateEvent(EventStructureDto event){
+    private void updateEvent(EventStructureDto event){
         this.event = event;
         this.isEventUpdated = true;
     }
 
     /**
-     * (package-private)
+     * (private)
      * Update contract at a specific index
      * @param contract not nullable contract object
      * @param calypsoIndex calypso index where to update the contract
      */
-    void updateContract(int calypsoIndex,ContractStructureDto contract){
+    private void updateContract(int calypsoIndex,ContractStructureDto contract){
         Assert.getInstance().notNull(contract, "contract should not be null");
         contracts.set(calypsoIndex-1, contract);
-        contractUpdated.add(contract);
+        updatedContracts.add(contract);
     }
 
 

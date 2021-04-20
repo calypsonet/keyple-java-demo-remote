@@ -12,16 +12,20 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Store transaction logs in server cache
+ * Store transaction logs and push to a unique subscriber
  */
 @ApplicationScoped
 public class TransactionLogStore {
 
     private static final Logger logger = LoggerFactory.getLogger(TransactionLogStore.class);
 
-    List<TransactionLog> transactionLogs;
-    BlockingQueue<TransactionLog> transactionLogQueue;
+    List<TransactionLog> transactionLogs;//list of all transactions
+    BlockingQueue<TransactionLog> transactionLogQueue;//queue for the subscriber
 
+    /**
+     * (package private)
+     * Constructor
+     */
     TransactionLogStore(){
         transactionLogs = new ArrayList<>();
         transactionLogQueue = new ArrayBlockingQueue<>(1);
@@ -36,10 +40,10 @@ public class TransactionLogStore {
     }
 
     /**
-     * Store a new transaction.
-     * @param t
+     * Push a new transaction to a subscriber
+     * @param t transaction object to push
      */
-    public void store(@NotNull TransactionLog t){
+    public void push(@NotNull TransactionLog t){
         //store the new transaction
         transactionLogs.add(t);
 

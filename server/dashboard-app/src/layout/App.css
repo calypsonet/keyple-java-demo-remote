@@ -36,7 +36,7 @@ img#logo-eclipse-fondation {
     100% { background-color: #FFFFFF; }
 }
 
-.newLineAnimatedSuccess{
+.newRowSuccess{
     background-image:none !important;
     -o-animation: fadeItSuccess 2s ease-in-out;
     animation: fadeItSuccess 2s ease-in-out;
@@ -44,7 +44,7 @@ img#logo-eclipse-fondation {
 
 }
 
-.newLineAnimatedError {
+.newRowError {
     background-image:none !important;
     -o-animation: fadeItError 2s ease-in-out;
     animation: fadeItError 2s ease-in-out;
