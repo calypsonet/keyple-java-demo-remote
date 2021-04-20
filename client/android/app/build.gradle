@@ -19,7 +19,7 @@ android {
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
-        versionName "20210419"
+        versionName "2021.04"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
