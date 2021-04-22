@@ -21,7 +21,7 @@ android {
         versionCode 1
         versionName "2021.04"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-        setProperty("archivesBaseName", "keyple-demo-remote-client_$versionName")
+        setProperty("archivesBaseName", "keyple-demo-remote-client_v$versionName")
     }
 
 
