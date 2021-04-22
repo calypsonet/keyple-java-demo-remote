@@ -50,15 +50,27 @@ This demo evolves to provide wide Calypso applet support. For now this demo can 
 * (Work in progress) Hoplink: A000000291A000000191
 * (Work in progress) Navigo2013: A00000040401250901
 
-## Dependencies
+## Project Dependencies
 
 Android Client
-- /common: Contains components shared between server side and client side of this demo. 
+* /common: Contains components shared between server side and client side of this demo. 
+
+## Keyple Dependencies
+
+* Keyple Core: Java library providing core API of Keyle.
+* Keyple Calypso: Java library providing an API to handle Calypso support
+* Keyple Distribued Local: Java library providing distribued Local API 
+* Keyple Android Plugin NFC: plugin providing access to NFC Reader
+* Keyple Android Plugin OMAPI: plugin providing access to SIM Reader
 
 ## Sign application
 
 In order to access to SIM card content you must own a specific simcard and sign the application with related
 keystore. Otherwise you'll encounter a security exception.
+
+Within the release package, 2 apks are provided:
+* keyple-demo-remote-client_XXXX.XX: Signed with CNA Keystore. At time no compatible SIM are available.
+* keyple-demo-remote-client_XXXX.XX-ORANGE: Signed with Orange Keystore, compatible pre+production SIMs provided by Orange. 
 
 ## Use wizway platform
 
