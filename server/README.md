@@ -3,10 +3,10 @@
 
 ## Running the server from the executable
 
-The server is packaged in an executable jar  `keyple-java-demo-remote-server-YYYY.MM-runner.jar` which can be started with the command : 
+The server is packaged in an executable jar  `keyple-demo-remote-server-vYYYY.MM.jar` which can be started with the command : 
 
 ```
-java -jar keyple-java-demo-remote-server-YYYY.MM-runner.jar
+java -jar keyple-demo-remote-server-vYYYY.MM.jar
 ```
 
 By default the server starts only if a PCSC reader is connected. The pcsc reader name should match the default filter (regex format) defined in the application.properties. 
@@ -16,12 +16,12 @@ If you want to use a different filter, start the server with the parameter ``-Ds
 
 For instance : 
 ```
->java -jar keyple-java-demo-remote-server-YYYY.MM-runner.jar -Dsam.pcsc.reader.filter="Identive CLOUD 2700 R Smart Card Reader"
+>java -jar keyple-demo-remote-server-vYYYY.MM.jar -Dsam.pcsc.reader.filter="Identive CLOUD 2700 R Smart Card Reader"
 ```
 The command below starts the server with the PCSC reader "Identive CLOUD 2700 R Smart Card Reader"
 
 ```
->java -jar keyple-java-demo-remote-server-YYYY.MM-runner.jar -Dsam.pcsc.reader.filter=.*
+>java -jar keyple-demo-remote-server-vYYYY.MM.jar -Dsam.pcsc.reader.filter=.*
 ```
 The command below starts the server with any pcsc connected. Be aware that if multiple readers are connected, the server will select one of them randomly.
 
@@ -56,12 +56,12 @@ The application can be packaged using
 
 ```./gradlew buildServerExecutable```
 
-It produces the `keyple-java-demo-remote-server-YYYY.MM-runner.jar` file in the `build` directory (where YYYY and MM are respectively the year and the month of the release)
+It produces the `keyple-demo-remote-server-vYYYY.MM.jar` file in the `build` directory (where YYYY and MM are respectively the year and the month of the release)
 Be aware that it is a _über-jar_ as the dependencies are copied inside the jar along with the dashboard-app.
 
 The application is now runnable using :
 
-```java -jar build/keyple-java-demo-remote-server-YYYY.MM-runner.jar```
+```java -jar build/keyple-demo-remote-server-vYYYY.MM.jar```
 (where YYYY and MM are respectively the year and the month of the release)
 
 or using the custom gradle task that runs the previous command : 

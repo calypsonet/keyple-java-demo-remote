@@ -7,6 +7,17 @@ repositories {
     mavenLocal()
     mavenCentral()
 }
+ext {
+    keyple_v = project.hasProperty("keyple_version") ? keyple_version : "+"
+    artifactName = project.name + "-v"
+}
+
+group 'org.cna.keyple.demo.remote.server'
+version '2021.04'
+
+quarkus{
+    finalName artifactName
+}
 
 task('runDevServer',  group:'keyple'){
     dependsOn 'quarkusDev'
@@ -14,7 +25,7 @@ task('runDevServer',  group:'keyple'){
 
 task('runServerExecutable',  group:'keyple',type:Exec){
     workingDir 'build'
-    commandLine 'java', '-jar', 'keyple-java-demo-remote-server-2021.04-runner.jar'
+    commandLine 'java', '-jar', artifactName + version +".jar"
 }
 
 task('buildServerExecutable', group:'keyple'){
@@ -34,9 +45,9 @@ task copyDashboard(type:Copy){
     dependsOn 'buildDashboard'
 }
 
-ext {
-    keyple_v = project.hasProperty("keyple_version") ? keyple_version : "+"
-}
+
+
+
 
 dependencies {
 
@@ -63,9 +74,6 @@ dependencies {
     testImplementation 'io.quarkus:quarkus-junit5'
     testImplementation 'io.rest-assured:rest-assured'
 }
-
-group 'org.cna.keyple.demo.remote.server'
-version '2021.04'
 
 compileJava {
     options.encoding = 'UTF-8'

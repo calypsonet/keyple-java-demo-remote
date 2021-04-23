@@ -8,7 +8,7 @@ pluginManagement {
         id 'io.quarkus' version "${quarkusPluginVersion}"
     }
 }
-rootProject.name = 'keyple-java-demo-remote-server'
+rootProject.name = 'keyple-demo-remote-server'
 
 include ':common'
 project(':common').projectDir = file("../common")
