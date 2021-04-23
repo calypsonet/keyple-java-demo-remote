@@ -69,6 +69,7 @@ public final class PcscReaderUtils {
   }
 
   public static Reader initSamReader(String samReaderFilter) {
+    logger.info("Initialize card reader for SAM with filter :{}", samReaderFilter);
 
     Reader reader = PcscReaderUtils.getReaderByPattern(samReaderFilter);
 
