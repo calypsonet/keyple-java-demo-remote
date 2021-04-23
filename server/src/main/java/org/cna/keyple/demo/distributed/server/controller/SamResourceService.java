@@ -10,6 +10,7 @@ import org.eclipse.keyple.core.service.event.PluginObservationExceptionHandler;
 import org.eclipse.keyple.core.service.event.ReaderObservationExceptionHandler;
 import org.eclipse.keyple.core.service.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.plugin.pcsc.PcscPluginFactory;
+import org.eclipse.microprofile.config.ConfigProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,7 +23,8 @@ import javax.inject.Singleton;
 public class SamResourceService {
     private static final Logger logger = LoggerFactory.getLogger(SamResourceService.class);
 
-    public static String SAM_READER_FILTER = ".*(Cherry TC|SCM Microsystems|Identive|HID|Generic).*";
+    //filter to define which reader is used for SAM
+    String samReaderFilter;
 
     //sam resource manager handles ressource allocation
     SamResourceManager samResourceManager;
@@ -37,8 +39,9 @@ public class SamResourceService {
      */
     public SamResourceService(){
         plugin = initSamPlugin();
-        PcscReaderUtils.initSamReader(SAM_READER_FILTER);
-        samResourceManager = SamResourceManagerFactory.instantiate(plugin, SAM_READER_FILTER);
+        samReaderFilter = ConfigProvider.getConfig().getValue("sam.pcsc.reader.filter", String.class);
+        PcscReaderUtils.initSamReader(samReaderFilter);
+        samResourceManager = SamResourceManagerFactory.instantiate(plugin, samReaderFilter);
     }
 
     /**
@@ -55,7 +58,7 @@ public class SamResourceService {
      * @throws KeypleReaderNotFoundException is no Sam Pcsc reader is found
      */
     public Reader getSamReader(){
-        return PcscReaderUtils.getReaderByPattern(SAM_READER_FILTER);
+        return PcscReaderUtils.getReaderByPattern(samReaderFilter);
     }
 
     private Plugin initSamPlugin(){
@@ -88,4 +91,7 @@ public class SamResourceService {
         return plugin;
     }
 
+    public String getSamReaderFilter() {
+        return samReaderFilter;
+    }
 }

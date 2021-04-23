@@ -1,7 +1,31 @@
 
 # Keyple distributed demo - Server
 
-## Running the server
+## Running the server from the executable
+
+The server is packaged in an executable jar  `keyple-java-demo-remote-server-YYYY.MM-runner.jar` which can be started with the command : 
+
+```
+java -jar keyple-java-demo-remote-server-YYYY.MM-runner.jar
+```
+
+By default the server starts only if a PCSC reader is connected. The pcsc reader name should match the default filter (regex format) defined in the application.properties. 
+``sam.pcsc.reader.filter=.*(Cherry TC|SCM Microsystems|Identive|HID|Generic).*``
+
+If you want to use a different filter, start the server with the parameter ``-Dsam.pcsc.reader.filter=XXX`` where XXX is the name for your sam reader or a matching regex.
+
+For instance : 
+```
+>java -jar keyple-java-demo-remote-server-YYYY.MM-runner.jar -Dsam.pcsc.reader.filter="Identive CLOUD 2700 R Smart Card Reader"
+```
+The command below starts the server with the PCSC reader "Identive CLOUD 2700 R Smart Card Reader"
+
+```
+>java -jar keyple-java-demo-remote-server-YYYY.MM-runner.jar -Dsam.pcsc.reader.filter=.*
+```
+The command below starts the server with any pcsc connected. Be aware that if multiple readers are connected, the server will select one of them randomly.
+
+## Running the server from the source
 
 This example is based on the Quarkus framework. To start the server, you need to install Quarkus dependencies : 
 - JDK 1.8+ installed with JAVA_HOME configured appropriately
@@ -13,7 +37,9 @@ You can run the server in dev mode:
 ./gradlew runDevServer
 ```
 
-Be aware that the server will start correctly if a PCSC reader is connected. 
+Be aware that the server will start correctly if a PCSC reader is connected whose name matches the default filter defined in the application.properties file :
+``sam.pcsc.reader.filter=.*(Cherry TC|SCM Microsystems|Identive|HID|Generic).*``
+
 
 A web browser should be launched automatically pointing to the server dashboard application. If not started, open the default url : http://localhost:8080
 
