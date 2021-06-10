@@ -12,16 +12,16 @@ java -jar keyple-demo-remote-server-vYYYY.MM.jar
 By default the server starts only if a PCSC reader is connected. The pcsc reader name should match the default filter (regex format) defined in the application.properties. 
 ``sam.pcsc.reader.filter=.*(Cherry TC|SCM Microsystems|Identive|HID|Generic).*``
 
-If you want to use a different filter, start the server with the parameter ``-Dsam.pcsc.reader.filter=XXX`` where XXX is the name for your sam reader or a matching regex.
+If you want to use a different filter, start the server with the parameter ``-Dsam.pcsc.reader.filter=XXX`` where XXX is a matching regex of your reader.
 
 For instance : 
 ```
->java -jar keyple-demo-remote-server-vYYYY.MM.jar -Dsam.pcsc.reader.filter="Identive CLOUD 2700 R Smart Card Reader"
+>java -Dsam.pcsc.reader.filter="Identive CLOUD 2700 R Smart Card Reader.*" -jar keyple-demo-remote-server-vYYYY.MM.jar 
 ```
 The command below starts the server with the PCSC reader "Identive CLOUD 2700 R Smart Card Reader"
 
 ```
->java -jar keyple-demo-remote-server-vYYYY.MM.jar -Dsam.pcsc.reader.filter=.*
+>java -Dsam.pcsc.reader.filter=.* -jar keyple-demo-remote-server-vYYYY.MM.jar 
 ```
 The command below starts the server with any pcsc connected. Be aware that if multiple readers are connected, the server will select one of them randomly.
 
