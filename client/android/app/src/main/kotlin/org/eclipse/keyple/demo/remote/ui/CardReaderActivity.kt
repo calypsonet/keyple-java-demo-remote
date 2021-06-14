@@ -12,6 +12,7 @@
 package org.eclipse.keyple.demo.remote.ui
 
 import android.content.Intent
+import android.nfc.NfcManager
 import android.os.Bundle
 import android.view.View
 import java.lang.Exception
@@ -29,6 +30,7 @@ import org.cna.keyple.demo.sale.data.model.ContractStructureDto
 import org.cna.keyple.demo.sale.data.model.type.PriorityCode
 import org.eclipse.keyple.core.service.event.ReaderEvent
 import org.eclipse.keyple.core.service.exception.KeypleException
+import org.eclipse.keyple.core.service.exception.KeypleReaderNotFoundException
 import org.eclipse.keyple.core.service.util.ContactCardCommonProtocols
 import org.eclipse.keyple.core.service.util.ContactlessCardCommonProtocols
 import org.eclipse.keyple.demo.remote.R
@@ -41,6 +43,7 @@ import org.eclipse.keyple.distributed.RemoteServiceParameters
 import org.joda.time.DateTime
 import org.joda.time.format.DateTimeFormat
 import timber.log.Timber
+import java.lang.IllegalStateException
 
 @ActivityScoped
 class CardReaderActivity : AbstractCardActivity() {
@@ -52,20 +55,37 @@ class CardReaderActivity : AbstractCardActivity() {
         setContentView(R.layout.activity_card_reader)
     }
 
-    override fun onResume() {
-        super.onResume()
-        try {
-            if (DeviceEnum.getDeviceEnum(prefData.loadDeviceType()!!) == DeviceEnum.CONTACTLESS_CARD) {
-                showPresentNfcCardInstructions()
-                initAndActivateAndroidKeypleNfcReader()
-            } else {
-                showNowLoadingInformation()
-                initOmapiReader() {
-                    GlobalScope.launch {
-                        remoteServiceExecution(selectedDeviceReaderName, "Android OMAPI", keypleServices.aidEnum.aid, ContactCardCommonProtocols.ISO_7816_3.name)
+    override fun initReaders(){
+        try{
+            when(DeviceEnum.getDeviceEnum(prefData.loadDeviceType()!!)){
+                DeviceEnum.CONTACTLESS_CARD -> {
+                    val nfcManager = getSystemService(NFC_SERVICE) as NfcManager
+                    if(nfcManager.defaultAdapter?.isEnabled == true){
+                        showPresentNfcCardInstructions()
+                        initAndActivateAndroidKeypleNfcReader()
+                    }else{
+                        launchExceptionResponse(IllegalStateException("NFC not activated"), finishActivity = true)
+                    }
+
+                }
+                DeviceEnum.SIM -> {
+                    showNowLoadingInformation()
+                    initOmapiReader() {
+                        GlobalScope.launch {
+                            remoteServiceExecution(selectedDeviceReaderName, "Android OMAPI", keypleServices.aidEnum.aid, ContactCardCommonProtocols.ISO_7816_3.name)
+                        }
                     }
                 }
+                DeviceEnum.WEARABLE -> {
+                    throw KeypleReaderNotFoundException("Wearable")
+                }
+                DeviceEnum.EMBEDDED -> {
+                    throw KeypleReaderNotFoundException("Embedded")
+                }
             }
+        } catch (e: KeypleReaderNotFoundException) {
+            Timber.e(e)
+            launchExceptionResponse(e, true)
         } catch (e: KeypleException) {
             Timber.e(e)
         }
@@ -177,13 +197,14 @@ class CardReaderActivity : AbstractCardActivity() {
         return cardTitles ?: arrayListOf()
     }
 
-    override fun changeDisplay(cardReaderResponse: CardReaderResponse, applicationSerialNumber: String?) {
-        loadingAnimation.cancelAnimation()
-        cardAnimation.cancelAnimation()
+    override fun changeDisplay(cardReaderResponse: CardReaderResponse, applicationSerialNumber: String?, finishActivity: Boolean?) {
+        loadingAnimation?.cancelAnimation()
+        cardAnimation?.cancelAnimation()
         val intent = Intent(this, CardSummaryActivity::class.java)
         intent.putExtra(CARD_CONTENT, cardReaderResponse)
         intent.putExtra(CARD_APPLICATION_NUMBER, applicationSerialNumber)
         startActivity(intent)
+        if(finishActivity == true){finish()}
     }
 
     private fun showPresentNfcCardInstructions() {

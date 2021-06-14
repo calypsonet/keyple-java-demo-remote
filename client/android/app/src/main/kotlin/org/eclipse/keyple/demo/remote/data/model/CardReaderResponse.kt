@@ -21,5 +21,6 @@ data class CardReaderResponse(
     val ticketsNumber: Int,
     val titlesList: List<CardTitle>,
     val lastValidationsList: ArrayList<Validation>,
-    val seasonPassExpiryDate: String
+    val seasonPassExpiryDate: String,
+    val errorMessage: String? = null
 ) : Parcelable

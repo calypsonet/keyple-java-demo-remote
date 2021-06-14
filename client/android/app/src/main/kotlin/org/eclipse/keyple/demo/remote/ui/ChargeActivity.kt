@@ -46,8 +46,7 @@ class ChargeActivity : AbstractCardActivity() {
         setContentView(R.layout.activity_charge)
     }
 
-    override fun onResume() {
-        super.onResume()
+    override fun initReaders() {
         try {
             if (DeviceEnum.getDeviceEnum(prefData.loadDeviceType()!!) == DeviceEnum.CONTACTLESS_CARD) {
                 showPresentNfcCardInstructions()
@@ -150,7 +149,8 @@ class ChargeActivity : AbstractCardActivity() {
                                     arrayListOf(),
                                     arrayListOf(),
                                     ""
-                                )
+                                ),
+                                finishActivity = true
                             )
                         }
                     }
@@ -170,7 +170,8 @@ class ChargeActivity : AbstractCardActivity() {
 
     override fun changeDisplay(
         cardReaderResponse: CardReaderResponse,
-        applicationSerialNumber: String?
+        applicationSerialNumber: String?,
+        finishActivity: Boolean?
     ) {
         loadingAnimation.cancelAnimation()
         cardAnimation.cancelAnimation()
@@ -178,9 +179,7 @@ class ChargeActivity : AbstractCardActivity() {
         intent.putExtra(ChargeResultActivity.TICKETS_NUMBER, 0)
         intent.putExtra(ChargeResultActivity.STATUS, cardReaderResponse.status.toString())
         startActivity(intent)
-        if (cardReaderResponse.status == Status.SUCCESS) {
-            this@ChargeActivity.finish()
-        }
+        if(finishActivity == true){finish()}
     }
 
     private fun showPresentNfcCardInstructions() {

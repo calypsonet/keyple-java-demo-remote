@@ -25,6 +25,7 @@ import org.eclipse.keyple.core.service.event.ObservableReader
 import org.eclipse.keyple.core.service.exception.KeypleAllocationNoReaderException
 import org.eclipse.keyple.core.service.exception.KeypleReaderIOException
 import org.eclipse.keyple.core.service.exception.KeypleReaderNotFoundException
+import timber.log.Timber
 
 /**
  * Manager provided to encapsulate slight differences
@@ -42,14 +43,22 @@ object KeypleManager {
      * Register any keyple plugin
      */
     public fun registerPlugin(factory: PluginFactory) {
-        SmartCardService.getInstance().registerPlugin(factory)
+        try {
+            SmartCardService.getInstance().registerPlugin(factory)
+        }catch (e: Exception){
+            Timber.e(e)
+        }
     }
 
     /**
      * Un register any keyple plugin
      */
     public fun unregisterPlugin(pluginName: String) {
-        SmartCardService.getInstance().unregisterPlugin(pluginName)
+        try {
+            SmartCardService.getInstance().unregisterPlugin(pluginName)
+        }catch (e: Exception){
+            Timber.e(e)
+        }
     }
 
     /**
@@ -106,19 +115,20 @@ object KeypleManager {
                 if (selectionResult.hasActiveSelection()) {
                     return selectionResult.activeSmartCard as CalypsoPo
                 } else {
-                    throw KeypleReaderIOException("Card is not present")
+                    throw KeypleReaderIOException("Card app not found")
                 }
             } else {
-                throw IllegalStateException()
+                throw KeypleReaderIOException("Card is not present")
             }
         }
     }
 
     enum class AidEnum(val aid: String) {
         CDLIGHT_GTML("315449432E49434131"),
+        INTERCODE_22("315449432E49434132"),
+        CALYPSO_LIGHT_CL("315449432E49434133"),
         HOPLINK("A000000291A000000191"),
         NAVIGO2013("A00000040401250901"),
         STORED_VALUE("304554502E494341"),
-        INTERCODE_22("315449432E49434132"),
     }
 }
