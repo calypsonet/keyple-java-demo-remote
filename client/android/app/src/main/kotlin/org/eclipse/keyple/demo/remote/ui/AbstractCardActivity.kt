@@ -12,7 +12,6 @@
 package org.eclipse.keyple.demo.remote.ui
 
 import android.os.Bundle
-import java.lang.IllegalStateException
 import javax.inject.Inject
 import kotlin.jvm.Throws
 import org.eclipse.keyple.core.service.event.ObservableReader
@@ -44,7 +43,6 @@ abstract class AbstractCardActivity : AbstractDemoActivity(), ObservableReader.R
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         selectedDeviceReaderName = when (DeviceEnum.getDeviceEnum(prefData.loadDeviceType()!!)) {
             DeviceEnum.CONTACTLESS_CARD -> {
                 keypleServices.aidEnum = KeypleManager.AidEnum.CDLIGHT_GTML
@@ -54,7 +52,24 @@ abstract class AbstractCardActivity : AbstractDemoActivity(), ObservableReader.R
                 keypleServices.aidEnum = KeypleManager.AidEnum.NAVIGO2013
                 KeypleManager.OMAPI_SIM_READER_NAME
             }
-            else -> throw IllegalStateException("")
+            DeviceEnum.WEARABLE -> {
+                keypleServices.aidEnum = KeypleManager.AidEnum.CDLIGHT_GTML
+                "WEARABLE"
+            }
+            DeviceEnum.EMBEDDED -> {
+                keypleServices.aidEnum = KeypleManager.AidEnum.CDLIGHT_GTML
+                "EMBEDDED"
+            }
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if(!prefData.loadLastStatus()){
+            launchExceptionResponse(IllegalStateException("Server not available"), true)
+            return
+        }else{
+            initReaders()
         }
     }
 
@@ -122,11 +137,12 @@ abstract class AbstractCardActivity : AbstractDemoActivity(), ObservableReader.R
             changeDisplay(
                 CardReaderResponse(
                     Status.INVALID_CARD,
-                    "invalid card",
+                    "",
                     0,
                     arrayListOf(),
                     arrayListOf(),
-                    ""
+                    "",
+                    "invalid card"
                 )
             )
         }
@@ -137,7 +153,7 @@ abstract class AbstractCardActivity : AbstractDemoActivity(), ObservableReader.R
             changeDisplay(
                 CardReaderResponse(
                     Status.ERROR,
-                    "Local error",
+                    "",
                     0,
                     arrayListOf(),
                     arrayListOf(),
@@ -147,25 +163,30 @@ abstract class AbstractCardActivity : AbstractDemoActivity(), ObservableReader.R
         }
     }
 
-    fun launchExceptionResponse(e: Exception) {
+    fun launchExceptionResponse(e: Exception, finishActivity: Boolean? = false) {
         runOnUiThread {
             changeDisplay(
                 CardReaderResponse(
                     Status.ERROR,
-                    "${e.message}",
+                    "",
                     0,
                     arrayListOf(),
                     arrayListOf(),
-                    ""
-                )
+                    "",
+                    e.message
+                ),
+                finishActivity = finishActivity
             )
         }
     }
 
     protected abstract fun changeDisplay(
         cardReaderResponse: CardReaderResponse,
-        applicationSerialNumber: String? = null
+        applicationSerialNumber: String? = null,
+        finishActivity: Boolean? = false
     )
+
+    protected abstract fun initReaders()
 
     companion object {
         const val CARD_APPLICATION_NUMBER = "cardApplicationNumber"

@@ -41,8 +41,7 @@ class PersonnalizationActivity : AbstractCardActivity() {
         setContentView(R.layout.activity_personnalization)
     }
 
-    override fun onResume() {
-        super.onResume()
+    override fun initReaders() {
         try {
             if (DeviceEnum.getDeviceEnum(prefData.loadDeviceType()!!) == DeviceEnum.CONTACTLESS_CARD) {
                 showPresentNfcCardInstructions()
@@ -84,19 +83,19 @@ class PersonnalizationActivity : AbstractCardActivity() {
     }
 
     private fun showNowPersonnalizingInformation() {
-        presentTxt.text = getString(R.string.read_in_progress)
+        presentTxt.text = getString(R.string.personalization_in_progress)
         loadingAnimation.visibility = View.VISIBLE
         loadingAnimation.playAnimation()
         cardAnimation.cancelAnimation()
         cardAnimation.visibility = View.INVISIBLE
     }
 
-    override fun changeDisplay(cardReaderResponse: CardReaderResponse, applicationSerialNumber: String?) {
+    override fun changeDisplay(cardReaderResponse: CardReaderResponse, applicationSerialNumber: String?, finishActivity: Boolean?) {
         val intent = Intent(this, ChargeResultActivity::class.java)
         intent.putExtra(ChargeResultActivity.IS_PERSONNALIZATION_RESULT, true)
         intent.putExtra(ChargeResultActivity.STATUS, cardReaderResponse.status.name)
         startActivity(intent)
-        this.finish()
+        if(finishActivity == true){finish()}
     }
 
     override fun update(event: ReaderEvent?) {
@@ -135,7 +134,8 @@ class PersonnalizationActivity : AbstractCardActivity() {
                                     arrayListOf(),
                                     ""
                                 ),
-                                calypsoPo.applicationSerialNumber
+                                applicationSerialNumber = calypsoPo.applicationSerialNumber,
+                                finishActivity = true
                             )
                         }
                     } // success,

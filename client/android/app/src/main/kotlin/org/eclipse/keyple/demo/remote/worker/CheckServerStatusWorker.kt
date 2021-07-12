@@ -14,6 +14,7 @@ package org.eclipse.keyple.demo.remote.worker
 import android.content.Context
 import androidx.work.Worker
 import androidx.work.WorkerParameters
+import org.eclipse.keyple.demo.remote.KEYPLE_PREFS
 import org.eclipse.keyple.demo.remote.data.SharedPrefData
 import org.eclipse.keyple.demo.remote.event.ServerStatusEvent
 import org.eclipse.keyple.demo.remote.rest.RestClient
@@ -30,7 +31,7 @@ class CheckServerStatusWorker(appContext: Context, workerParams: WorkerParameter
 
     val client: RestClient
     val prefData: SharedPrefData =
-        SharedPrefData(appContext.getSharedPreferences("Keyple-prefs", Context.MODE_PRIVATE))
+        SharedPrefData(appContext.getSharedPreferences(KEYPLE_PREFS, Context.MODE_PRIVATE))
 
     init {
         client = Retrofit.Builder()

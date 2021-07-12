@@ -57,6 +57,9 @@
         <item quantity="other">%d trips</item>
     </plurals>
 
+    <!-- Personnalization -->
+    <string name="personalization_in_progress">Personalization in progress</string>
+
     <!-- Settings -->
     <string name="version">version %s</string>
     <string name="action_settings">Settings</string>

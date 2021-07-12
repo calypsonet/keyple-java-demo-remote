@@ -92,6 +92,20 @@ class CardSummaryActivity : AbstractDemoActivity() {
                 lastValidationContent.visibility = View.VISIBLE
                 contentTitle.visibility = View.GONE
             }
+            Status.ERROR -> {
+                animation.setAnimation("error_anim.json")
+                animation.playAnimation()
+                if(cardContent.errorMessage != null)
+                    bigText.text = cardContent.errorMessage
+                else
+                    bigText.setText(R.string.error_label)
+                bigText.setTextColor(resources.getColor(R.color.red))
+                smallDesc.visibility = View.INVISIBLE
+                buyBtn.visibility = View.INVISIBLE
+                titlesList.visibility = View.GONE
+                lastValidationContent.visibility = View.GONE
+                contentTitle.visibility = View.GONE
+            }
             else -> {
                 animation.setAnimation("error_anim.json")
                 animation.playAnimation()
