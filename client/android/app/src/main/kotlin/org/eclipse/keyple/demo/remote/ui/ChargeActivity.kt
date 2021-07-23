@@ -23,19 +23,21 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.calypsonet.terminal.reader.CardReaderEvent
+import org.cna.keyple.demo.sale.data.endpoint.AnalyzeContractsInput
+import org.cna.keyple.demo.sale.data.endpoint.AnalyzeContractsOutput
 import org.cna.keyple.demo.sale.data.endpoint.WriteContractInput
 import org.cna.keyple.demo.sale.data.endpoint.WriteContractOutput
 import org.cna.keyple.demo.sale.data.model.type.PriorityCode
-import org.eclipse.keyple.core.service.event.ReaderEvent
 import org.eclipse.keyple.core.service.exception.KeypleException
 import org.eclipse.keyple.core.service.util.ContactCardCommonProtocols
 import org.eclipse.keyple.core.service.util.ContactlessCardCommonProtocols
+import org.eclipse.keyple.core.util.ByteArrayUtil
 import org.eclipse.keyple.demo.remote.R
 import org.eclipse.keyple.demo.remote.data.model.CardReaderResponse
 import org.eclipse.keyple.demo.remote.data.model.DeviceEnum
 import org.eclipse.keyple.demo.remote.data.model.Status
 import org.eclipse.keyple.demo.remote.di.scopes.ActivityScoped
-import org.eclipse.keyple.distributed.RemoteServiceParameters
 import timber.log.Timber
 
 @ActivityScoped
@@ -82,8 +84,8 @@ class ChargeActivity : AbstractCardActivity() {
         super.onPause()
     }
 
-    override fun update(event: ReaderEvent?) {
-        if (event?.eventType == ReaderEvent.EventType.CARD_INSERTED) {
+    override fun onReaderEvent(event: CardReaderEvent?) {
+        if (event?.type == CardReaderEvent.Type.CARD_INSERTED) {
             runOnUiThread {
                 showNowLoadingInformation()
             }
@@ -107,13 +109,23 @@ class ChargeActivity : AbstractCardActivity() {
     ) {
         withContext(Dispatchers.IO) {
             try {
-                val calypsoPo = keypleServices.getCalypsoPo(selectedDeviceReaderName, aid, protocol)
                 val readCardSerialNumber = intent.getStringExtra(CARD_APPLICATION_NUMBER)
-                if (calypsoPo.applicationSerialNumber != readCardSerialNumber) {
+
+                val transactionManager = keypleServices.getTransactionManager(selectedDeviceReaderName, aid, protocol)
+                if (ByteArrayUtil.toHex(transactionManager.calypsoCard.applicationSerialNumber) != readCardSerialNumber) {
                     // Ticket would have been bought for the Card read at step one.
                     // To avoid swapping we check thant loading is done on the same card
                     throw IllegalStateException("Not the same card")
                 }
+
+                val analyseContractsInput = AnalyzeContractsInput().setPluginType(pluginType)
+                // unmock for run
+                val compatibleContractOutput = localServiceClient.executeRemoteService("CONTRACT_ANALYSIS",
+                    selectedDeviceReaderName,
+                    transactionManager,
+                    analyseContractsInput,
+                    AnalyzeContractsOutput::class.java)
+
 
                 val writeContractInput = WriteContractInput()
                 writeContractInput.pluginType = pluginType
@@ -127,16 +139,11 @@ class ChargeActivity : AbstractCardActivity() {
                 )
                 writeContractInput.ticketToLoad = ticketToBeLoaded
 
-                val writeTitleOutput = localServiceClient.executeRemoteService(
-                    RemoteServiceParameters.builder(
-                        "WRITE_CONTRACT",
-                        keypleServices.getReader(selectedDeviceReaderName)
-                    )
-                        .withUserInputData(writeContractInput)
-                        .withInitialCardContent(calypsoPo)
-                        .build(),
-                    WriteContractOutput::class.java
-                )
+                val writeTitleOutput = localServiceClient.executeRemoteService("WRITE_CONTRACT",
+                    selectedDeviceReaderName,
+                    transactionManager,
+                    writeContractInput,
+                    WriteContractOutput::class.java)
 
                 when (writeTitleOutput.statusCode) {
                     0 -> {

@@ -13,12 +13,12 @@ package org.eclipse.keyple.demo.remote.rest
 
 import io.reactivex.Single
 import org.eclipse.keyple.distributed.MessageDto
-import org.eclipse.keyple.distributed.spi.SyncEndpointClient
+import org.eclipse.keyple.distributed.spi.SyncEndpointClientSpi
 
 /**
  * We have to wrap the retrofit client
  */
-class KeypleSyncEndPointClient(private val restClient: RestClient) : SyncEndpointClient {
+class KeypleSyncEndPointClient(private val restClient: RestClient) : SyncEndpointClientSpi {
 
     override fun sendRequest(msg: MessageDto?): MutableList<MessageDto> {
         return restClient.sendRequest(msg).blockingGet()

@@ -12,26 +12,30 @@
 package org.eclipse.keyple.demo.remote.ui
 
 import android.os.Bundle
+import org.calypsonet.terminal.reader.ObservableCardReader
+import org.calypsonet.terminal.reader.spi.CardReaderObservationExceptionHandlerSpi
+import org.calypsonet.terminal.reader.spi.CardReaderObserverSpi
 import javax.inject.Inject
 import kotlin.jvm.Throws
-import org.eclipse.keyple.core.service.event.ObservableReader
-import org.eclipse.keyple.core.service.event.ReaderObservationExceptionHandler
 import org.eclipse.keyple.core.service.exception.KeypleException
+import org.eclipse.keyple.core.service.util.ContactCardCommonProtocols
 import org.eclipse.keyple.core.service.util.ContactlessCardCommonProtocols
 import org.eclipse.keyple.demo.remote.data.model.CardReaderResponse
 import org.eclipse.keyple.demo.remote.data.model.DeviceEnum
 import org.eclipse.keyple.demo.remote.data.model.Status
 import org.eclipse.keyple.demo.remote.manager.KeypleManager
 import org.eclipse.keyple.distributed.LocalServiceClient
+import org.eclipse.keyple.distributed.LocalServiceClientFactory
+import org.eclipse.keyple.distributed.LocalServiceClientFactoryBuilder
 import org.eclipse.keyple.plugin.android.nfc.AndroidNfcPlugin
-import org.eclipse.keyple.plugin.android.nfc.AndroidNfcPluginFactory
+import org.eclipse.keyple.plugin.android.nfc.AndroidNfcPluginFactoryProvider
 import org.eclipse.keyple.plugin.android.nfc.AndroidNfcReader
-import org.eclipse.keyple.plugin.android.omapi.AndroidOmapiPluginFactory
-import org.eclipse.keyple.plugin.android.omapi.AndroidOmapiSupportedProtocols
-import org.eclipse.keyple.plugin.android.omapi.PLUGIN_NAME
+import org.eclipse.keyple.plugin.android.omapi.AndroidOmapiPlugin
+import org.eclipse.keyple.plugin.android.omapi.AndroidOmapiPluginFactoryProvider
 import timber.log.Timber
 
-abstract class AbstractCardActivity : AbstractDemoActivity(), ObservableReader.ReaderObserver {
+abstract class AbstractCardActivity : AbstractDemoActivity(), CardReaderObserverSpi,
+    CardReaderObservationExceptionHandlerSpi {
 
     @Inject
     lateinit var localServiceClient: LocalServiceClient
@@ -78,32 +82,23 @@ abstract class AbstractCardActivity : AbstractDemoActivity(), ObservableReader.R
      */
     @Throws(KeypleException::class)
     fun initAndActivateAndroidKeypleNfcReader() {
-        val readerObservationExceptionHandler = ReaderObservationExceptionHandler { _, _, e ->
-            runOnUiThread() {
-                Timber.e(e)
-                this@AbstractCardActivity.finish()
-            }
-        }
         keypleServices.registerPlugin(
-            AndroidNfcPluginFactory(
-                this@AbstractCardActivity,
-                readerObservationExceptionHandler
-            )
+            AndroidNfcPluginFactoryProvider(this@AbstractCardActivity).getFactory()
         )
         keypleServices.getReader(selectedDeviceReaderName).activateProtocol(
             ContactlessCardCommonProtocols.ISO_14443_4.name,
             ContactlessCardCommonProtocols.ISO_14443_4.name
         )
-        keypleServices.getObservableReader(selectedDeviceReaderName).addObserver(this)
-        val androidNfcReader =
-            keypleServices.getReader(selectedDeviceReaderName) as AndroidNfcReader
-        androidNfcReader.startCardDetection(ObservableReader.PollingMode.REPEATING)
+
+        val androidNfcReader = keypleServices.getObservableReader(selectedDeviceReaderName) as ObservableCardReader
+        androidNfcReader.addObserver(this@AbstractCardActivity)
+        androidNfcReader.setReaderObservationExceptionHandler(this@AbstractCardActivity)
+        androidNfcReader.startCardDetection(ObservableCardReader.DetectionMode.REPEATING)
     }
 
     @Throws(KeypleException::class)
     fun deactivateAndClearAndroidKeypleNfcReader() {
-        keypleServices.getObservableReader(selectedDeviceReaderName).removeObserver(this)
-        (keypleServices.getReader(selectedDeviceReaderName) as AndroidNfcReader).stopCardDetection()
+        (keypleServices.getReader(selectedDeviceReaderName) as ObservableCardReader).stopCardDetection()
         keypleServices.getReader(selectedDeviceReaderName)
             .deactivateProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name)
         keypleServices.unregisterPlugin(AndroidNfcPlugin.PLUGIN_NAME)
@@ -117,11 +112,11 @@ abstract class AbstractCardActivity : AbstractDemoActivity(), ObservableReader.R
     @Throws(KeypleException::class)
     fun initOmapiReader(callback: () -> Unit) {
         // TODO catch initialisation error
-        AndroidOmapiPluginFactory(this@AbstractCardActivity) {
+        AndroidOmapiPluginFactoryProvider(this@AbstractCardActivity) {
             keypleServices.registerPlugin(it)
             keypleServices.getReader(KeypleManager.OMAPI_SIM_READER_NAME).activateProtocol(
-                AndroidOmapiSupportedProtocols.ISO_7816_3.name,
-                AndroidOmapiSupportedProtocols.ISO_7816_3.name
+                ContactCardCommonProtocols.ISO_7816_3.name,
+                ContactCardCommonProtocols.ISO_7816_3.name
             )
             callback()
         }
@@ -129,7 +124,7 @@ abstract class AbstractCardActivity : AbstractDemoActivity(), ObservableReader.R
 
     @Throws(KeypleException::class)
     fun deactivateAndClearOmapiReader() {
-        keypleServices.unregisterPlugin(PLUGIN_NAME)
+        keypleServices.unregisterPlugin(AndroidOmapiPlugin.PLUGIN_NAME)
     }
 
     fun launchInvalidCardResponse() {
@@ -185,6 +180,12 @@ abstract class AbstractCardActivity : AbstractDemoActivity(), ObservableReader.R
         applicationSerialNumber: String? = null,
         finishActivity: Boolean? = false
     )
+
+    override fun onReaderObservationError(contextInfo: String?, readerName: String?, e: Throwable?) {
+        Timber.e(e)
+        Timber.d("Error on $contextInfo, $readerName")
+        this@AbstractCardActivity.finish()
+    }
 
     protected abstract fun initReaders()
 

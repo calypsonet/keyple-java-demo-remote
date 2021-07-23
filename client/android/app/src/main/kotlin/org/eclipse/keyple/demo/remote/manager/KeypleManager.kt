@@ -11,16 +11,14 @@
  ********************************************************************************/
 package org.eclipse.keyple.demo.remote.manager
 
+import org.calypsonet.terminal.calypso.card.CalypsoCard
+import org.calypsonet.terminal.calypso.transaction.CardTransactionManager
+import org.eclipse.keyple.card.calypso.CalypsoExtensionService
 import java.lang.IllegalStateException
 import kotlin.jvm.Throws
-import org.eclipse.keyple.calypso.transaction.CalypsoPo
-import org.eclipse.keyple.calypso.transaction.PoSelection
-import org.eclipse.keyple.calypso.transaction.PoSelector
-import org.eclipse.keyple.core.card.selection.CardSelectionsService
-import org.eclipse.keyple.core.card.selection.CardSelector
-import org.eclipse.keyple.core.service.PluginFactory
+import org.eclipse.keyple.core.common.KeyplePluginExtensionFactory
 import org.eclipse.keyple.core.service.Reader
-import org.eclipse.keyple.core.service.SmartCardService
+import org.eclipse.keyple.core.service.SmartCardServiceProvider
 import org.eclipse.keyple.core.service.event.ObservableReader
 import org.eclipse.keyple.core.service.exception.KeypleAllocationNoReaderException
 import org.eclipse.keyple.core.service.exception.KeypleReaderIOException
@@ -42,9 +40,9 @@ object KeypleManager {
     /**
      * Register any keyple plugin
      */
-    public fun registerPlugin(factory: PluginFactory) {
+    public fun registerPlugin(factory: KeyplePluginExtensionFactory) {
         try {
-            SmartCardService.getInstance().registerPlugin(factory)
+            SmartCardServiceProvider.getService().registerPlugin(factory)
         }catch (e: Exception){
             Timber.e(e)
         }
@@ -55,7 +53,7 @@ object KeypleManager {
      */
     public fun unregisterPlugin(pluginName: String) {
         try {
-            SmartCardService.getInstance().unregisterPlugin(pluginName)
+            SmartCardServiceProvider.getService().unregisterPlugin(pluginName)
         }catch (e: Exception){
             Timber.e(e)
         }
@@ -67,13 +65,13 @@ object KeypleManager {
     @Throws(KeypleAllocationNoReaderException::class)
     public fun getReader(readerName: String): Reader {
         var reader: Reader? = null
-        SmartCardService.getInstance().plugins.forEach {
+        SmartCardServiceProvider.getService().plugins.forEach {
             try {
-                reader = it.value.getReader(readerName)
+                reader = it.getReader(readerName)
             } catch (e: KeypleReaderNotFoundException) {
                 if (readerName == OMAPI_SIM_READER_NAME) {
                     try {
-                        reader = it.value.getReader(OMAPI_SIM_1_READER_NAME)
+                        reader = it.getReader(OMAPI_SIM_1_READER_NAME)
                     } catch (e: KeypleReaderNotFoundException) { }
                 }
             }
@@ -94,26 +92,38 @@ object KeypleManager {
      * Select card and retrieve CalypsoPO
      */
     @Throws(IllegalStateException::class, KeypleReaderIOException::class, KeypleAllocationNoReaderException::class)
-    public fun getCalypsoPo(readerName: String, aid: String, protocol: String?): CalypsoPo {
+    public fun getTransactionManager(readerName: String, aid: String, protocol: String?): CardTransactionManager {
         with(getReader(readerName)) {
             if (isCardPresent) {
-                val cardSelectionService = CardSelectionsService()
-                // cardSelectionService.prepareReleaseChannel()
-                val poSelection = PoSelection(
-                    PoSelector
-                        .builder()
-                        .cardProtocol(protocol)
-                        .aidSelector(
-                            CardSelector.AidSelector.builder()
-                                .aidToSelect(aid) // Set the AID of your Calypso PO
-                                .build()
-                        )
-                        .invalidatedPo(PoSelector.InvalidatedPo.REJECT)
-                        .build())
-                cardSelectionService.prepareSelection(poSelection)
-                val selectionResult = cardSelectionService.processExplicitSelections(this)
-                if (selectionResult.hasActiveSelection()) {
-                    return selectionResult.activeSmartCard as CalypsoPo
+                val smartCardService = SmartCardServiceProvider.getService()
+
+                val reader = getReader(readerName)
+
+                /**
+                 * Get the generic card extension service
+                 */
+                val calypsoExtension = CalypsoExtensionService.getInstance()
+
+                /**
+                 * Verify that the extension's API level is consistent with the current service.
+                 */
+                smartCardService.checkCardExtension(calypsoExtension)
+
+                /**
+                 * Generic selection: configures a CardSelector with all the desired attributes to make
+                 * the selection and read additional information afterwards
+                 */
+                val cardSelection = calypsoExtension
+                    .createCardSelection()
+                    .filterByDfName(aid)
+                    .filterByCardProtocol(protocol)
+
+                val cardSelectionManager = smartCardService.createCardSelectionManager()
+                cardSelectionManager.prepareSelection(cardSelection)
+
+                val selectionResult = cardSelectionManager.processCardSelectionScenario(reader)
+                if (selectionResult.activeSmartCard != null) {
+                    return calypsoExtension.createCardTransactionWithoutSecurity(reader, selectionResult.activeSmartCard as CalypsoCard)
                 } else {
                     throw KeypleReaderIOException("Card app not found")
                 }

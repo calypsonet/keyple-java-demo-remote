@@ -20,17 +20,17 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.calypsonet.terminal.reader.CardReaderEvent
 import org.cna.keyple.demo.sale.data.endpoint.CardIssuanceOutput
-import org.eclipse.keyple.core.service.event.ReaderEvent
 import org.eclipse.keyple.core.service.exception.KeypleException
 import org.eclipse.keyple.core.service.util.ContactCardCommonProtocols
 import org.eclipse.keyple.core.service.util.ContactlessCardCommonProtocols
+import org.eclipse.keyple.core.util.ByteArrayUtil
 import org.eclipse.keyple.demo.remote.R
 import org.eclipse.keyple.demo.remote.data.model.CardReaderResponse
 import org.eclipse.keyple.demo.remote.data.model.DeviceEnum
 import org.eclipse.keyple.demo.remote.data.model.Status
 import org.eclipse.keyple.demo.remote.di.scopes.ActivityScoped
-import org.eclipse.keyple.distributed.RemoteServiceParameters
 import timber.log.Timber
 
 @ActivityScoped
@@ -98,8 +98,8 @@ class PersonnalizationActivity : AbstractCardActivity() {
         if(finishActivity == true){finish()}
     }
 
-    override fun update(event: ReaderEvent?) {
-        if (event?.eventType == ReaderEvent.EventType.CARD_INSERTED) {
+    override fun onReaderEvent(event: CardReaderEvent?) {
+        if (event?.type == CardReaderEvent.Type.CARD_INSERTED) {
             runOnUiThread {
                 showNowPersonnalizingInformation()
             }
@@ -112,14 +112,13 @@ class PersonnalizationActivity : AbstractCardActivity() {
     private suspend fun remoteServiceExecution(selectedDeviceReaderName: String, pluginType: String, aid: String, protocol: String?) {
         withContext(Dispatchers.IO) {
             try {
-                val calypsoPo = keypleServices.getCalypsoPo(selectedDeviceReaderName, aid, protocol)
+                val transactionManager = keypleServices.getTransactionManager(selectedDeviceReaderName, aid, protocol)
                 val cardIssuanceOutput = localServiceClient.executeRemoteService(
-                    RemoteServiceParameters
-                        .builder("CARD_ISSUANCE", keypleServices.getReader(selectedDeviceReaderName))
-                        .withInitialCardContent(calypsoPo)
-                        .build(),
-                    CardIssuanceOutput::class.java
-                )
+                    "CARD_ISSUANCE",
+                    selectedDeviceReaderName,
+                    transactionManager,
+                    null,
+                    CardIssuanceOutput::class.java)
 
                 when (cardIssuanceOutput.statusCode) {
                     0 -> {
@@ -134,7 +133,7 @@ class PersonnalizationActivity : AbstractCardActivity() {
                                     arrayListOf(),
                                     ""
                                 ),
-                                applicationSerialNumber = calypsoPo.applicationSerialNumber,
+                                applicationSerialNumber = ByteArrayUtil.toHex(transactionManager.calypsoCard.applicationSerialNumber),
                                 finishActivity = true
                             )
                         }

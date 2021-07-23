@@ -24,22 +24,22 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.calypsonet.terminal.reader.CardReaderEvent
 import org.cna.keyple.demo.sale.data.endpoint.AnalyzeContractsInput
 import org.cna.keyple.demo.sale.data.endpoint.AnalyzeContractsOutput
 import org.cna.keyple.demo.sale.data.model.ContractStructureDto
 import org.cna.keyple.demo.sale.data.model.type.PriorityCode
-import org.eclipse.keyple.core.service.event.ReaderEvent
 import org.eclipse.keyple.core.service.exception.KeypleException
 import org.eclipse.keyple.core.service.exception.KeypleReaderNotFoundException
 import org.eclipse.keyple.core.service.util.ContactCardCommonProtocols
 import org.eclipse.keyple.core.service.util.ContactlessCardCommonProtocols
+import org.eclipse.keyple.core.util.ByteArrayUtil
 import org.eclipse.keyple.demo.remote.R
 import org.eclipse.keyple.demo.remote.data.model.CardReaderResponse
 import org.eclipse.keyple.demo.remote.data.model.CardTitle
 import org.eclipse.keyple.demo.remote.data.model.DeviceEnum
 import org.eclipse.keyple.demo.remote.data.model.Status
 import org.eclipse.keyple.demo.remote.di.scopes.ActivityScoped
-import org.eclipse.keyple.distributed.RemoteServiceParameters
 import org.joda.time.DateTime
 import org.joda.time.format.DateTimeFormat
 import timber.log.Timber
@@ -106,8 +106,8 @@ class CardReaderActivity : AbstractCardActivity() {
         super.onPause()
     }
 
-    override fun update(event: ReaderEvent?) {
-        if (event?.eventType == ReaderEvent.EventType.CARD_INSERTED) {
+    override fun onReaderEvent(event: CardReaderEvent?) {
+        if (event?.type == CardReaderEvent.Type.CARD_INSERTED) {
             // We'll select PO when SmartCard is presented in field
             // Method handlePo is described below
             runOnUiThread {
@@ -123,15 +123,13 @@ class CardReaderActivity : AbstractCardActivity() {
     private suspend fun remoteServiceExecution(selectedDeviceReaderName: String, pluginType: String, aid: String, protocol: String?) {
         withContext(Dispatchers.IO) {
             try {
-                val calypsoPo = keypleServices.getCalypsoPo(selectedDeviceReaderName, aid, protocol)
+                val transactionManager = keypleServices.getTransactionManager(selectedDeviceReaderName, aid, protocol)
                 val analyseContractsInput = AnalyzeContractsInput().setPluginType(pluginType)
                 // unmock for run
-                val compatibleContractOutput = localServiceClient.executeRemoteService(
-                    RemoteServiceParameters
-                        .builder("CONTRACT_ANALYSIS", keypleServices.getReader(selectedDeviceReaderName))
-                        .withUserInputData(analyseContractsInput)
-                        .withInitialCardContent(calypsoPo)
-                        .build(),
+                val compatibleContractOutput = localServiceClient.executeRemoteService("CONTRACT_ANALYSIS",
+                    selectedDeviceReaderName,
+                    transactionManager,
+                    analyseContractsInput,
                     AnalyzeContractsOutput::class.java)
 
                 when (compatibleContractOutput.statusCode) {
@@ -150,7 +148,7 @@ class CardReaderActivity : AbstractCardActivity() {
                                     arrayListOf(),
                                     ""
                                 ),
-                                calypsoPo.applicationSerialNumber
+                                ByteArrayUtil.toHex(transactionManager.calypsoCard.applicationSerialNumber)
                             )
                         }
                     } // success,
