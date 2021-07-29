@@ -152,18 +152,17 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 
     // Keyple Java Component
-    implementation("org.calypsonet.terminal:calypsonet-terminal-reader-java-api:1.0.0-SNAPSHOT")
-    implementation("org.calypsonet.terminal:calypsonet-terminal-calypso-java-api:1.0.0-SNAPSHOT")
-    implementation("org.eclipse.keyple:keyple-common-java-api:$keypleVersion")
+    implementation("org.calypsonet.terminal:calypsonet-terminal-reader-java-api:1.0.+")
+    implementation("org.calypsonet.terminal:calypsonet-terminal-calypso-java-api:1.0.+")
+    implementation("org.eclipse.keyple:keyple-common-java-api:2.0.+")
+    implementation("org.eclipse.keyple:keyple-util-java-lib:2.+")
     implementation("org.eclipse.keyple:keyple-service-java-lib:$keypleVersion")
     implementation("org.eclipse.keyple:keyple-card-generic-java-lib:$keypleVersion")
     implementation("org.eclipse.keyple:keyple-card-calypso-java-lib:$keypleVersion")
 
-    //Conflict with org.eclipse.keyple:keyple-java-core imported from org.eclipse.keyple:keyple-service-java-lib
-    implementation("org.eclipse.keyple:keyple-distributed-local-java-lib:$keypleVersion"){
-        exclude group: 'org.eclipse.keyple', module: 'keyple-java-core'
-    }
+    implementation("org.eclipse.keyple:keyple-distributed-local-java-lib:$keypleVersion")
     implementation "org.eclipse.keyple:keyple-distributed-network-java-lib:$keypleVersion"
+    implementation("org.eclipse.keyple:keyple-plugin-java-api:$keypleVersion")
     implementation "org.eclipse.keyple:keyple-plugin-android-nfc-java-lib:$keypleVersion"
     implementation "org.eclipse.keyple:keyple-plugin-android-omapi-java-lib:$keypleVersion"
 

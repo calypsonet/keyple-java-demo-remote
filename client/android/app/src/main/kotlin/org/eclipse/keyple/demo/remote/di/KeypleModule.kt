@@ -13,10 +13,11 @@ package org.eclipse.keyple.demo.remote.di
 
 import dagger.Module
 import dagger.Provides
+import org.eclipse.keyple.core.service.SmartCardServiceProvider
 import org.eclipse.keyple.demo.remote.di.scopes.AppScoped
 import org.eclipse.keyple.demo.remote.manager.KeypleManager
 import org.eclipse.keyple.demo.remote.rest.KeypleSyncEndPointClient
-import org.eclipse.keyple.distributed.LocalServiceClientFactory
+import org.eclipse.keyple.distributed.LocalServiceClient
 import org.eclipse.keyple.distributed.LocalServiceClientFactoryBuilder
 
 @Module
@@ -24,18 +25,17 @@ class KeypleModule {
 
     @Provides
     @AppScoped
-    public fun provideLocalServiceClient(keypleSyncEndPointClient: KeypleSyncEndPointClient): LocalServiceClientFactory {
-        return LocalServiceClientFactoryBuilder
-            .builder("localServiceName")
-            .withSyncNode(keypleSyncEndPointClient)
-            .build()
-
-        //V 1.0
-                // .builder()
-                // .withDefaultServiceName()
-                // .withSyncNode(keypleSyncEndPointClient)
-                // .withoutReaderObservation()
-                // .service
+    public fun provideLocalServiceClient(keypleSyncEndPointClient: KeypleSyncEndPointClient): LocalServiceClient {
+        if (!SmartCardServiceProvider.getService().isDistributedLocalServiceRegistered("localService")) {
+            SmartCardServiceProvider.getService().registerDistributedLocalService(LocalServiceClientFactoryBuilder
+                .builder("localService")
+                .withSyncNode(keypleSyncEndPointClient)
+                .build())
+        }
+        return SmartCardServiceProvider
+            .getService()
+            .getDistributedLocalService("localService")
+            .getExtension(LocalServiceClient::class.java)
     }
 
     @Provides

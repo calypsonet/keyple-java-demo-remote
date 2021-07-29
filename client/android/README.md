@@ -1,8 +1,8 @@
 # Keyple Remote Demo - Android Client's repository
 
-This is the repository for the Android Client of the Keyple Java Remote Demo application. 
+This is the repository for the Android Client of the Keyple Java Remote Demo application.
 
-Read the main [README](https://github.com/calypsonet/keyple-java-demo-remote#readme) to understand the purpose of the Keyple Java Remote Demo application. 
+Read the main [README](https://github.com/calypsonet/keyple-java-demo-remote#readme) to understand the purpose of the Keyple Java Remote Demo application.
 
 ## Screens
 
@@ -10,7 +10,7 @@ Read the main [README](https://github.com/calypsonet/keyple-java-demo-remote#rea
 - Home (HomeActivity): Display a menu allowing to choose the Calypso card type to read and load.
     - 'Contactless support': works with the native Android NFC reader and is available for any android smartphone.
     - 'SIM Card': works with the native Android OMAPI reader and is available for any android smartphone. (Work in progress)
-    - 'Embedded Secure Element': works with the Wizway plugin to access to eSE. (Work in progress)   
+    - 'Embedded Secure Element': works with the Wizway plugin to access to eSE. (Work in progress)
 - Settings (SettingsMenuActivity):
     - Server (ServerSettingsActivity): Settings for server connexion.
     - Configuration (ConfigurationSettingsActivity): Activate/Deactivate each plugin availability in the android smartphone.
@@ -34,7 +34,7 @@ Read the main [README](https://github.com/calypsonet/keyple-java-demo-remote#rea
 ## Project Dependencies
 
 Android Client
-- /common: Contains components shared between server side and client side of this demo. 
+- /common: Contains components shared between server side and client side of this demo.
 ```groovy
     implementation project(":common")
 ```
@@ -52,12 +52,12 @@ First we need to import the Keyple related dependencies in the `build.gradle` fi
 ```groovy
     implementation "org.eclipse.keyple:keyple-java-calypso:1.0.0"
 ```
-- Keyple Distributed Local: Java library providing distributed Local API 
+- Keyple Distributed Local: Java library providing distributed Local API
 ```groovy
     implementation "org.eclipse.keyple:keyple-java-distributed-local:1.0.0"
 ```
 
-Then each Keyple plugin needs its own dependencies imported. 
+Then each Keyple plugin needs its own dependencies imported.
 Here are some examples:
 
 - Keyple Android Plugin NFC: plugin providing access to NFC Reader
@@ -77,14 +77,14 @@ Otherwise you'll encounter a security exception.
 
 Within the release package, 2 APKs are provided:
 * keyple-demo-remote-client_XXXX.XX: Signed with CNA Keystore. At time no compatible SIM are available.
-* keyple-demo-remote-client_XXXX.XX-ORANGE: Signed with Orange Keystore, compatible pre-production SIMs provided by Orange. 
+* keyple-demo-remote-client_XXXX.XX-ORANGE: Signed with Orange Keystore, compatible pre-production SIMs provided by Orange.
 
 ## Use Wizway Solutions platform
 
-In order to use the eSE, this demo relies on Wizway Platform. 
+In order to use the eSE, this demo relies on Wizway Platform.
 Wizway Solutions provides an application to install on the device (called the Agent) which will handle operations opening access to the secure element (can also be used with the SIM card) and allowing to exchange
 data with it.
-To create a connection with this agent, Wizway Solutions provides an android library. 
+To create a connection with this agent, Wizway Solutions provides an android library.
 Once the library and agent are correctly initialized, Wizway Service Instances are provided to Keyple Wizway Plugin and the Android application can benefit from Keyple toolkit.
 
 Please refer to [Keyple Android Wizway Plugin](https://github.com/calypsonet/keyple-android-plugin-wizway/) and [Wizway Solutions](https://www.wizwaysolutions.com) for more information.

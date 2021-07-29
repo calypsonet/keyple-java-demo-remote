@@ -29,10 +29,9 @@ import org.cna.keyple.demo.sale.data.endpoint.AnalyzeContractsOutput
 import org.cna.keyple.demo.sale.data.endpoint.WriteContractInput
 import org.cna.keyple.demo.sale.data.endpoint.WriteContractOutput
 import org.cna.keyple.demo.sale.data.model.type.PriorityCode
-import org.eclipse.keyple.core.service.exception.KeypleException
-import org.eclipse.keyple.core.service.util.ContactCardCommonProtocols
-import org.eclipse.keyple.core.service.util.ContactlessCardCommonProtocols
 import org.eclipse.keyple.core.util.ByteArrayUtil
+import org.eclipse.keyple.core.util.protocol.ContactCardCommonProtocol
+import org.eclipse.keyple.core.util.protocol.ContactlessCardCommonProtocol
 import org.eclipse.keyple.demo.remote.R
 import org.eclipse.keyple.demo.remote.data.model.CardReaderResponse
 import org.eclipse.keyple.demo.remote.data.model.DeviceEnum
@@ -61,12 +60,12 @@ class ChargeActivity : AbstractCardActivity() {
                             selectedDeviceReaderName,
                             "Android OMAPI",
                             keypleServices.aidEnum.aid,
-                            ContactCardCommonProtocols.ISO_7816_3.name
+                            ContactCardCommonProtocol.ISO_7816_3.name
                         )
                     }
                 }
             }
-        } catch (e: KeypleException) {
+        } catch (e: Exception) {
             Timber.e(e)
         }
     }
@@ -78,7 +77,7 @@ class ChargeActivity : AbstractCardActivity() {
             if (DeviceEnum.getDeviceEnum(prefData.loadDeviceType()!!) == DeviceEnum.CONTACTLESS_CARD) {
                 deactivateAndClearAndroidKeypleNfcReader()
             }
-        } catch (e: KeypleException) {
+        } catch (e: Exception) {
             Timber.e(e)
         }
         super.onPause()
@@ -95,7 +94,7 @@ class ChargeActivity : AbstractCardActivity() {
                     selectedDeviceReaderName,
                     "Android NFC",
                     keypleServices.aidEnum.aid,
-                    ContactlessCardCommonProtocols.ISO_14443_4.name
+                    ContactlessCardCommonProtocol.ISO_14443_4.name
                 )
             }
         }
@@ -125,7 +124,6 @@ class ChargeActivity : AbstractCardActivity() {
                     transactionManager,
                     analyseContractsInput,
                     AnalyzeContractsOutput::class.java)
-
 
                 val writeContractInput = WriteContractInput()
                 writeContractInput.pluginType = pluginType
@@ -186,7 +184,7 @@ class ChargeActivity : AbstractCardActivity() {
         intent.putExtra(ChargeResultActivity.TICKETS_NUMBER, 0)
         intent.putExtra(ChargeResultActivity.STATUS, cardReaderResponse.status.toString())
         startActivity(intent)
-        if(finishActivity == true){finish()}
+        if (finishActivity == true) { finish() }
     }
 
     private fun showPresentNfcCardInstructions() {

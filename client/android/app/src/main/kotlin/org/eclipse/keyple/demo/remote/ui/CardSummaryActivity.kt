@@ -95,7 +95,7 @@ class CardSummaryActivity : AbstractDemoActivity() {
             Status.ERROR -> {
                 animation.setAnimation("error_anim.json")
                 animation.playAnimation()
-                if(cardContent.errorMessage != null)
+                if (cardContent.errorMessage != null)
                     bigText.text = cardContent.errorMessage
                 else
                     bigText.setText(R.string.error_label)

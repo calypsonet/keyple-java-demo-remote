@@ -22,10 +22,9 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.calypsonet.terminal.reader.CardReaderEvent
 import org.cna.keyple.demo.sale.data.endpoint.CardIssuanceOutput
-import org.eclipse.keyple.core.service.exception.KeypleException
-import org.eclipse.keyple.core.service.util.ContactCardCommonProtocols
-import org.eclipse.keyple.core.service.util.ContactlessCardCommonProtocols
 import org.eclipse.keyple.core.util.ByteArrayUtil
+import org.eclipse.keyple.core.util.protocol.ContactCardCommonProtocol
+import org.eclipse.keyple.core.util.protocol.ContactlessCardCommonProtocol
 import org.eclipse.keyple.demo.remote.R
 import org.eclipse.keyple.demo.remote.data.model.CardReaderResponse
 import org.eclipse.keyple.demo.remote.data.model.DeviceEnum
@@ -50,11 +49,11 @@ class PersonnalizationActivity : AbstractCardActivity() {
                 showNowPersonnalizingInformation()
                 initOmapiReader() {
                     GlobalScope.launch {
-                        remoteServiceExecution(selectedDeviceReaderName, "Android OMAPI", keypleServices.aidEnum.aid, ContactCardCommonProtocols.ISO_7816_3.name)
+                        remoteServiceExecution(selectedDeviceReaderName, "Android OMAPI", keypleServices.aidEnum.aid, ContactCardCommonProtocol.ISO_7816_3.name)
                     }
                 }
             }
-        } catch (e: KeypleException) {
+        } catch (e: Exception) {
             Timber.e(e)
         }
     }
@@ -68,7 +67,7 @@ class PersonnalizationActivity : AbstractCardActivity() {
             } else {
                 deactivateAndClearOmapiReader()
             }
-        } catch (e: KeypleException) {
+        } catch (e: Exception) {
             Timber.e(e)
         }
         super.onPause()
@@ -95,7 +94,7 @@ class PersonnalizationActivity : AbstractCardActivity() {
         intent.putExtra(ChargeResultActivity.IS_PERSONNALIZATION_RESULT, true)
         intent.putExtra(ChargeResultActivity.STATUS, cardReaderResponse.status.name)
         startActivity(intent)
-        if(finishActivity == true){finish()}
+        if (finishActivity == true) { finish() }
     }
 
     override fun onReaderEvent(event: CardReaderEvent?) {
@@ -104,7 +103,7 @@ class PersonnalizationActivity : AbstractCardActivity() {
                 showNowPersonnalizingInformation()
             }
             GlobalScope.launch {
-                remoteServiceExecution(selectedDeviceReaderName, "Android NFC", keypleServices.aidEnum.aid, ContactlessCardCommonProtocols.ISO_14443_4.name)
+                remoteServiceExecution(selectedDeviceReaderName, "Android NFC", keypleServices.aidEnum.aid, ContactlessCardCommonProtocol.ISO_14443_4.name)
             }
         }
     }

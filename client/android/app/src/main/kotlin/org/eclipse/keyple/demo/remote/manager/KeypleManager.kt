@@ -11,18 +11,17 @@
  ********************************************************************************/
 package org.eclipse.keyple.demo.remote.manager
 
-import org.calypsonet.terminal.calypso.card.CalypsoCard
-import org.calypsonet.terminal.calypso.transaction.CardTransactionManager
-import org.eclipse.keyple.card.calypso.CalypsoExtensionService
 import java.lang.IllegalStateException
 import kotlin.jvm.Throws
+import org.calypsonet.terminal.calypso.card.CalypsoCard
+import org.calypsonet.terminal.calypso.transaction.CardTransactionManager
+import org.calypsonet.terminal.reader.CardReader
+import org.calypsonet.terminal.reader.ReaderCommunicationException
+import org.eclipse.keyple.card.calypso.CalypsoExtensionService
 import org.eclipse.keyple.core.common.KeyplePluginExtensionFactory
-import org.eclipse.keyple.core.service.Reader
+import org.eclipse.keyple.core.plugin.ReaderIOException
+import org.eclipse.keyple.core.service.ObservableReader
 import org.eclipse.keyple.core.service.SmartCardServiceProvider
-import org.eclipse.keyple.core.service.event.ObservableReader
-import org.eclipse.keyple.core.service.exception.KeypleAllocationNoReaderException
-import org.eclipse.keyple.core.service.exception.KeypleReaderIOException
-import org.eclipse.keyple.core.service.exception.KeypleReaderNotFoundException
 import timber.log.Timber
 
 /**
@@ -43,7 +42,7 @@ object KeypleManager {
     public fun registerPlugin(factory: KeyplePluginExtensionFactory) {
         try {
             SmartCardServiceProvider.getService().registerPlugin(factory)
-        }catch (e: Exception){
+        } catch (e: Exception) {
             Timber.e(e)
         }
     }
@@ -54,7 +53,7 @@ object KeypleManager {
     public fun unregisterPlugin(pluginName: String) {
         try {
             SmartCardServiceProvider.getService().unregisterPlugin(pluginName)
-        }catch (e: Exception){
+        } catch (e: Exception) {
             Timber.e(e)
         }
     }
@@ -62,36 +61,36 @@ object KeypleManager {
     /**
      * Retrieve a registered reader
      */
-    @Throws(KeypleAllocationNoReaderException::class)
-    public fun getReader(readerName: String): Reader {
-        var reader: Reader? = null
+    @Throws(ReaderIOException::class)
+    public fun getReader(readerName: String): CardReader {
+        var reader: CardReader? = null
         SmartCardServiceProvider.getService().plugins.forEach {
             try {
                 reader = it.getReader(readerName)
-            } catch (e: KeypleReaderNotFoundException) {
+            } catch (e: ReaderIOException) {
                 if (readerName == OMAPI_SIM_READER_NAME) {
                     try {
                         reader = it.getReader(OMAPI_SIM_1_READER_NAME)
-                    } catch (e: KeypleReaderNotFoundException) { }
+                    } catch (e: ReaderIOException) { }
                 }
             }
         }
-        return reader ?: throw KeypleReaderNotFoundException("$readerName not found")
+        return reader ?: throw ReaderIOException("$readerName not found")
     }
 
     /**
      * Retrieve a registered observable reader.
      */
-    @Throws(KeypleAllocationNoReaderException::class)
+    @Throws(ReaderIOException::class)
     public fun getObservableReader(readerName: String): ObservableReader {
         val reader = getReader(readerName)
-        return if (reader is ObservableReader) reader else throw KeypleReaderNotFoundException("$readerName not found")
+        return if (reader is ObservableReader) reader else throw Exception("$readerName not found")
     }
 
     /**
      * Select card and retrieve CalypsoPO
      */
-    @Throws(IllegalStateException::class, KeypleReaderIOException::class, KeypleAllocationNoReaderException::class)
+    @Throws(IllegalStateException::class, ReaderIOException::class)
     public fun getTransactionManager(readerName: String, aid: String, protocol: String?): CardTransactionManager {
         with(getReader(readerName)) {
             if (isCardPresent) {
@@ -125,10 +124,10 @@ object KeypleManager {
                 if (selectionResult.activeSmartCard != null) {
                     return calypsoExtension.createCardTransactionWithoutSecurity(reader, selectionResult.activeSmartCard as CalypsoCard)
                 } else {
-                    throw KeypleReaderIOException("Card app not found")
+                    throw ReaderCommunicationException("Card app not found")
                 }
             } else {
-                throw KeypleReaderIOException("Card is not present")
+                throw ReaderIOException("Card is not present")
             }
         }
     }
