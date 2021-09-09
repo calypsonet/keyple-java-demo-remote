@@ -40,7 +40,7 @@
     <dimen name="toolbar_menu_width">25dp</dimen>
 
     <dimen name="eclipse_logo_width">163dp</dimen>
-    <dimen name="eclipse_logo_height">52dp</dimen>
+    <dimen name="eclipse_logo_height">60dp</dimen>
 
     <dimen name="home_element_margin">20dp</dimen>
     <dimen name="home_btn_top_margin">10dp</dimen>

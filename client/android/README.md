@@ -39,35 +39,41 @@ Android Client
     implementation project(":common")
 ```
 
-## Keyple Dependencies
+## Dependencies
 
 The demo needs multiple dependencies to work.
 
 First we need to import the Keyple related dependencies in the `build.gradle` file:
-- Keyple Core: Java library providing core API of Keyple.
+
 ```groovy
-    implementation "org.eclipse.keyple:keyple-java-core:1.0.0"
-```
-- Keyple Calypso: Java library providing an API to handle Calypso card
-```groovy
-    implementation "org.eclipse.keyple:keyple-java-calypso:1.0.0"
-```
-- Keyple Distributed Local: Java library providing distributed Local API
-```groovy
-    implementation "org.eclipse.keyple:keyple-java-distributed-local:1.0.0"
+    implementation "org.calypsonet.terminal:calypsonet-terminal-reader-java-api:1.0.+"
+    implementation "org.calypsonet.terminal:calypsonet-terminal-calypso-java-api:1.0.+"
+
+    implementation "org.eclipse.keyple:keyple-service-java-lib:2.0.+"
+    implementation "org.eclipse.keyple:keyple-card-calypso-java-lib:2.0.+"
+    implementation "org.eclipse.keyple:keyple-card-generic-java-lib:2.0.+"
+    implementation "org.eclipse.keyple:keyple-util-java-lib:2.0.+"
+    implementation "org.eclipse.keyple:keyple-common-java-api:2.0.+"
+
+    implementation "org.eclipse.keyple:keyple-distributed-local-java-lib:2.0.+"
+    implementation "org.eclipse.keyple:keyple-distributed-network-java-lib:2.0.+"
+
+    implementation "org.eclipse.keyple:keyple-plugin-java-api:2.0.+"
+
 ```
 
-Then each Keyple plugin needs its own dependencies imported.
-Here are some examples:
+## Keyple plugins 
 
-- Keyple Android Plugin NFC: plugin providing access to NFC Reader
-```groovy
-    implementation "org.eclipse.keyple:keyple-android-plugin-nfc:1.0.0"
-```
+This demo uses two keyple plugins
 
-- Keyple Android Plugin OMAPI: plugin providing access to SIM Reader
+The [Android NFC plugin](https://github.com/eclipse/keyple-plugin-android-nfc-java-lib) allowing to
+process a contactless SmartCard.
+The The [Android OMAPI plugin](https://github.com/eclipse/keyple-plugin-android-omapi-java-lib) 
+allowing to process a contact SmartCard.
+
 ```groovy
-    implementation "org.eclipse.keyple:keyple-android-plugin-omapi:1.0.0"
+    implementation "org.eclipse.keyple:keyple-plugin-android-nfc-java-lib:2.0.+"
+    implementation "org.eclipse.keyple:keyple-plugin-android-omapi-java-lib:2.0.+"
 ```
 
 ## Sign application
