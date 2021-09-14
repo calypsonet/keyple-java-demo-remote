@@ -129,7 +129,7 @@ public class TransactionTest {
                 localService.executeRemoteService(
                     "CONTRACT_ANALYSIS",
                     poReader.getName(),
-                    null,
+                        calypsoCard,
                     compatibleContractInput,
                     AnalyzeContractsOutput.class);
 
@@ -147,7 +147,7 @@ public class TransactionTest {
         AnalyzeContractsOutput passExpected = localService.executeRemoteService(
                 "CONTRACT_ANALYSIS",
                 poReader.getName(),
-                null,
+                calypsoCard,
                 compatibleContractInput,
                 AnalyzeContractsOutput.class);
 
