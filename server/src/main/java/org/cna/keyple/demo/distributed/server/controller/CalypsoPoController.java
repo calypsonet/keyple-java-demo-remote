@@ -1,8 +1,13 @@
 package org.cna.keyple.demo.distributed.server.controller;
 
 
+import org.calypsonet.terminal.calypso.WriteAccessLevel;
+import org.calypsonet.terminal.calypso.card.CalypsoCard;
+import org.calypsonet.terminal.calypso.sam.CalypsoSam;
+import org.calypsonet.terminal.calypso.transaction.CardSecuritySetting;
+import org.calypsonet.terminal.calypso.transaction.CardTransactionManager;
 import org.cna.keyple.demo.distributed.server.util.CalypsoClassicInfo;
-import org.cna.keyple.demo.distributed.server.util.CalypsoUtils;
+import org.cna.keyple.demo.distributed.server.util.CalypsoConstants;
 import org.cna.keyple.demo.sale.data.model.ContractStructureDto;
 import org.cna.keyple.demo.sale.data.model.EnvironmentHolderStructureDto;
 import org.cna.keyple.demo.sale.data.model.EventStructureDto;
@@ -12,11 +17,10 @@ import org.cna.keyple.demo.sale.data.model.parser.EnvironmentHolderStructurePars
 import org.cna.keyple.demo.sale.data.model.parser.EventStructureParser;
 import org.cna.keyple.demo.sale.data.model.type.DateCompact;
 import org.cna.keyple.demo.sale.data.model.type.VersionNumber;
-import org.eclipse.keyple.calypso.transaction.CalypsoPo;
-import org.eclipse.keyple.calypso.transaction.CalypsoSam;
-import org.eclipse.keyple.calypso.transaction.PoTransaction;
-import org.eclipse.keyple.core.card.selection.CardResource;
+import org.eclipse.keyple.card.calypso.CalypsoExtensionService;
 import org.eclipse.keyple.core.service.Reader;
+import org.eclipse.keyple.core.service.resource.CardResource;
+import org.eclipse.keyple.core.service.resource.CardResourceServiceProvider;
 import org.eclipse.keyple.core.util.Assert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,9 +39,9 @@ import static org.cna.keyple.demo.distributed.server.util.CalypsoClassicInfo.*;
 public class CalypsoPoController {
 
     private static final Logger logger = LoggerFactory.getLogger(CalypsoPoController.class);
-    private final CalypsoPo calypsoPo;
-    private final Reader poReader;
-    private final CardResource<CalypsoSam> samResource;
+    private final CalypsoCard calypsoCard;
+    private final Reader cardReader;
+    private final CardResource samResource;
 
     public static Builder newBuilder(){
         return new Builder();
@@ -47,18 +51,18 @@ public class CalypsoPoController {
      * static Builder class
      */
     public static final class Builder {
-        private  CalypsoPo calypsoPo;
+        private CalypsoCard calypsoCard;
         private  Reader poReader;
-        private  CardResource<CalypsoSam> samResource;
+        private CardResource samResource;
 
         /**
-         * Specify the calypso PO to which the operation will be executed
-         * @param calypsoPo non null instance of a calypso smart card object
+         * Specify the calypso Card to which the operation will be executed
+         * @param calypsoCard non null instance of a calypso smart card object
          * @return next step of configuration
          */
-        public Builder withCalypsoPo(CalypsoPo calypsoPo){
-            Assert.getInstance().notNull(calypsoPo,"calypsoPo");
-            this.calypsoPo = calypsoPo;
+        public Builder withCalypsoCard(CalypsoCard calypsoCard){
+            Assert.getInstance().notNull(calypsoCard,"calypsoCard");
+            this.calypsoCard = calypsoCard;
             return this;
         }
 
@@ -67,24 +71,25 @@ public class CalypsoPoController {
          * @param poReader non null instance of a reader
          * @return next step of configuration
          */
-        public Builder withReader(Reader poReader){
+        public Builder withCardReader(Reader poReader){
             Assert.getInstance().notNull(poReader,"poReader");
             this.poReader = poReader;
             return this;
         }
         /**
-         * Specify the sam resource required to perform secured operations
-         * @param samResource non null instance of a card resource
+         * Specify the calypso sam resource
+         * @param samResource non null instance of a reader
          * @return next step of configuration
          */
-        public Builder withSamResource(CardResource<CalypsoSam> samResource){
+        public Builder withSamResource(CardResource samResource){
             Assert.getInstance().notNull(samResource,"samResource");
             this.samResource = samResource;
             return this;
         }
 
+
         public CalypsoPoController build(){
-            return new CalypsoPoController(calypsoPo, poReader,samResource);
+            return new CalypsoPoController(calypsoCard, poReader,samResource);
         }
 
     }
@@ -92,13 +97,12 @@ public class CalypsoPoController {
     /**
      * (private)
      * Build this controller with the calypso resource you aim to read.
-     * @param calypsoPo selected smart card
-     * @param poReader reader the smart card is inserted into
-     * @param samResource sam resource needed to perform secure operations
+     * @param calypsoCard selected smart card
+     * @param cardReader reader the smart card is inserted into
      */
-    private CalypsoPoController(CalypsoPo calypsoPo , Reader poReader, CardResource<CalypsoSam> samResource){
-        this.calypsoPo = calypsoPo;
-        this.poReader = poReader;
+    private CalypsoPoController(CalypsoCard calypsoCard , Reader cardReader,CardResource samResource){
+        this.calypsoCard = calypsoCard;
+        this.cardReader = cardReader;
         this.samResource = samResource;
     }
 
@@ -107,58 +111,72 @@ public class CalypsoPoController {
      * Read all files on the calypso PO inserted in the Reader
      * @return card content
      */
-    public CalypsoPoContent readCard(){
-        // prepare the PO TransactionLog
-        PoTransaction poTransaction =
-                new PoTransaction(
-                        new CardResource<>(this.poReader, this.calypsoPo),
-                        CalypsoUtils.getSecuritySettings(this.samResource));
+    public CalypsoPoRepresentation readCard(){
+        // Create the card transaction manager
+        CardTransactionManager cardTransaction;
 
+        // Get the Calypso card extension service
+        CalypsoExtensionService cardExtension = CalypsoExtensionService.getInstance();
+
+        CardSecuritySetting cardSecuritySetting =
+                CalypsoExtensionService.getInstance()
+                        .createCardSecuritySetting()
+                        .setSamResource(samResource.getReader(), (CalypsoSam) samResource.getSmartCard())
+                        .setPinVerificationCipheringKey(
+                                CalypsoConstants.PIN_VERIFICATION_CIPHERING_KEY_KIF,
+                                CalypsoConstants.PIN_VERIFICATION_CIPHERING_KEY_KVC)
+                        .setPinModificationCipheringKey(
+                                CalypsoConstants.PIN_MODIFICATION_CIPHERING_KEY_KIF,
+                                CalypsoConstants.PIN_MODIFICATION_CIPHERING_KEY_KVC);
+
+        // create a secured card transaction
+        cardTransaction =
+                cardExtension.createCardTransaction(cardReader, calypsoCard, cardSecuritySetting);
         /*
          * Open Calypso session
          */
         logger.info("Open Calypso Session...");
-        poTransaction.processOpening(PoTransaction.SessionSetting.AccessLevel.SESSION_LVL_LOAD);
+        cardTransaction.processOpening(WriteAccessLevel.LOAD);
 
         // Prepare reading of environment record
-        poTransaction.prepareReadRecordFile(SFI_EnvironmentAndHolder, RECORD_NUMBER_1);
+        cardTransaction.prepareReadRecordFile(SFI_EnvironmentAndHolder, RECORD_NUMBER_1);
 
         // Prepare reading of last event record
-        poTransaction.prepareReadRecordFile(
+        cardTransaction.prepareReadRecordFile(
                 CalypsoClassicInfo.SFI_EventLog, CalypsoClassicInfo.RECORD_NUMBER_1);
 
         // Prepare reading of contract records (Calypso Light)
-        poTransaction.prepareReadRecordFile(
+        cardTransaction.prepareReadRecordFile(
                 SFI_Contracts, CalypsoClassicInfo.RECORD_NUMBER_1);
-        poTransaction.prepareReadRecordFile(
+        cardTransaction.prepareReadRecordFile(
                 SFI_Contracts, CalypsoClassicInfo.RECORD_NUMBER_2);
-        poTransaction.prepareReadRecordFile(
+        cardTransaction.prepareReadRecordFile(
                 SFI_Contracts, CalypsoClassicInfo.RECORD_NUMBER_3);
-        poTransaction.prepareReadRecordFile(
+        cardTransaction.prepareReadRecordFile(
                 SFI_Contracts, CalypsoClassicInfo.RECORD_NUMBER_4);
 
         // Prepare reading of simulated counter record
-        poTransaction.prepareReadCounterFile(
+        cardTransaction.prepareReadCounterFile(
                 SFI_Counters_1, CalypsoClassicInfo.RECORD_NUMBER_1);
-        poTransaction.prepareReadCounterFile(
+        cardTransaction.prepareReadCounterFile(
                 SFI_Counters_2, CalypsoClassicInfo.RECORD_NUMBER_1);
-        poTransaction.prepareReadCounterFile(
+        cardTransaction.prepareReadCounterFile(
                 SFI_Counters_3, CalypsoClassicInfo.RECORD_NUMBER_1);
-        poTransaction.prepareReadCounterFile(
+        cardTransaction.prepareReadCounterFile(
                 SFI_Counters_4, CalypsoClassicInfo.RECORD_NUMBER_1);
 
 
         logger.info("Read Card...");
 
-        poTransaction.processPoCommands();
+        cardTransaction.processCardCommands();
 
         /*
          * Close Calypso session
          */
-        poTransaction.processClosing();
+        cardTransaction.processClosing();
 
         logger.info("Calypso Session Closed.");
-        return CalypsoPoContent.parse(calypsoPo);
+        return CalypsoPoRepresentation.parse(calypsoCard);
     }
 
     /**
@@ -166,16 +184,32 @@ public class CalypsoPoController {
      * @param calypsoPoContent updated content to be written
      * @return status code
      */
-    public int writeCard(CalypsoPoContent calypsoPoContent){
-        // prepare the PO TransactionLog
-        PoTransaction poTransaction =
-                new PoTransaction(
-                        new CardResource<>(this.poReader, this.calypsoPo),
-                        CalypsoUtils.getSecuritySettings(this.samResource));
+    public int writeCard(CalypsoPoRepresentation calypsoPoContent){
+        // Create the card transaction manager
+        CardTransactionManager cardTransaction;
+
+        // Get the Calypso card extension service
+        CalypsoExtensionService cardExtension = CalypsoExtensionService.getInstance();
+
+        // Create security settings that reference the same SAM profile requested from the card resource
+        // service, specifying the key ciphering key parameters.
+        CardSecuritySetting cardSecuritySetting =
+                CalypsoExtensionService.getInstance()
+                        .createCardSecuritySetting()
+                        .setSamResource(samResource.getReader(), (CalypsoSam) samResource.getSmartCard())
+                        .setPinVerificationCipheringKey(
+                                CalypsoConstants.PIN_VERIFICATION_CIPHERING_KEY_KIF,
+                                CalypsoConstants.PIN_VERIFICATION_CIPHERING_KEY_KVC)
+                        .setPinModificationCipheringKey(
+                                CalypsoConstants.PIN_MODIFICATION_CIPHERING_KEY_KIF,
+                                CalypsoConstants.PIN_MODIFICATION_CIPHERING_KEY_KVC);
+        // create a secured card transaction
+        cardTransaction =
+                cardExtension.createCardTransaction(cardReader, calypsoCard, cardSecuritySetting);
 
         /* Open Calypso session */
         logger.info("Open Calypso Session - SESSION_LVL_LOAD...");
-        poTransaction.processOpening(PoTransaction.SessionSetting.AccessLevel.SESSION_LVL_LOAD);
+        cardTransaction.processOpening(WriteAccessLevel.LOAD);
 
         /* Update contract records */
         if(!calypsoPoContent.getUpdatedContracts().isEmpty()){
@@ -185,14 +219,14 @@ public class CalypsoPoController {
 
                 if(calypsoPoContent.getUpdatedContracts().contains(contract)){
                    //update contract
-                    poTransaction.prepareUpdateRecord(
+                    cardTransaction.prepareUpdateRecord(
                             SFI_Contracts,
                             i+1,
                             ContractStructureParser.unparse(contract));
 
                     //update counter
                     if(contract.getCounter() != null){
-                        poTransaction.prepareUpdateRecord(
+                        cardTransaction.prepareUpdateRecord(
                                 SFI_Counters_simulated.get(i),
                                 1,
                                 CounterStructureParser.unparse(contract.getCounter()));
@@ -203,12 +237,12 @@ public class CalypsoPoController {
 
         /* Update event */
         if(calypsoPoContent.isEventUpdated()){
-            poTransaction.prepareUpdateRecord(SFI_EventLog, 1,
+            cardTransaction.prepareUpdateRecord(SFI_EventLog, 1,
                     EventStructureParser.unparse(buildEvent(calypsoPoContent.getEvent(), calypsoPoContent.getContracts())));
         }
 
         /* Close Session */
-        poTransaction.processClosing();
+        cardTransaction.processClosing();
         logger.info("Calypso Session Closed - SESSION_LVL_LOAD");
 
         return 0;
@@ -218,47 +252,63 @@ public class CalypsoPoController {
      * Empty the inserted card with empty files for event, contracts, counters. Init the environment file.
      */
     public void initCard(){
-        // prepare the PO TransactionLog
-        PoTransaction poTransaction =
-                new PoTransaction(
-                        new CardResource<>(poReader, calypsoPo),
-                        CalypsoUtils.getSecuritySettings(samResource));
+        // Create the card transaction manager
+        CardTransactionManager cardTransaction;
+
+        // Get the Calypso card extension service
+        CalypsoExtensionService cardExtension = CalypsoExtensionService.getInstance();
+
+        // Create security settings that reference the same SAM profile requested from the card resource
+        // service, specifying the key ciphering key parameters.
+        CardSecuritySetting cardSecuritySetting =
+                CalypsoExtensionService.getInstance()
+                        .createCardSecuritySetting()
+                        .setSamResource(samResource.getReader(), (CalypsoSam) samResource.getSmartCard())
+                        .setPinVerificationCipheringKey(
+                                CalypsoConstants.PIN_VERIFICATION_CIPHERING_KEY_KIF,
+                                CalypsoConstants.PIN_VERIFICATION_CIPHERING_KEY_KVC)
+                        .setPinModificationCipheringKey(
+                                CalypsoConstants.PIN_MODIFICATION_CIPHERING_KEY_KIF,
+                                CalypsoConstants.PIN_MODIFICATION_CIPHERING_KEY_KVC);
+        // create a secured card transaction
+        cardTransaction =
+                cardExtension.createCardTransaction(cardReader, calypsoCard, cardSecuritySetting);
 
         /*
          * Open Calypso session
          */
         logger.info("Open Calypso Session - SESSION_LVL_PERSO...");
-        poTransaction.processOpening(PoTransaction.SessionSetting.AccessLevel.SESSION_LVL_PERSO);
+        cardTransaction.processOpening(WriteAccessLevel.PERSONALIZATION);
 
         /*
          * Prepare file update
          */
         //Fill the environment structure with predefined values
-        poTransaction.prepareUpdateRecord(SFI_EnvironmentAndHolder, 1,
+        cardTransaction.prepareUpdateRecord(SFI_EnvironmentAndHolder, 1,
                 EnvironmentHolderStructureParser.unparse(getEnvironmentInit()));
 
         //Clear the first event (update with a byte array filled with 0s).
-        poTransaction.prepareUpdateRecord(SFI_EventLog, 1,
+        cardTransaction.prepareUpdateRecord(SFI_EventLog, 1,
                 EnvironmentHolderStructureParser.getEmpty());
 
         //Clear all contracts (update with a byte array filled with 0s).
         //TODO do not support CLAP
-        poTransaction.prepareUpdateRecord(SFI_Contracts, 1,
+        cardTransaction.prepareUpdateRecord(SFI_Contracts, 1,
                 ContractStructureParser.getEmpty());
-        poTransaction.prepareUpdateRecord(SFI_Contracts, 2,
+        cardTransaction.prepareUpdateRecord(SFI_Contracts, 2,
                 ContractStructureParser.getEmpty());
-        poTransaction.prepareUpdateRecord(SFI_Contracts, 3,
+        cardTransaction.prepareUpdateRecord(SFI_Contracts, 3,
                 ContractStructureParser.getEmpty());
-        poTransaction.prepareUpdateRecord(SFI_Contracts, 4,
+        cardTransaction.prepareUpdateRecord(SFI_Contracts, 4,
                 ContractStructureParser.getEmpty());
 
         //Clear the counter file (update with a byte array filled with 0s).
-        poTransaction.prepareUpdateRecord(SFI_Counters, 1, EventStructureParser.getEmpty());
+        cardTransaction.prepareUpdateRecord(SFI_Counters, 1, EventStructureParser.getEmpty());
 
         /*
          * Close Calypso session
          */
-        poTransaction.processClosing();
+        cardTransaction.processClosing();
 
         logger.info("Calypso Session Closed - SESSION_LVL_PERSO");
     }

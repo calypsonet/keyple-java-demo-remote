@@ -12,8 +12,9 @@
 package org.cna.keyple.demo.distributed.server.endpoint;
 
 import org.eclipse.keyple.distributed.MessageDto;
+import org.eclipse.keyple.distributed.RemotePluginServer;
 import org.eclipse.keyple.distributed.SyncNodeServer;
-import org.eclipse.keyple.distributed.impl.RemotePluginServerUtils;
+import org.eclipse.keyple.core.service.SmartCardServiceProvider;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
@@ -21,6 +22,8 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import java.util.List;
+
+import static org.cna.keyple.demo.distributed.server.Main.KeypleDistributedServerDemo.REMOTE_PLUGIN_NAME;
 
 /**
  * Server Controller.
@@ -40,7 +43,11 @@ public class EndpointServer {
   public List<MessageDto> processMessage(MessageDto message) {
 
     // Retrieves the node associated to the remote plugin.
-    SyncNodeServer node = RemotePluginServerUtils.getSyncNode();
+    SyncNodeServer node =
+            SmartCardServiceProvider.getService()
+                    .getPlugin(REMOTE_PLUGIN_NAME)
+                    .getExtension(RemotePluginServer.class)
+                    .getSyncNode();
 
     // Forwards the message to the node and returns the response to the client.
     return node.onRequest(message);

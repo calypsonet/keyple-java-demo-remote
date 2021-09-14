@@ -36,6 +36,8 @@ public class Main {
   /** Main class of the Demo Application. */
   public static class KeypleDistributedServerDemo implements QuarkusApplication {
 
+    public static final String REMOTE_PLUGIN_NAME = "REMOTE_PLUGIN_#1";
+
     @ConfigProperty(name = "quarkus.http.port")
     Integer assignedPort;
 

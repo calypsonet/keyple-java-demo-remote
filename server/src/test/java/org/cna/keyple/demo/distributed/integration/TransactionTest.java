@@ -1,6 +1,8 @@
 package org.cna.keyple.demo.distributed.integration;
 
 import io.quarkus.test.junit.QuarkusTest;
+import org.calypsonet.terminal.calypso.card.CalypsoCard;
+import org.calypsonet.terminal.reader.selection.spi.SmartCard;
 import org.cna.keyple.demo.distributed.integration.client.EndpointClient;
 import org.cna.keyple.demo.distributed.integration.client.SamClient;
 import org.cna.keyple.demo.distributed.server.util.CalypsoUtils;
@@ -8,12 +10,13 @@ import org.cna.keyple.demo.distributed.server.util.PcscReaderUtils;
 import org.cna.keyple.demo.sale.data.endpoint.*;
 import org.cna.keyple.demo.sale.data.model.ContractStructureDto;
 import org.cna.keyple.demo.sale.data.model.type.PriorityCode;
-import org.eclipse.keyple.calypso.transaction.CalypsoPo;
+import org.eclipse.keyple.core.service.Plugin;
 import org.eclipse.keyple.core.service.Reader;
+import org.eclipse.keyple.core.service.SmartCardServiceProvider;
 import org.eclipse.keyple.distributed.LocalServiceClient;
-import org.eclipse.keyple.distributed.RemoteServiceParameters;
-import org.eclipse.keyple.distributed.impl.LocalServiceClientFactory;
-import org.eclipse.keyple.distributed.impl.LocalServiceClientUtils;
+import org.eclipse.keyple.distributed.LocalServiceClientFactory;
+import org.eclipse.keyple.distributed.LocalServiceClientFactoryBuilder;
+import org.eclipse.keyple.plugin.pcsc.PcscPluginFactoryBuilder;
 import org.eclipse.microprofile.rest.client.RestClientBuilder;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 import org.junit.jupiter.api.BeforeAll;
@@ -55,11 +58,18 @@ public class TransactionTest {
 
     @BeforeAll
     public static void setUpAll(){
-        LocalServiceClientFactory.builder()
-                .withServiceName(LOCAL_SERVICE_NAME)
-                .withSyncNode(endpointClient)
-                .withoutReaderObservation()
-                .getService();
+        // Init the local service factory.
+        LocalServiceClientFactory factory =
+                LocalServiceClientFactoryBuilder.builder(LOCAL_SERVICE_NAME)
+                        .withSyncNode(endpointClient)
+                        .build();
+
+        // Init the local service using the associated factory.
+        SmartCardServiceProvider.getService().registerDistributedLocalService(factory);
+
+        // Register the PcscPlugin with the SmartCardService, do not specify any regex for the type
+        //Plugin plugin = SmartCardServiceProvider.getService().registerPlugin(PcscPluginFactoryBuilder.builder().build());
+
     }
 
     @BeforeEach
@@ -92,17 +102,22 @@ public class TransactionTest {
      */
     static void reset_load_tickets(Reader poReader){
         /* Select PO */
-        CalypsoPo calypsoPo = CalypsoUtils.selectPo(poReader);
+        SmartCard calypsoCard = CalypsoUtils.selectCard(poReader);
 
-        LocalServiceClient localService = LocalServiceClientUtils.getLocalService(LOCAL_SERVICE_NAME);
+        // Retrieves the local service.
+        LocalServiceClient localService =
+                SmartCardServiceProvider.getService()
+                        .getDistributedLocalService(LOCAL_SERVICE_NAME)
+                        .getExtension(LocalServiceClient.class);
 
         /* Execute Remote Service : Reset card */
-        CardIssuanceOutput cardIssuanceOutput = localService.executeRemoteService(
-                RemoteServiceParameters
-                        .builder("CARD_ISSUANCE", poReader)
-                        .withInitialCardContent(calypsoPo)
-                        .build(),
-                CardIssuanceOutput.class);
+        CardIssuanceOutput cardIssuanceOutput =
+                localService.executeRemoteService(
+                "CARD_ISSUANCE",
+                    poReader.getName(),
+                    calypsoCard,
+                    null,
+                    CardIssuanceOutput.class);
 
         assertEquals(0, cardIssuanceOutput.getStatusCode());
 
@@ -110,13 +125,13 @@ public class TransactionTest {
                 new AnalyzeContractsInput().setPluginType("Android NFC");
 
         /* Execute Remote Service : Get Valid Contracts */
-        AnalyzeContractsOutput contractAnalysisOutput = localService.executeRemoteService(
-                RemoteServiceParameters
-                        .builder("CONTRACT_ANALYSIS", poReader)
-                        .withUserInputData(compatibleContractInput)
-                        .withInitialCardContent(calypsoPo)
-                        .build(),
-                AnalyzeContractsOutput.class);
+        AnalyzeContractsOutput contractAnalysisOutput =
+                localService.executeRemoteService(
+                    "CONTRACT_ANALYSIS",
+                    poReader.getName(),
+                        calypsoCard,
+                    compatibleContractInput,
+                    AnalyzeContractsOutput.class);
 
         assertNotNull(contractAnalysisOutput);
         assertEquals(0, contractAnalysisOutput.getStatusCode());
@@ -130,11 +145,10 @@ public class TransactionTest {
 
         /* Execute Remote Service : Check that MULTI-TRIP is written in the card */
         AnalyzeContractsOutput passExpected = localService.executeRemoteService(
-                RemoteServiceParameters
-                        .builder("CONTRACT_ANALYSIS", poReader)
-                        .withUserInputData(compatibleContractInput)
-                        .withInitialCardContent(calypsoPo)
-                        .build(),
+                "CONTRACT_ANALYSIS",
+                poReader.getName(),
+                calypsoCard,
+                compatibleContractInput,
                 AnalyzeContractsOutput.class);
 
         assertNotNull(passExpected);
@@ -152,9 +166,13 @@ public class TransactionTest {
      */
     static void load_tickets(Reader poReader){
         /* Select PO */
-        CalypsoPo calypsoPo = CalypsoUtils.selectPo(poReader);
+        CalypsoCard calypsoCard = CalypsoUtils.selectCard(poReader);
 
-        LocalServiceClient localService = LocalServiceClientUtils.getLocalService(LOCAL_SERVICE_NAME);
+        // Retrieves the local service.
+        LocalServiceClient localService =
+                SmartCardServiceProvider.getService()
+                        .getDistributedLocalService(LOCAL_SERVICE_NAME)
+                        .getExtension(LocalServiceClient.class);
 
         AnalyzeContractsInput compatibleContractInput =
                 new AnalyzeContractsInput().setPluginType("Android NFC");
@@ -172,12 +190,12 @@ public class TransactionTest {
 
         /* Execute Remote Service : Write Contract */
         WriteContractOutput writeTitleOutput = localService.executeRemoteService(
-                RemoteServiceParameters
-                        .builder("WRITE_CONTRACT", poReader)
-                        .withInitialCardContent(calypsoPo)
-                        .withUserInputData(writeContractInput)
-                        .build(),
+                "WRITE_CONTRACT",
+                poReader.getName(),
+                calypsoCard,
+                writeContractInput,
                 WriteContractOutput.class);
+
 
         assertNotNull(writeTitleOutput);
         assertEquals(0, writeTitleOutput.getStatusCode());
@@ -190,9 +208,13 @@ public class TransactionTest {
      */
     static void load_season_pass(Reader poReader){
         /* Select PO */
-        CalypsoPo calypsoPo = CalypsoUtils.selectPo(poReader);
+        CalypsoCard calypsoCard = CalypsoUtils.selectCard(poReader);
 
-        LocalServiceClient localService = LocalServiceClientUtils.getLocalService(LOCAL_SERVICE_NAME);
+        // Retrieves the local service.
+        LocalServiceClient localService =
+                SmartCardServiceProvider.getService()
+                        .getDistributedLocalService(LOCAL_SERVICE_NAME)
+                        .getExtension(LocalServiceClient.class);
 
         AnalyzeContractsInput compatibleContractInput =
                 new AnalyzeContractsInput().setPluginType("Android NFC");
@@ -209,11 +231,10 @@ public class TransactionTest {
 
         /* Execute Remote Service : Write Contract */
         WriteContractOutput writeTitleOutput = localService.executeRemoteService(
-                RemoteServiceParameters
-                        .builder("WRITE_CONTRACT", poReader)
-                        .withInitialCardContent(calypsoPo)
-                        .withUserInputData(writeContractInput)
-                        .build(),
+                "WRITE_CONTRACT",
+                poReader.getName(),
+                calypsoCard,
+                writeContractInput,
                 WriteContractOutput.class);
 
         assertNotNull(writeTitleOutput);
