@@ -8,10 +8,20 @@ version '2021.04'
 sourceCompatibility = 1.8
 
 repositories {
+    mavenLocal()
     mavenCentral()
+    maven{
+        url "https://repo.eclipse.org/service/local/repositories/maven_central/content"
+    }
+    maven{
+        url "https://oss.sonatype.org/content/repositories/snapshots"
+    }
+    maven{
+        url  "https://s01.oss.sonatype.org/content/repositories/snapshots"
+    }
 }
 
 dependencies {
-    compile group: 'org.eclipse.keyple', name: 'keyple-java-core', version: '+'
+    implementation group: 'org.eclipse.keyple', name: 'keyple-util-java-lib', version:  "2.0.0-SNAPSHOT"
     testCompile group: 'junit', name: 'junit', version: '4.12'
 }

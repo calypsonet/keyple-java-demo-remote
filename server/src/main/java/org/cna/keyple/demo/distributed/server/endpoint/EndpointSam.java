@@ -12,8 +12,9 @@
 package org.cna.keyple.demo.distributed.server.endpoint;
 
 import com.google.gson.JsonObject;
-import org.cna.keyple.demo.distributed.server.controller.SamResourceService;
-import org.eclipse.keyple.core.service.exception.KeypleReaderNotFoundException;
+import org.cna.keyple.demo.distributed.server.plugin.SamCardConfiguration;
+import org.eclipse.keyple.core.service.resource.CardResourceService;
+import org.eclipse.keyple.core.service.resource.CardResourceServiceProvider;
 
 import javax.inject.Inject;
 import javax.ws.rs.GET;
@@ -29,7 +30,7 @@ import javax.ws.rs.core.Response;
 public class EndpointSam {
 
   @Inject
-  SamResourceService samResourceService;
+  SamCardConfiguration samResourceService;
 
   /**
    * Check if sam is present
@@ -38,12 +39,9 @@ public class EndpointSam {
   @GET
   @Produces(MediaType.APPLICATION_JSON)
   public Response isSamReady() {
-    boolean isSamReady = false;
-    try{
-      isSamReady = samResourceService.getSamReader().isCardPresent();
-    }catch (KeypleReaderNotFoundException e){
-      //sam is not ready
-    }
+
+    Boolean isSamReady  =  samResourceService.getSamReader().isCardPresent(); //ping sam
+
     JsonObject object = new JsonObject();
     object.addProperty("isSamReady", isSamReady);
     return Response.ok(object.toString()).build();

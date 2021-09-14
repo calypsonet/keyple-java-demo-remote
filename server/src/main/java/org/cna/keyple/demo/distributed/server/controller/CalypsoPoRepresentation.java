@@ -1,5 +1,6 @@
 package org.cna.keyple.demo.distributed.server.controller;
 
+import org.calypsonet.terminal.calypso.card.FileData;
 import org.cna.keyple.demo.distributed.server.util.CalypsoClassicInfo;
 import org.cna.keyple.demo.sale.data.model.ContractStructureDto;
 import org.cna.keyple.demo.sale.data.model.CounterStructureDto;
@@ -12,8 +13,8 @@ import org.cna.keyple.demo.sale.data.model.parser.EventStructureParser;
 import org.cna.keyple.demo.sale.data.model.type.DateCompact;
 import org.cna.keyple.demo.sale.data.model.type.PriorityCode;
 import org.cna.keyple.demo.sale.data.model.type.VersionNumber;
-import org.eclipse.keyple.calypso.transaction.CalypsoPo;
-import org.eclipse.keyple.calypso.transaction.FileData;
+import org.calypsonet.terminal.calypso.card.CalypsoCard;
+
 import org.eclipse.keyple.core.util.Assert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,11 +27,11 @@ import java.util.List;
 import static org.cna.keyple.demo.distributed.server.util.CalypsoClassicInfo.*;
 
 /**
- * Holds a PO Content and provides method to prepare an update of the card. Use the {@link #parse(CalypsoPo)} method to build this object.
+ * Holds a PO Content and provides method to prepare an update of the card. Use the {@link #parse(CalypsoCard)} method to build this object.
  */
-public class CalypsoPoContent {
+public class CalypsoPoRepresentation {
 
-    private static final Logger logger = LoggerFactory.getLogger(CalypsoPoContent.class);
+    private static final Logger logger = LoggerFactory.getLogger(CalypsoPoRepresentation.class);
 
     private EventStructureDto event;
     private final List<ContractStructureDto> contracts ;
@@ -39,7 +40,7 @@ public class CalypsoPoContent {
     private final List<ContractStructureDto> updatedContracts;//Updated contracts in this object
     private Boolean isEventUpdated;
 
-    private CalypsoPoContent(){
+    private CalypsoPoRepresentation(){
         contracts = new ArrayList<>();
         updatedContracts = new ArrayList<>();
         isEventUpdated = false;
@@ -50,8 +51,8 @@ public class CalypsoPoContent {
      * @param calypsoPo not null calypsoPo object
      * @return cardSession not null object
      */
-    public static CalypsoPoContent parse(CalypsoPo calypsoPo){
-        CalypsoPoContent card = new CalypsoPoContent();
+    public static CalypsoPoRepresentation parse(CalypsoCard calypsoPo){
+        CalypsoPoRepresentation card = new CalypsoPoRepresentation();
 
         //parse event
         card.event = EventStructureParser.parse(

@@ -11,15 +11,10 @@
  ************************************************************************************** */
 package org.cna.keyple.demo.distributed.server.util;
 
-import org.eclipse.keyple.core.service.Plugin;
-import org.eclipse.keyple.core.service.Reader;
-import org.eclipse.keyple.core.service.SmartCardService;
-import org.eclipse.keyple.core.service.exception.KeypleReaderNotFoundException;
-import org.eclipse.keyple.core.service.util.ContactCardCommonProtocols;
-import org.eclipse.keyple.core.service.util.ContactlessCardCommonProtocols;
+import org.eclipse.keyple.core.service.*;
+import org.eclipse.keyple.core.util.protocol.ContactlessCardCommonProtocol;
 import org.eclipse.keyple.plugin.pcsc.PcscReader;
-import org.eclipse.keyple.plugin.pcsc.PcscSupportedContactProtocols;
-import org.eclipse.keyple.plugin.pcsc.PcscSupportedContactlessProtocols;
+import org.eclipse.keyple.plugin.pcsc.PcscSupportedContactlessProtocol;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,50 +34,37 @@ public final class PcscReaderUtils {
    */
   public static Reader getReaderByPattern(String pattern) {
     Pattern p = Pattern.compile(pattern);
-    Collection<Plugin> plugins = SmartCardService.getInstance().getPlugins().values();
+    Collection<Plugin> plugins = SmartCardServiceProvider.getService().getPlugins();
     for (Plugin plugin : plugins) {
-      Collection<Reader> readers = plugin.getReaders().values();
+      Collection<Reader> readers = plugin.getReaders();
       for (Reader reader : readers) {
         if (p.matcher(reader.getName()).matches()) {
           return reader;
         }
       }
     }
-    throw new KeypleReaderNotFoundException("Reader name pattern: " + pattern);
+   return null;
   }
 
   static public Reader initPoReader(String poReaderFilter) {
 
     Reader reader = PcscReaderUtils.getReaderByPattern(poReaderFilter);
 
-    // Get and configure the PO reader
-    ((PcscReader) reader).setContactless(true).setIsoProtocol(PcscReader.IsoProtocol.T1);
+    if(reader==null){
+      return null;
+    }
 
-    // activate protocols
-    reader.activateProtocol(
-            PcscSupportedContactlessProtocols.ISO_14443_4.name(),
-            ContactlessCardCommonProtocols.ISO_14443_4.name());
+    // Get and configure the PO reader
+    reader.getExtension(PcscReader.class).setContactless(true).setIsoProtocol(PcscReader.IsoProtocol.T1);
+
+    ((ConfigurableReader) reader)
+            .activateProtocol(
+                    PcscSupportedContactlessProtocol.ISO_14443_4.name(),
+                    ContactlessCardCommonProtocol.ISO_14443_4.name());
 
     logger.info("PO Reader configured : {}", reader.getName());
     return reader;
 
   }
 
-  public static Reader initSamReader(String samReaderFilter) {
-    logger.info("Initialize card reader for SAM with filter :{}", samReaderFilter);
-
-    Reader reader = PcscReaderUtils.getReaderByPattern(samReaderFilter);
-
-    ((PcscReader) reader).setContactless(false).setIsoProtocol(PcscReader.IsoProtocol.T0);
-
-    ((PcscReader) reader).setSharingMode(PcscReader.SharingMode.SHARED);
-
-    reader.activateProtocol(
-            PcscSupportedContactProtocols.ISO_7816_3.name(),
-            ContactCardCommonProtocols.ISO_7816_3.name());
-
-
-    logger.info("SAM Reader configured : {}", reader.getName());
-    return reader;
-  }
 }

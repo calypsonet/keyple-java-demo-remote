@@ -11,155 +11,98 @@
  ************************************************************************************** */
 package org.cna.keyple.demo.distributed.server.util;
 
-import org.eclipse.keyple.calypso.transaction.*;
-import org.eclipse.keyple.core.card.selection.CardResource;
-import org.eclipse.keyple.core.card.selection.CardSelectionsResult;
-import org.eclipse.keyple.core.card.selection.CardSelectionsService;
-import org.eclipse.keyple.core.card.selection.CardSelector;
+import org.calypsonet.terminal.calypso.card.CalypsoCard;
+import org.calypsonet.terminal.reader.selection.CardSelectionManager;
+import org.calypsonet.terminal.reader.selection.CardSelectionResult;
+import org.eclipse.keyple.card.calypso.CalypsoExtensionService;
 import org.eclipse.keyple.core.service.Reader;
-import org.eclipse.keyple.core.service.util.ContactlessCardCommonProtocols;
-
-import static org.eclipse.keyple.calypso.command.sam.SamRevision.C1;
-import static org.eclipse.keyple.calypso.transaction.PoTransaction.SessionSetting.AccessLevel;
+import org.eclipse.keyple.core.service.SmartCardService;
+import org.eclipse.keyple.core.service.SmartCardServiceProvider;
 
 public final class CalypsoUtils {
 
 
   /**
-   * Define the security parameters to provide when creating {@link
-   * org.eclipse.keyple.calypso.transaction.PoTransaction}
-   *
-   * @param samResource sam resource to build Po Security from
-   * @return PoSecuritySettings settings the set the security on the PO
-   */
-  public static PoSecuritySettings getSecuritySettings(CardResource<CalypsoSam> samResource) {
-
-    // The default KIF values for personalization, loading and debiting
-    final byte DEFAULT_KIF_PERSO = (byte) 0x21;
-    final byte DEFAULT_KIF_LOAD = (byte) 0x27;
-    final byte DEFAULT_KIF_DEBIT = (byte) 0x30;
-    // The default key record number values for personalization, loading and debiting
-    // The actual value should be adjusted.
-    final byte DEFAULT_KEY_RECORD_NUMBER_PERSO = (byte) 0x01;
-    final byte DEFAULT_KEY_RECORD_NUMBER_LOAD = (byte) 0x02;
-    final byte DEFAULT_KEY_RECORD_NUMBER_DEBIT = (byte) 0x03;
-    /* define the security parameters to provide when creating PoTransaction */
-    return new PoSecuritySettings.PoSecuritySettingsBuilder(samResource)
-        .sessionDefaultKif(AccessLevel.SESSION_LVL_PERSO, DEFAULT_KIF_PERSO)
-        .sessionDefaultKif(AccessLevel.SESSION_LVL_LOAD, DEFAULT_KIF_LOAD)
-        .sessionDefaultKif(AccessLevel.SESSION_LVL_DEBIT, DEFAULT_KIF_DEBIT)
-        .sessionDefaultKeyRecordNumber(
-            AccessLevel.SESSION_LVL_PERSO, DEFAULT_KEY_RECORD_NUMBER_PERSO)
-        .sessionDefaultKeyRecordNumber(AccessLevel.SESSION_LVL_LOAD, DEFAULT_KEY_RECORD_NUMBER_LOAD)
-        .sessionDefaultKeyRecordNumber(
-            AccessLevel.SESSION_LVL_DEBIT, DEFAULT_KEY_RECORD_NUMBER_DEBIT)
-        .build();
-  }
-  /**
-   * Operate the SAM selection
-   *
-   * @param samReader the reader where to operate the SAM selection
-   * @return a CalypsoSam object if the selection succeed
-   * @throws IllegalStateException if the selection fails
-   */
-  public static CalypsoSam selectSam(Reader samReader) {
-    // Create a SAM resource after selecting the SAM
-    CardSelectionsService samSelection = new CardSelectionsService();
-
-    // Prepare selector
-    samSelection.prepareSelection(
-            new SamSelection(SamSelector.builder().samRevision(C1).serialNumber(".*").build()));
-
-    if (!samReader.isCardPresent()) {
-      throw new IllegalStateException("No SAM is present in the reader " + samReader.getName());
-    }
-
-    CardSelectionsResult cardSelectionsResult = samSelection.processExplicitSelections(samReader);
-
-    if (!cardSelectionsResult.hasActiveSelection()) {
-      throw new IllegalStateException("Unable to open a logical channel for SAM!");
-    }
-
-    return (CalypsoSam) cardSelectionsResult.getActiveSmartCard();
-  }
-
-  /**
    * Operate the PO selection
    *
-   * @param poReader the reader where to operate the PO selection
+   * @param cardReader the reader where to operate the PO selection
    * @return a CalypsoPo object if the selection succeed
    * @throws IllegalStateException if the selection fails
    */
-  public static CalypsoPo selectPo(Reader poReader) {
+  public static CalypsoCard selectCard(Reader cardReader) {
+    // Get the instance of the SmartCardService (singleton pattern)
+    SmartCardService smartCardService = SmartCardServiceProvider.getService();
 
-    // Check if a PO is present in the reader
-    if (!poReader.isCardPresent()) {
-      throw new IllegalStateException("No PO is present in the reader " + poReader.getName());
+    // Get the Calypso card extension service
+    CalypsoExtensionService cardExtension = CalypsoExtensionService.getInstance();
+
+    // Get the core card selection manager.
+    CardSelectionManager cardSelectionManager = smartCardService.createCardSelectionManager();
+
+    // Create a card selection using the Calypso card extension.
+    // Prepare the selection by adding the created Calypso card selection to the card selection
+    // scenario.
+    cardSelectionManager.prepareSelection(
+            cardExtension
+                    .createCardSelection()
+                    .acceptInvalidatedCard()
+                    .filterByDfName(CalypsoConstants.AID));
+
+    // Actual card communication: run the selection scenario.
+    CardSelectionResult selectionResult =
+            cardSelectionManager.processCardSelectionScenario(cardReader);
+
+    // Check the selection result.
+    if (selectionResult.getActiveSmartCard() == null) {
+      throw new IllegalStateException(
+              "The selection of the application " + CalypsoConstants.AID + " failed.");
     }
 
-    // Prepare a Calypso PO selection
-    CardSelectionsService cardSelectionsService = new CardSelectionsService();
-
-    // make the selection and read additional information afterwards
-    PoSelection poSelection =
-            new PoSelection(
-                    PoSelector.builder()
-                            .cardProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name())
-                            .aidSelector(
-                                    CardSelector.AidSelector.builder().aidToSelect(CalypsoClassicInfo.AID).build())
-                            .invalidatedPo(PoSelector.InvalidatedPo.REJECT)
-                            .build());
-
-    // Add the selection case to the current selection
-    cardSelectionsService.prepareSelection(poSelection);
-
-
-    // Actual PO communication: operate through a single request the Calypso PO selection
-    // and the file read
-
-    return (CalypsoPo) cardSelectionsService.processExplicitSelections(poReader).getActiveSmartCard();
+    // Get the SmartCard resulting of the selection.
+    return (CalypsoCard) selectionResult.getActiveSmartCard();
   }
 
   /**
    * Operate the PO selection with the read of the environment file
    *
-   * @param poReader the reader where to operate the PO selection
+   * @param cardReader the reader where to operate the PO selection
    * @return a CalypsoPo object if the selection succeed
    * @throws IllegalStateException if the selection fails
    */
-  public static CalypsoPo selectPoWithEnvironment(Reader poReader) {
+  public static CalypsoCard selectCardWithEnvironment(Reader cardReader) {
+// Get the instance of the SmartCardService (singleton pattern)
+    SmartCardService smartCardService = SmartCardServiceProvider.getService();
 
-    // Check if a PO is present in the reader
-    if (!poReader.isCardPresent()) {
-      throw new IllegalStateException("No PO is present in the reader " + poReader.getName());
+    // Get the Calypso card extension service
+    CalypsoExtensionService cardExtension = CalypsoExtensionService.getInstance();
+
+    // Get the core card selection manager.
+    CardSelectionManager cardSelectionManager = smartCardService.createCardSelectionManager();
+
+    // Create a card selection using the Calypso card extension.
+    // Prepare the selection by adding the created Calypso card selection to the card selection
+    // scenario.
+    cardSelectionManager.prepareSelection(
+            cardExtension
+                    .createCardSelection()
+                    .filterByDfName(CalypsoConstants.AID)
+                    .acceptInvalidatedCard()
+                    .prepareReadRecordFile(
+                            CalypsoConstants.SFI_ENVIRONMENT_AND_HOLDER, CalypsoConstants.RECORD_NUMBER_1));
+
+
+    // Actual card communication: run the selection scenario.
+    CardSelectionResult selectionResult =
+            cardSelectionManager.processCardSelectionScenario(cardReader);
+
+    // Check the selection result.
+    if (selectionResult.getActiveSmartCard() == null) {
+      throw new IllegalStateException(
+              "The selection of the application " + CalypsoConstants.AID + " failed.");
     }
 
-    // Prepare a Calypso PO selection
-    CardSelectionsService cardSelectionsService = new CardSelectionsService();
-
-    // make the selection and read additional information afterwards
-    PoSelection poSelection =
-            new PoSelection(
-                    PoSelector.builder()
-                            .cardProtocol(ContactlessCardCommonProtocols.ISO_14443_4.name())
-                            .aidSelector(
-                                    CardSelector.AidSelector.builder().aidToSelect(CalypsoClassicInfo.AID).build())
-                            .invalidatedPo(PoSelector.InvalidatedPo.REJECT)
-                            .build());
-
-
-    // Prepare the reading of the environment file
-    poSelection.prepareReadRecordFile(
-            CalypsoClassicInfo.SFI_EnvironmentAndHolder, CalypsoClassicInfo.RECORD_NUMBER_1);
-
-    // Add the selection case to the current selection
-    cardSelectionsService.prepareSelection(poSelection);
-
-
-    // Actual PO communication: operate through a single request the Calypso PO selection
-    // and the file read
-
-    return (CalypsoPo) cardSelectionsService.processExplicitSelections(poReader).getActiveSmartCard();
+    // Get the SmartCard resulting of the selection.
+    return (CalypsoCard) selectionResult.getActiveSmartCard();
   }
 
 }

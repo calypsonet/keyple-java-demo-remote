@@ -1,21 +1,19 @@
-package org.cna.keyple.demo.distributed.server.procedure;
+package org.cna.keyple.demo.procedure;
 
-import org.cna.keyple.demo.distributed.server.controller.SamResourceService;
-import org.cna.keyple.demo.distributed.server.controller.CalypsoPoContent;
+import org.calypsonet.terminal.calypso.card.CalypsoCard;
+import org.cna.keyple.demo.distributed.server.plugin.SamCardConfiguration;
+import org.cna.keyple.demo.distributed.server.controller.CalypsoPoRepresentation;
 import org.cna.keyple.demo.distributed.server.controller.CalypsoPoController;
+import org.cna.keyple.demo.distributed.server.util.CalypsoConstants;
 import org.cna.keyple.demo.distributed.server.util.PcscReaderUtils;
 import org.cna.keyple.demo.sale.data.model.type.PriorityCode;
-import org.eclipse.keyple.calypso.command.sam.SamRevision;
-import org.eclipse.keyple.calypso.transaction.CalypsoPo;
-import org.eclipse.keyple.calypso.transaction.CalypsoSam;
-import org.eclipse.keyple.calypso.transaction.sammanager.SamIdentifier;
-import org.eclipse.keyple.calypso.transaction.sammanager.SamResourceManager;
-import org.eclipse.keyple.core.card.selection.CardResource;
 import org.eclipse.keyple.core.service.Reader;
+import org.eclipse.keyple.core.service.resource.CardResource;
+import org.eclipse.keyple.core.service.resource.CardResourceServiceProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static org.cna.keyple.demo.distributed.server.util.CalypsoUtils.selectPoWithEnvironment;
+import static org.cna.keyple.demo.distributed.server.util.CalypsoUtils.selectCardWithEnvironment;
 
 /**
  * Execute locally a write contract operation
@@ -23,9 +21,10 @@ import static org.cna.keyple.demo.distributed.server.util.CalypsoUtils.selectPoW
 public class LocalCardLoadingMain {
     private static final Logger logger = LoggerFactory.getLogger(LocalCardLoadingMain.class);
     public static String poReaderFilter = ".*(ASK|ACS).*";
+    public static String samReaderFilter = ".*(Cherry TC|SCM Microsystems|Identive|HID|Generic).*";
 
     public static void main(String[] args) {
-        SamResourceManager samResourceManager = new SamResourceService().getSamResourceManager();
+        SamCardConfiguration samCardConfiguration = new SamCardConfiguration(samReaderFilter);
 
         /*
          * Init readers
@@ -36,28 +35,20 @@ public class LocalCardLoadingMain {
         /*
          * Select cards
          */
-        CalypsoPo calypsoPo = selectPoWithEnvironment(poReader);
+        CalypsoCard calypsoCard = selectCardWithEnvironment(poReader);
 
-        //Reader samReader = PcscReaderUtils.initSamReader(PcscReaderUtils.samReaderFilter);
-        //CalypsoSam calypsoSam = selectSam(samReader);
-        //CardResource<CalypsoSam> samResource = new CardResource<>(samReader, calypsoSam);
-        CardResource<CalypsoSam> samResource = samResourceManager.allocateSamResource(
-                SamResourceManager.AllocationMode.BLOCKING,
-                new SamIdentifier.SamIdentifierBuilder()
-                        .serialNumber("")
-                        .samRevision(SamRevision.AUTO)
-                        .groupReference(".*").build());
+        CardResource samResource = CardResourceServiceProvider.getService().getCardResource(CalypsoConstants.SAM_PROFILE_NAME);
 
         /*
          * Load a contract
          */
         CalypsoPoController calypsoPoController = CalypsoPoController.newBuilder()
-                .withCalypsoPo(calypsoPo)
-                .withReader(poReader)
+                .withCalypsoCard(calypsoCard)
+                .withCardReader(poReader)
                 .withSamResource(samResource)
                 .build();
 
-        CalypsoPoContent calypsoPoContent = calypsoPoController.readCard();
+        CalypsoPoRepresentation calypsoPoContent = calypsoPoController.readCard();
         logger.info(calypsoPoContent.toString());
         calypsoPoContent.listValidContracts();
 
@@ -68,7 +59,7 @@ public class LocalCardLoadingMain {
         calypsoPoController.writeCard(calypsoPoContent);
 
         logger.info(calypsoPoContent.toString());
-        samResourceManager.freeSamResource(samResource);
+        CardResourceServiceProvider.getService().releaseCardResource(samResource);
         System.exit(0);
     }
 
