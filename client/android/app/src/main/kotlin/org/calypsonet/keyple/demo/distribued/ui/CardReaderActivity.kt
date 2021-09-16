@@ -71,7 +71,7 @@ class CardReaderActivity : AbstractCardActivity() {
                     showNowLoadingInformation()
                     initOmapiReader() {
                         GlobalScope.launch {
-                            remoteServiceExecution(selectedDeviceReaderName, "Android OMAPI", keypleServices.aidEnum.aid, ContactCardCommonProtocol.ISO_7816_3.name)
+                            remoteServiceExecution(selectedDeviceReaderName, "Android OMAPI", keypleServices.aidEnum.aid, null)
                         }
                     }
                 }

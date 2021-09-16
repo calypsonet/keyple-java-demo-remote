@@ -24,12 +24,14 @@ import org.calypsonet.keyple.demo.distribued.data.model.CardReaderResponse
 import org.calypsonet.keyple.demo.distribued.data.model.DeviceEnum
 import org.calypsonet.keyple.demo.distribued.data.model.Status
 import org.calypsonet.keyple.demo.distribued.manager.KeypleManager
+import org.calypsonet.terminal.reader.ConfigurableCardReader
 import org.eclipse.keyple.distributed.LocalServiceClient
 import org.eclipse.keyple.plugin.android.nfc.AndroidNfcPlugin
 import org.eclipse.keyple.plugin.android.nfc.AndroidNfcPluginFactoryProvider
 import org.eclipse.keyple.plugin.android.nfc.AndroidNfcReader
 import org.eclipse.keyple.plugin.android.omapi.AndroidOmapiPlugin
 import org.eclipse.keyple.plugin.android.omapi.AndroidOmapiPluginFactoryProvider
+import org.eclipse.keyple.plugin.android.omapi.AndroidOmapiReader
 import timber.log.Timber
 
 abstract class AbstractCardActivity : AbstractDemoActivity(), CardReaderObserverSpi,
@@ -52,7 +54,7 @@ abstract class AbstractCardActivity : AbstractDemoActivity(), CardReaderObserver
             }
             DeviceEnum.SIM -> {
                 keypleServices.aidEnum = KeypleManager.AidEnum.NAVIGO2013
-                KeypleManager.OMAPI_SIM_READER_NAME
+                AndroidOmapiReader.READER_NAME_SIM_1
             }
             DeviceEnum.WEARABLE -> {
                 keypleServices.aidEnum = KeypleManager.AidEnum.CDLIGHT_GTML
@@ -89,7 +91,7 @@ abstract class AbstractCardActivity : AbstractDemoActivity(), CardReaderObserver
         androidNfcReader.addObserver(this@AbstractCardActivity)
         androidNfcReader.setReaderObservationExceptionHandler(this@AbstractCardActivity)
 
-        keypleServices.getReader(selectedDeviceReaderName).activateProtocol(
+        (keypleServices.getReader(selectedDeviceReaderName) as ConfigurableCardReader).activateProtocol(
             ContactlessCardCommonProtocol.ISO_14443_4.name,
             ContactlessCardCommonProtocol.ISO_14443_4.name
         )
@@ -100,7 +102,7 @@ abstract class AbstractCardActivity : AbstractDemoActivity(), CardReaderObserver
     @Throws(KeyplePluginException::class)
     fun deactivateAndClearAndroidKeypleNfcReader() {
         (keypleServices.getReader(selectedDeviceReaderName) as ObservableCardReader).stopCardDetection()
-        keypleServices.getReader(selectedDeviceReaderName)
+        (keypleServices.getReader(selectedDeviceReaderName) as ConfigurableCardReader)
             .deactivateProtocol(ContactlessCardCommonProtocol.ISO_14443_4.name)
         keypleServices.unregisterPlugin(AndroidNfcPlugin.PLUGIN_NAME)
     }
@@ -114,10 +116,10 @@ abstract class AbstractCardActivity : AbstractDemoActivity(), CardReaderObserver
     fun initOmapiReader(callback: () -> Unit) {
         AndroidOmapiPluginFactoryProvider(this@AbstractCardActivity) {
             keypleServices.registerPlugin(it)
-            keypleServices.getReader(KeypleManager.OMAPI_SIM_READER_NAME).activateProtocol(
-                ContactCardCommonProtocol.ISO_7816_3.name,
-                ContactCardCommonProtocol.ISO_7816_3.name
-            )
+//            (keypleServices.getReader(AndroidOmapiReader.READER_NAME_SIM_1) as ConfigurableCardReader).activateProtocol(
+//                ContactCardCommonProtocol.ISO_7816_3.name,
+//                ContactCardCommonProtocol.ISO_7816_3.name
+//            )
             callback()
         }
     }

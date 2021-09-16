@@ -23,6 +23,7 @@ import org.eclipse.keyple.core.common.KeyplePluginExtensionFactory
 import org.eclipse.keyple.core.plugin.ReaderIOException
 import org.eclipse.keyple.core.service.ObservableReader
 import org.eclipse.keyple.core.service.SmartCardServiceProvider
+import org.eclipse.keyple.plugin.android.omapi.AndroidOmapiReader
 import timber.log.Timber
 
 /**
@@ -32,10 +33,6 @@ import timber.log.Timber
 object KeypleManager {
 
     var aidEnum = AidEnum.CDLIGHT_GTML
-    const val OMAPI_SIM_READER_NAME = "SIM"
-
-    // On devices with multi sim, native SIM reader can be identified by SIM1 on the device.
-    private const val OMAPI_SIM_1_READER_NAME = "SIM1"
 
     /**
      * Register any keyple plugin
@@ -63,18 +60,12 @@ object KeypleManager {
      * Retrieve a registered reader
      */
     @Throws(ReaderIOException::class)
-    public fun getReader(readerName: String): ConfigurableCardReader {
-        var reader: ConfigurableCardReader? = null
+    public fun getReader(readerName: String): CardReader {
+        var reader: CardReader? = null
         SmartCardServiceProvider.getService().plugins.forEach {
             try {
-                reader = it.getReader(readerName) as ConfigurableCardReader
-            } catch (e: ReaderIOException) {
-                if (readerName == OMAPI_SIM_READER_NAME) {
-                    try {
-                        reader = it.getReader(OMAPI_SIM_1_READER_NAME) as ConfigurableCardReader
-                    } catch (e: ReaderIOException) { }
-                }
-            }
+                reader = it.getReader(readerName)
+            } catch (e: ReaderIOException) { }
         }
         return reader ?: throw ReaderIOException("$readerName not found")
     }
@@ -113,10 +104,17 @@ object KeypleManager {
                  * Generic selection: configures a CardSelector with all the desired attributes to make
                  * the selection and read additional information afterwards
                  */
-                val cardSelection = calypsoExtension
-                    .createCardSelection()
-                    .filterByDfName(aid)
-                    .filterByCardProtocol(protocol)
+                val cardSelection =
+                    if(protocol != null){
+                        calypsoExtension
+                            .createCardSelection()
+                            .filterByDfName(aid)
+                            .filterByCardProtocol(protocol)
+                    }else{
+                        calypsoExtension
+                            .createCardSelection()
+                            .filterByDfName(aid)
+                    }
 
                 val cardSelectionManager = smartCardService.createCardSelectionManager()
                 cardSelectionManager.prepareSelection(cardSelection)
