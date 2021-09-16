@@ -83,22 +83,25 @@ abstract class AbstractCardActivity : AbstractDemoActivity(), CardReaderObserver
         keypleServices.registerPlugin(
             AndroidNfcPluginFactoryProvider(this@AbstractCardActivity).getFactory()
         )
-        // keypleServices.getReader(selectedDeviceReaderName).activateProtocol(
-        //     ContactlessCardCommonProtocol.ISO_14443_4.name,
-        //     ContactlessCardCommonProtocol.ISO_14443_4.name
-        // )
 
         val androidNfcReader = keypleServices.getObservableReader(selectedDeviceReaderName) as ObservableCardReader
+        androidNfcReader.setReaderObservationExceptionHandler(this@AbstractCardActivity)
         androidNfcReader.addObserver(this@AbstractCardActivity)
         androidNfcReader.setReaderObservationExceptionHandler(this@AbstractCardActivity)
+
+        keypleServices.getReader(selectedDeviceReaderName).activateProtocol(
+            ContactlessCardCommonProtocol.ISO_14443_4.name,
+            ContactlessCardCommonProtocol.ISO_14443_4.name
+        )
+
         androidNfcReader.startCardDetection(ObservableCardReader.DetectionMode.REPEATING)
     }
 
     @Throws(KeyplePluginException::class)
     fun deactivateAndClearAndroidKeypleNfcReader() {
         (keypleServices.getReader(selectedDeviceReaderName) as ObservableCardReader).stopCardDetection()
-        // keypleServices.getReader(selectedDeviceReaderName)
-        //     .deactivateProtocol(ContactlessCardCommonProtocol.ISO_14443_4.name)
+        keypleServices.getReader(selectedDeviceReaderName)
+            .deactivateProtocol(ContactlessCardCommonProtocol.ISO_14443_4.name)
         keypleServices.unregisterPlugin(AndroidNfcPlugin.PLUGIN_NAME)
     }
 
@@ -111,10 +114,10 @@ abstract class AbstractCardActivity : AbstractDemoActivity(), CardReaderObserver
     fun initOmapiReader(callback: () -> Unit) {
         AndroidOmapiPluginFactoryProvider(this@AbstractCardActivity) {
             keypleServices.registerPlugin(it)
-            // keypleServices.getReader(KeypleManager.OMAPI_SIM_READER_NAME).activateProtocol(
-            //     ContactCardCommonProtocol.ISO_7816_3.name,
-            //     ContactCardCommonProtocol.ISO_7816_3.name
-            // )
+            keypleServices.getReader(KeypleManager.OMAPI_SIM_READER_NAME).activateProtocol(
+                ContactCardCommonProtocol.ISO_7816_3.name,
+                ContactCardCommonProtocol.ISO_7816_3.name
+            )
             callback()
         }
     }

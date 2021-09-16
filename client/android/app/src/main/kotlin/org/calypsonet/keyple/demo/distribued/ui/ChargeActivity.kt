@@ -121,7 +121,7 @@ class ChargeActivity : AbstractCardActivity() {
                 // unmock for run
                 val compatibleContractOutput = localServiceClient.executeRemoteService("CONTRACT_ANALYSIS",
                     selectedDeviceReaderName,
-                    transactionManager,
+                    transactionManager.calypsoCard,
                     analyseContractsInput,
                     AnalyzeContractsOutput::class.java)
 
@@ -139,7 +139,7 @@ class ChargeActivity : AbstractCardActivity() {
 
                 val writeTitleOutput = localServiceClient.executeRemoteService("WRITE_CONTRACT",
                     selectedDeviceReaderName,
-                    transactionManager,
+                    transactionManager.calypsoCard,
                     writeContractInput,
                     WriteContractOutput::class.java)
 

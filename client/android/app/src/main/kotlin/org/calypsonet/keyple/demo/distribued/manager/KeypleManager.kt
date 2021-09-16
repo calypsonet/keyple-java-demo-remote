@@ -16,6 +16,7 @@ import kotlin.jvm.Throws
 import org.calypsonet.terminal.calypso.card.CalypsoCard
 import org.calypsonet.terminal.calypso.transaction.CardTransactionManager
 import org.calypsonet.terminal.reader.CardReader
+import org.calypsonet.terminal.reader.ConfigurableCardReader
 import org.calypsonet.terminal.reader.ReaderCommunicationException
 import org.eclipse.keyple.card.calypso.CalypsoExtensionService
 import org.eclipse.keyple.core.common.KeyplePluginExtensionFactory
@@ -62,15 +63,15 @@ object KeypleManager {
      * Retrieve a registered reader
      */
     @Throws(ReaderIOException::class)
-    public fun getReader(readerName: String): CardReader {
-        var reader: CardReader? = null
+    public fun getReader(readerName: String): ConfigurableCardReader {
+        var reader: ConfigurableCardReader? = null
         SmartCardServiceProvider.getService().plugins.forEach {
             try {
-                reader = it.getReader(readerName)
+                reader = it.getReader(readerName) as ConfigurableCardReader
             } catch (e: ReaderIOException) {
                 if (readerName == OMAPI_SIM_READER_NAME) {
                     try {
-                        reader = it.getReader(OMAPI_SIM_1_READER_NAME)
+                        reader = it.getReader(OMAPI_SIM_1_READER_NAME) as ConfigurableCardReader
                     } catch (e: ReaderIOException) { }
                 }
             }
