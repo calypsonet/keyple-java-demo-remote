@@ -1,8 +1,8 @@
-# Keyple Remote Demo - Android Client's repository
+# Keyple Remote Reload Demo - Android Client's repository
 
-This is the repository for the Android Client of the Keyple Java Remote Demo application.
+This is the repository for the Android Client of the Keyple Remote Reload Demo application.
 
-Read the main [README](https://github.com/calypsonet/keyple-java-demo-remote#readme) to understand the purpose of the Keyple Java Remote Demo application.
+Read the main [README](https://github.com/calypsonet/keyple-java-demo-remote#readme) to understand the purpose of this application.
 
 ## Screens
 

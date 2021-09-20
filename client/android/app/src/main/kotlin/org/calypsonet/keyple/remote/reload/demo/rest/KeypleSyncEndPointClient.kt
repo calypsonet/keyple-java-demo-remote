@@ -9,23 +9,22 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ********************************************************************************/
-package org.eclipse.keyple.demo.distribued
+package org.calypsonet.keyple.remote.reload.demo.rest
 
-import androidx.test.ext.junit.runners.AndroidJUnit4
-import androidx.test.platform.app.InstrumentationRegistry
-import org.junit.Assert
-import org.junit.Test
-import org.junit.runner.RunWith
+import io.reactivex.Single
+import org.eclipse.keyple.distributed.MessageDto
+import org.eclipse.keyple.distributed.spi.SyncEndpointClientSpi
 
-@RunWith(AndroidJUnit4::class)
-class ExampleInstrumentedTest {
-    @Test
-    fun useAppContext() {
-        // Context of the app under test.
-        val appContext = InstrumentationRegistry.getInstrumentation().targetContext
-        Assert.assertEquals(
-            "org.calypsonet.keyple.demo.remote",
-            appContext.packageName
-        )
+/**
+ * We have to wrap the retrofit client
+ */
+class KeypleSyncEndPointClient(private val restClient: RestClient) : SyncEndpointClientSpi {
+
+    override fun sendRequest(msg: MessageDto?): MutableList<MessageDto> {
+        return restClient.sendRequest(msg).blockingGet()
+    }
+
+    public fun ping(): Single<String> {
+        return restClient.ping()
     }
 }

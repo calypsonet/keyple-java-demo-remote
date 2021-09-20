@@ -9,23 +9,18 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ********************************************************************************/
-package org.eclipse.keyple.demo.distribued
+package org.calypsonet.keyple.remote.reload.demo.data.model
 
-import androidx.test.ext.junit.runners.AndroidJUnit4
-import androidx.test.platform.app.InstrumentationRegistry
-import org.junit.Assert
-import org.junit.Test
-import org.junit.runner.RunWith
+import android.os.Parcelable
+import kotlinx.android.parcel.Parcelize
 
-@RunWith(AndroidJUnit4::class)
-class ExampleInstrumentedTest {
-    @Test
-    fun useAppContext() {
-        // Context of the app under test.
-        val appContext = InstrumentationRegistry.getInstrumentation().targetContext
-        Assert.assertEquals(
-            "org.calypsonet.keyple.demo.remote",
-            appContext.packageName
-        )
-    }
-}
+@Parcelize
+data class CardReaderResponse(
+    val status: Status,
+    val cardType: String,
+    val ticketsNumber: Int,
+    val titlesList: List<CardTitle>,
+    val lastValidationsList: ArrayList<Validation>,
+    val seasonPassExpiryDate: String,
+    val errorMessage: String? = null
+) : Parcelable

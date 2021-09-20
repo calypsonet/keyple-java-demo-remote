@@ -13,7 +13,7 @@ if (project.rootProject.file("local.properties").exists()) {
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
     defaultConfig {
-        applicationId "org.eclipse.keyple.demo.remote"
+        applicationId "org.calypsonet.keyple.remote.reload.demo"
         //applicationId "org.keyple.examples.wizway"
         multiDexEnabled true
         minSdkVersion rootProject.ext.minSdkVersion
@@ -62,7 +62,7 @@ android {
         debug {
             versionNameSuffix "-DEBUG"
             //applicationIdSuffix ".debug"
-            resValue "string", "app_name", "Keyple Demo Remote Debug"
+            resValue "string", "app_name", "Keyple Remote Reload Demo Debug"
         }
         orange {
             versionNameSuffix "-ORANGE"
@@ -70,7 +70,7 @@ android {
             minifyEnabled false
             shrinkResources false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            resValue "string", "app_name", "Keyple Demo Remote Orange"
+            resValue "string", "app_name", "Keyple Remote Reload Demo Orange"
         }
         cna {
             versionNameSuffix ""
@@ -78,7 +78,7 @@ android {
             minifyEnabled false
             shrinkResources false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            resValue "string", "app_name", "Keyple Demo Remote"
+            resValue "string", "app_name", "Keyple Remote Reload Demo"
         }
     }
 
@@ -167,8 +167,8 @@ dependencies {
     implementation "org.eclipse.keyple:keyple-distributed-network-java-lib:$keypleVersion"
     implementation("org.eclipse.keyple:keyple-plugin-java-api:$keypleVersion")
 
-    implementation "org.eclipse.keyple:keyple-plugin-android-nfc-java-lib:$keypleVersion"
-    implementation "org.eclipse.keyple:keyple-plugin-android-omapi-java-lib:$keypleVersion"
+    implementation "org.eclipse.keyple:keyple-plugin-android-nfc-java-lib:2.0.+"
+    implementation "org.eclipse.keyple:keyple-plugin-android-omapi-java-lib:2.0.+"
 
     implementation project(":common")
 

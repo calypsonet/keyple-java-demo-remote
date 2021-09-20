@@ -9,7 +9,8 @@ import android.widget.FrameLayout;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
-import org.eclipse.keyple.demo.distribued.R;
+
+import org.calypsonet.keyple.remote.reload.demo.R;
 
 public class SingleFragmentActivity extends AppCompatActivity {
     @Override

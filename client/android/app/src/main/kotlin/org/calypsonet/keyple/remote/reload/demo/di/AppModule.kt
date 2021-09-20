@@ -9,23 +9,16 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ********************************************************************************/
-package org.eclipse.keyple.demo.distribued
+package org.calypsonet.keyple.remote.reload.demo.di
 
-import androidx.test.ext.junit.runners.AndroidJUnit4
-import androidx.test.platform.app.InstrumentationRegistry
-import org.junit.Assert
-import org.junit.Test
-import org.junit.runner.RunWith
+import android.content.Context
+import dagger.Binds
+import dagger.Module
+import org.calypsonet.keyple.remote.reload.demo.Application
 
-@RunWith(AndroidJUnit4::class)
-class ExampleInstrumentedTest {
-    @Test
-    fun useAppContext() {
-        // Context of the app under test.
-        val appContext = InstrumentationRegistry.getInstrumentation().targetContext
-        Assert.assertEquals(
-            "org.calypsonet.keyple.demo.remote",
-            appContext.packageName
-        )
-    }
+@Module
+abstract class AppModule {
+    // expose Application as an injectable context
+    @Binds
+    abstract fun bindContext(application: Application?): Context?
 }
