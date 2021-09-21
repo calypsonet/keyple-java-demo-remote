@@ -19,8 +19,8 @@ import kotlinx.android.synthetic.main.activity_checkout.expiryValue
 import kotlinx.android.synthetic.main.activity_checkout.selectionLabel
 import kotlinx.android.synthetic.main.activity_checkout.selectionPrice
 import kotlinx.android.synthetic.main.activity_checkout.validateBtn
-import org.cna.keyple.demo.sale.data.model.type.PriorityCode
 import org.calypsonet.keyple.remote.reload.demo.R
+import org.cna.keyple.demo.sale.data.model.type.PriorityCode
 
 class CheckoutActivity : AbstractDemoActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

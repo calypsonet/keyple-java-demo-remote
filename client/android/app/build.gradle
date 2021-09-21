@@ -138,10 +138,6 @@ android {
     }
 }
 
-preBuild.doFirst {
-    println project.name + " - Using keyple_version parameter with value " + keypleVersion
-}
-
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation 'androidx.appcompat:appcompat:1.2.0'
@@ -157,15 +153,15 @@ dependencies {
     implementation("org.calypsonet.terminal:calypsonet-terminal-card-java-api:1.0.+")
     implementation("org.calypsonet.terminal:calypsonet-terminal-calypso-java-api:1.0.+")
 
-    implementation("org.eclipse.keyple:keyple-service-java-lib:$keypleVersion")
-    implementation("org.eclipse.keyple:keyple-card-calypso-java-lib:$keypleVersion")
-    implementation("org.eclipse.keyple:keyple-card-generic-java-lib:$keypleVersion")
-    implementation("org.eclipse.keyple:keyple-util-java-lib:$keypleVersion")
-    implementation("org.eclipse.keyple:keyple-common-java-api:$keypleVersion")
+    implementation("org.eclipse.keyple:keyple-service-java-lib:2.0.0-rc4")
+    implementation("org.eclipse.keyple:keyple-card-calypso-java-lib:2.0.0-rc4")
+    implementation("org.eclipse.keyple:keyple-card-generic-java-lib:2.0.0-rc4")
+    implementation("org.eclipse.keyple:keyple-util-java-lib:2.0.0-rc4")
+    implementation("org.eclipse.keyple:keyple-common-java-api:2.0.0-rc4")
 
-    implementation("org.eclipse.keyple:keyple-distributed-local-java-lib:$keypleVersion")
-    implementation "org.eclipse.keyple:keyple-distributed-network-java-lib:$keypleVersion"
-    implementation("org.eclipse.keyple:keyple-plugin-java-api:$keypleVersion")
+    implementation("org.eclipse.keyple:keyple-distributed-local-java-lib:2.0.0-rc4")
+    implementation "org.eclipse.keyple:keyple-distributed-network-java-lib:2.0.0-rc4"
+    implementation("org.eclipse.keyple:keyple-plugin-java-api:2.0.0-rc4")
 
     implementation "org.eclipse.keyple:keyple-plugin-android-nfc-java-lib:2.0.+"
     implementation "org.eclipse.keyple:keyple-plugin-android-omapi-java-lib:2.0.+"

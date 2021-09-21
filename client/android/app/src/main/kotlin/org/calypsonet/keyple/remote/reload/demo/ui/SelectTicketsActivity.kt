@@ -27,8 +27,8 @@ import kotlinx.android.synthetic.main.activity_select_tickets.ticket3Price
 import kotlinx.android.synthetic.main.activity_select_tickets.ticket4Btn
 import kotlinx.android.synthetic.main.activity_select_tickets.ticket4Label
 import kotlinx.android.synthetic.main.activity_select_tickets.ticket4Price
-import org.cna.keyple.demo.sale.data.model.type.PriorityCode
 import org.calypsonet.keyple.remote.reload.demo.R
+import org.cna.keyple.demo.sale.data.model.type.PriorityCode
 
 class SelectTicketsActivity : AbstractDemoActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

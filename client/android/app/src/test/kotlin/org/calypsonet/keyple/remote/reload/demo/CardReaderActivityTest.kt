@@ -19,10 +19,10 @@ import io.mockk.every
 import io.mockk.justRun
 import io.mockk.mockk
 import io.mockk.mockkObject
-import org.calypsonet.keyple.remote.reload.demo.ui.CardReaderActivity
-import org.eclipse.keyple.core.service.event.ObservableReader
 import org.calypsonet.keyple.remote.reload.demo.data.model.DeviceEnum
 import org.calypsonet.keyple.remote.reload.demo.manager.KeypleManager
+import org.calypsonet.keyple.remote.reload.demo.ui.CardReaderActivity
+import org.eclipse.keyple.core.service.event.ObservableReader
 import org.eclipse.keyple.plugin.android.nfc.AndroidNfcReader
 import org.junit.After
 import org.junit.Before

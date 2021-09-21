@@ -14,16 +14,16 @@ package org.calypsonet.keyple.remote.reload.demo.ui
 import android.os.Bundle
 import javax.inject.Inject
 import kotlin.jvm.Throws
-import org.calypsonet.terminal.reader.ObservableCardReader
-import org.calypsonet.terminal.reader.spi.CardReaderObservationExceptionHandlerSpi
-import org.calypsonet.terminal.reader.spi.CardReaderObserverSpi
-import org.eclipse.keyple.core.service.KeyplePluginException
-import org.eclipse.keyple.core.util.protocol.ContactlessCardCommonProtocol
 import org.calypsonet.keyple.remote.reload.demo.data.model.CardReaderResponse
 import org.calypsonet.keyple.remote.reload.demo.data.model.DeviceEnum
 import org.calypsonet.keyple.remote.reload.demo.data.model.Status
 import org.calypsonet.keyple.remote.reload.demo.manager.KeypleManager
 import org.calypsonet.terminal.reader.ConfigurableCardReader
+import org.calypsonet.terminal.reader.ObservableCardReader
+import org.calypsonet.terminal.reader.spi.CardReaderObservationExceptionHandlerSpi
+import org.calypsonet.terminal.reader.spi.CardReaderObserverSpi
+import org.eclipse.keyple.core.service.KeyplePluginException
+import org.eclipse.keyple.core.util.protocol.ContactlessCardCommonProtocol
 import org.eclipse.keyple.distributed.LocalServiceClient
 import org.eclipse.keyple.plugin.android.nfc.AndroidNfcPlugin
 import org.eclipse.keyple.plugin.android.nfc.AndroidNfcPluginFactoryProvider
@@ -44,8 +44,8 @@ abstract class AbstractCardActivity : AbstractDemoActivity(), CardReaderObserver
 
     lateinit var selectedDeviceReaderName: String
 
-   lateinit var device: DeviceEnum
-   lateinit var pluginType: String
+    lateinit var device: DeviceEnum
+    lateinit var pluginType: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -154,7 +154,7 @@ abstract class AbstractCardActivity : AbstractDemoActivity(), CardReaderObserver
                     "",
                     "invalid card"
                 ),
-                finishActivity = device != DeviceEnum.CONTACTLESS_CARD ///Only with NFC we can come back to 'wait for device screen'
+                finishActivity = device != DeviceEnum.CONTACTLESS_CARD // /Only with NFC we can come back to 'wait for device screen'
             )
         }
     }
@@ -170,7 +170,7 @@ abstract class AbstractCardActivity : AbstractDemoActivity(), CardReaderObserver
                     arrayListOf(),
                     ""
                 ),
-             finishActivity = device != DeviceEnum.CONTACTLESS_CARD ///Only with NFC we can come back to 'wait for device screen'
+                finishActivity = device != DeviceEnum.CONTACTLESS_CARD // /Only with NFC we can come back to 'wait for device screen'
             )
         }
     }

@@ -30,7 +30,7 @@ import timber.log.Timber
  */
 object KeypleManager {
 
-    //Aid to select
+    // Aid to select
     var aidEnums = arrayListOf<AidEnum>()
 
     /**
@@ -101,18 +101,18 @@ object KeypleManager {
 
                 val cardSelectionManager = smartCardService.createCardSelectionManager()
 
-                aidEnums.forEach{
+                aidEnums.forEach {
                     /**
                      * Generic selection: configures a CardSelector with all the desired attributes to make
                      * the selection and read additional information afterwards
                      */
                     val cardSelection =
-                        if(protocol != null){
+                        if (protocol != null) {
                             calypsoExtension
                                 .createCardSelection()
                                 .filterByDfName(it.aid)
                                 .filterByCardProtocol(protocol)
-                        }else{
+                        } else {
                             calypsoExtension
                                 .createCardSelection()
                                 .filterByDfName(it.aid)
@@ -134,9 +134,9 @@ object KeypleManager {
     }
 
     enum class AidEnum(val aid: String) {
-        CDLIGHT_GTML(       "315449432E49434131"),
-        CALYPSO_LIGHT_CL(   "315449432E49434133"),
-        HOPLINK(            "A000000291A000000191"),
-        NAVIGO2013(         "A00000040401250901")
+        CDLIGHT_GTML("315449432E49434131"),
+        CALYPSO_LIGHT_CL("315449432E49434133"),
+        HOPLINK("A000000291A000000191"),
+        NAVIGO2013("A00000040401250901")
     }
 }

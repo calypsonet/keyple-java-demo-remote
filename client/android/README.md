@@ -49,10 +49,10 @@ First we need to import the Keyple related dependencies in the `build.gradle` fi
     implementation "org.calypsonet.terminal:calypsonet-terminal-reader-java-api:1.0.+"
     implementation "org.calypsonet.terminal:calypsonet-terminal-calypso-java-api:1.0.+"
 
-    implementation "org.eclipse.keyple:keyple-service-java-lib:2.0.+"
-    implementation "org.eclipse.keyple:keyple-card-calypso-java-lib:2.0.+"
-    implementation "org.eclipse.keyple:keyple-card-generic-java-lib:2.0.+"
-    implementation "org.eclipse.keyple:keyple-util-java-lib:2.0.+"
+    implementation "org.eclipse.keyple:keyple-service-java-lib:2.0.0"
+    implementation "org.eclipse.keyple:keyple-card-calypso-java-lib:2.0.0"
+    implementation "org.eclipse.keyple:keyple-card-generic-java-lib:2.0.0"
+    implementation "org.eclipse.keyple:keyple-util-java-lib:2.+"
     implementation "org.eclipse.keyple:keyple-common-java-api:2.0.+"
 
     implementation "org.eclipse.keyple:keyple-distributed-local-java-lib:2.0.+"
@@ -62,18 +62,18 @@ First we need to import the Keyple related dependencies in the `build.gradle` fi
 
 ```
 
-## Keyple plugins 
+## Keyple plugins
 
 This demo uses two keyple plugins
 
 The [Android NFC plugin](https://github.com/eclipse/keyple-plugin-android-nfc-java-lib) allowing to
 process a contactless SmartCard.
-The The [Android OMAPI plugin](https://github.com/eclipse/keyple-plugin-android-omapi-java-lib) 
+The The [Android OMAPI plugin](https://github.com/eclipse/keyple-plugin-android-omapi-java-lib)
 allowing to process a contact SmartCard.
 
 ```groovy
     implementation "org.eclipse.keyple:keyple-plugin-android-nfc-java-lib:2.0.+"
-    implementation "org.eclipse.keyple:keyple-plugin-android-omapi-java-lib:2.0.+"
+    implementation "org.eclipse.keyple:keyple-plugin-android-omapi-java-lib:2.+"
 ```
 
 ## Sign application

@@ -23,6 +23,12 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.calypsonet.keyple.remote.reload.demo.R
+import org.calypsonet.keyple.remote.reload.demo.data.model.CardReaderResponse
+import org.calypsonet.keyple.remote.reload.demo.data.model.DeviceEnum
+import org.calypsonet.keyple.remote.reload.demo.data.model.Status
+import org.calypsonet.keyple.remote.reload.demo.di.scopes.ActivityScoped
+import org.calypsonet.keyple.remote.reload.demo.manager.KeypleManager
 import org.calypsonet.terminal.reader.CardReaderEvent
 import org.cna.keyple.demo.sale.data.endpoint.AnalyzeContractsInput
 import org.cna.keyple.demo.sale.data.endpoint.AnalyzeContractsOutput
@@ -31,12 +37,6 @@ import org.cna.keyple.demo.sale.data.endpoint.WriteContractOutput
 import org.cna.keyple.demo.sale.data.model.type.PriorityCode
 import org.eclipse.keyple.core.util.ByteArrayUtil
 import org.eclipse.keyple.core.util.protocol.ContactlessCardCommonProtocol
-import org.calypsonet.keyple.remote.reload.demo.R
-import org.calypsonet.keyple.remote.reload.demo.data.model.CardReaderResponse
-import org.calypsonet.keyple.remote.reload.demo.data.model.DeviceEnum
-import org.calypsonet.keyple.remote.reload.demo.data.model.Status
-import org.calypsonet.keyple.remote.reload.demo.di.scopes.ActivityScoped
-import org.calypsonet.keyple.remote.reload.demo.manager.KeypleManager
 import timber.log.Timber
 
 @ActivityScoped

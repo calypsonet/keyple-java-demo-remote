@@ -19,8 +19,8 @@ import androidx.test.espresso.intent.matcher.IntentMatchers
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.ext.junit.rules.activityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import org.calypsonet.keyple.remote.reload.demo.ui.HomeActivity
 import org.calypsonet.keyple.remote.reload.demo.data.model.DeviceEnum
+import org.calypsonet.keyple.remote.reload.demo.ui.HomeActivity
 import org.junit.After
 import org.junit.Assert
 import org.junit.Before

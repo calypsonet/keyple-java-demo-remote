@@ -13,10 +13,10 @@ package org.calypsonet.keyple.remote.reload.demo.di
 
 import dagger.Module
 import dagger.Provides
-import org.eclipse.keyple.core.service.SmartCardServiceProvider
 import org.calypsonet.keyple.remote.reload.demo.di.scopes.AppScoped
 import org.calypsonet.keyple.remote.reload.demo.manager.KeypleManager
 import org.calypsonet.keyple.remote.reload.demo.rest.KeypleSyncEndPointClient
+import org.eclipse.keyple.core.service.SmartCardServiceProvider
 import org.eclipse.keyple.distributed.LocalServiceClient
 import org.eclipse.keyple.distributed.LocalServiceClientFactoryBuilder
 

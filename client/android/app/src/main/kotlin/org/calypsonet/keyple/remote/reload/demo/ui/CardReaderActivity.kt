@@ -25,6 +25,13 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.calypsonet.keyple.remote.reload.demo.R
+import org.calypsonet.keyple.remote.reload.demo.data.model.CardReaderResponse
+import org.calypsonet.keyple.remote.reload.demo.data.model.CardTitle
+import org.calypsonet.keyple.remote.reload.demo.data.model.DeviceEnum
+import org.calypsonet.keyple.remote.reload.demo.data.model.Status
+import org.calypsonet.keyple.remote.reload.demo.di.scopes.ActivityScoped
+import org.calypsonet.keyple.remote.reload.demo.manager.KeypleManager
 import org.calypsonet.terminal.reader.CardReaderEvent
 import org.cna.keyple.demo.sale.data.endpoint.AnalyzeContractsInput
 import org.cna.keyple.demo.sale.data.endpoint.AnalyzeContractsOutput
@@ -34,13 +41,6 @@ import org.eclipse.keyple.core.plugin.ReaderIOException
 import org.eclipse.keyple.core.service.KeyplePluginException
 import org.eclipse.keyple.core.util.ByteArrayUtil
 import org.eclipse.keyple.core.util.protocol.ContactlessCardCommonProtocol
-import org.calypsonet.keyple.remote.reload.demo.R
-import org.calypsonet.keyple.remote.reload.demo.data.model.CardReaderResponse
-import org.calypsonet.keyple.remote.reload.demo.data.model.CardTitle
-import org.calypsonet.keyple.remote.reload.demo.data.model.DeviceEnum
-import org.calypsonet.keyple.remote.reload.demo.data.model.Status
-import org.calypsonet.keyple.remote.reload.demo.di.scopes.ActivityScoped
-import org.calypsonet.keyple.remote.reload.demo.manager.KeypleManager
 import org.joda.time.DateTime
 import org.joda.time.format.DateTimeFormat
 import timber.log.Timber
@@ -137,7 +137,7 @@ class CardReaderActivity : AbstractCardActivity() {
 
                             val contracts = compatibleContractOutput.validContracts
                             val status = if (contracts?.size != null && contracts.size> 0) Status.TICKETS_FOUND else Status.EMPTY_CARD
-                            val finishActivity = device != DeviceEnum.CONTACTLESS_CARD //Only with NFC we can come back to 'wait for device screen'
+                            val finishActivity = device != DeviceEnum.CONTACTLESS_CARD // Only with NFC we can come back to 'wait for device screen'
 
                             changeDisplay(
                                 CardReaderResponse(
@@ -162,7 +162,7 @@ class CardReaderActivity : AbstractCardActivity() {
                 }
             } catch (e: Exception) {
                 Timber.e(e)
-                val finishActivity = device != DeviceEnum.CONTACTLESS_CARD //Only with NFC we can come back to 'wait for device screen'
+                val finishActivity = device != DeviceEnum.CONTACTLESS_CARD // Only with NFC we can come back to 'wait for device screen'
                 launchExceptionResponse(e, finishActivity)
             }
         }
