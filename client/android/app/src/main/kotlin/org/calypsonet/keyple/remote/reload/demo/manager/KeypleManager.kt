@@ -16,14 +16,12 @@ import kotlin.jvm.Throws
 import org.calypsonet.terminal.calypso.card.CalypsoCard
 import org.calypsonet.terminal.calypso.transaction.CardTransactionManager
 import org.calypsonet.terminal.reader.CardReader
-import org.calypsonet.terminal.reader.ConfigurableCardReader
 import org.calypsonet.terminal.reader.ReaderCommunicationException
 import org.eclipse.keyple.card.calypso.CalypsoExtensionService
 import org.eclipse.keyple.core.common.KeyplePluginExtensionFactory
 import org.eclipse.keyple.core.plugin.ReaderIOException
 import org.eclipse.keyple.core.service.ObservableReader
 import org.eclipse.keyple.core.service.SmartCardServiceProvider
-import org.eclipse.keyple.plugin.android.omapi.AndroidOmapiReader
 import timber.log.Timber
 
 /**
@@ -32,7 +30,8 @@ import timber.log.Timber
  */
 object KeypleManager {
 
-    var aidEnum = AidEnum.CALYPSO
+    //Aid to select
+    var aidEnums = arrayListOf<AidEnum>()
 
     /**
      * Register any keyple plugin
@@ -83,7 +82,7 @@ object KeypleManager {
      * Select card and retrieve CalypsoPO
      */
     @Throws(IllegalStateException::class, ReaderIOException::class)
-    public fun getTransactionManager(readerName: String, aid: String, protocol: String?): CardTransactionManager {
+    public fun getTransactionManager(readerName: String, aidEnums: ArrayList<KeypleManager.AidEnum>, protocol: String?): CardTransactionManager {
         with(getReader(readerName)) {
             if (isCardPresent) {
                 val smartCardService = SmartCardServiceProvider.getService()
@@ -100,24 +99,27 @@ object KeypleManager {
                  */
                 smartCardService.checkCardExtension(calypsoExtension)
 
-                /**
-                 * Generic selection: configures a CardSelector with all the desired attributes to make
-                 * the selection and read additional information afterwards
-                 */
-                val cardSelection =
-                    if(protocol != null){
-                        calypsoExtension
-                            .createCardSelection()
-                            .filterByDfName(aid)
-                            .filterByCardProtocol(protocol)
-                    }else{
-                        calypsoExtension
-                            .createCardSelection()
-                            .filterByDfName(aid)
-                    }
-
                 val cardSelectionManager = smartCardService.createCardSelectionManager()
-                cardSelectionManager.prepareSelection(cardSelection)
+
+                aidEnums.forEach{
+                    /**
+                     * Generic selection: configures a CardSelector with all the desired attributes to make
+                     * the selection and read additional information afterwards
+                     */
+                    val cardSelection =
+                        if(protocol != null){
+                            calypsoExtension
+                                .createCardSelection()
+                                .filterByDfName(it.aid)
+                                .filterByCardProtocol(protocol)
+                        }else{
+                            calypsoExtension
+                                .createCardSelection()
+                                .filterByDfName(it.aid)
+                        }
+
+                    cardSelectionManager.prepareSelection(cardSelection)
+                }
 
                 val selectionResult = cardSelectionManager.processCardSelectionScenario(reader)
                 if (selectionResult.activeSmartCard != null) {
@@ -132,11 +134,9 @@ object KeypleManager {
     }
 
     enum class AidEnum(val aid: String) {
-        CALYPSO("315449432E494341"),
-        CDLIGHT_GTML("315449432E49434131"),
-        INTERCODE_22("315449432E49434132"),
-        CALYPSO_LIGHT_CL("315449432E49434133"),
-        HOPLINK("A000000291A000000191"),
-        NAVIGO2013("A00000040401250901")
+        CDLIGHT_GTML(       "315449432E49434131"),
+        CALYPSO_LIGHT_CL(   "315449432E49434133"),
+        HOPLINK(            "A000000291A000000191"),
+        NAVIGO2013(         "A00000040401250901")
     }
 }

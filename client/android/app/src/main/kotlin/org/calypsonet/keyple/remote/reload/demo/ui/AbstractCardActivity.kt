@@ -44,23 +44,37 @@ abstract class AbstractCardActivity : AbstractDemoActivity(), CardReaderObserver
 
     lateinit var selectedDeviceReaderName: String
 
+   lateinit var device: DeviceEnum
+   lateinit var pluginType: String
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        selectedDeviceReaderName = when (DeviceEnum.getDeviceEnum(prefData.loadDeviceType()!!)) {
+        device = DeviceEnum.getDeviceEnum(prefData.loadDeviceType()!!)
+        selectedDeviceReaderName = when (device) {
             DeviceEnum.CONTACTLESS_CARD -> {
-                keypleServices.aidEnum = KeypleManager.AidEnum.CALYPSO
+                pluginType = "Android NFC"
+                keypleServices.aidEnums.clear()
+                keypleServices.aidEnums.add(KeypleManager.AidEnum.CDLIGHT_GTML)
+                keypleServices.aidEnums.add(KeypleManager.AidEnum.CALYPSO_LIGHT_CL)
+                keypleServices.aidEnums.add(KeypleManager.AidEnum.NAVIGO2013)
                 AndroidNfcReader.READER_NAME
             }
             DeviceEnum.SIM -> {
-                keypleServices.aidEnum = KeypleManager.AidEnum.NAVIGO2013
+                pluginType = "Android OMAPI"
+                keypleServices.aidEnums.clear()
+                keypleServices.aidEnums.add(KeypleManager.AidEnum.CDLIGHT_GTML)
                 AndroidOmapiReader.READER_NAME_SIM_1
             }
             DeviceEnum.WEARABLE -> {
-                keypleServices.aidEnum = KeypleManager.AidEnum.CALYPSO
+                pluginType = "Android WEARABLE"
+                keypleServices.aidEnums.clear()
+                keypleServices.aidEnums.add(KeypleManager.AidEnum.CDLIGHT_GTML)
                 "WEARABLE"
             }
             DeviceEnum.EMBEDDED -> {
-                keypleServices.aidEnum = KeypleManager.AidEnum.CALYPSO
+                pluginType = "Android EMBEDDED"
+                keypleServices.aidEnums.clear()
+                keypleServices.aidEnums.add(KeypleManager.AidEnum.CDLIGHT_GTML)
                 "EMBEDDED"
             }
         }
@@ -139,7 +153,8 @@ abstract class AbstractCardActivity : AbstractDemoActivity(), CardReaderObserver
                     arrayListOf(),
                     "",
                     "invalid card"
-                )
+                ),
+                finishActivity = device != DeviceEnum.CONTACTLESS_CARD ///Only with NFC we can come back to 'wait for device screen'
             )
         }
     }
@@ -154,7 +169,8 @@ abstract class AbstractCardActivity : AbstractDemoActivity(), CardReaderObserver
                     arrayListOf(),
                     arrayListOf(),
                     ""
-                )
+                ),
+             finishActivity = device != DeviceEnum.CONTACTLESS_CARD ///Only with NFC we can come back to 'wait for device screen'
             )
         }
     }

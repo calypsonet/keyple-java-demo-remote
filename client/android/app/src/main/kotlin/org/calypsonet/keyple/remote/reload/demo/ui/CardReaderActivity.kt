@@ -40,6 +40,7 @@ import org.calypsonet.keyple.remote.reload.demo.data.model.CardTitle
 import org.calypsonet.keyple.remote.reload.demo.data.model.DeviceEnum
 import org.calypsonet.keyple.remote.reload.demo.data.model.Status
 import org.calypsonet.keyple.remote.reload.demo.di.scopes.ActivityScoped
+import org.calypsonet.keyple.remote.reload.demo.manager.KeypleManager
 import org.joda.time.DateTime
 import org.joda.time.format.DateTimeFormat
 import timber.log.Timber
@@ -56,7 +57,7 @@ class CardReaderActivity : AbstractCardActivity() {
 
     override fun initReaders() {
         try {
-            when (DeviceEnum.getDeviceEnum(prefData.loadDeviceType()!!)) {
+            when (device) {
                 DeviceEnum.CONTACTLESS_CARD -> {
                     val nfcManager = getSystemService(NFC_SERVICE) as NfcManager
                     if (nfcManager.defaultAdapter?.isEnabled == true) {
@@ -70,7 +71,7 @@ class CardReaderActivity : AbstractCardActivity() {
                     showNowLoadingInformation()
                     initOmapiReader() {
                         GlobalScope.launch {
-                            remoteServiceExecution(selectedDeviceReaderName, "Android OMAPI", keypleServices.aidEnum.aid, null)
+                            remoteServiceExecution(selectedDeviceReaderName, pluginType, keypleServices.aidEnums, null)
                         }
                     }
                 }
@@ -113,15 +114,15 @@ class CardReaderActivity : AbstractCardActivity() {
             }
 
             GlobalScope.launch {
-                remoteServiceExecution(selectedDeviceReaderName, "Android NFC", keypleServices.aidEnum.aid, ContactlessCardCommonProtocol.ISO_14443_4.name)
+                remoteServiceExecution(selectedDeviceReaderName, pluginType, keypleServices.aidEnums, ContactlessCardCommonProtocol.ISO_14443_4.name)
             }
         }
     }
 
-    private suspend fun remoteServiceExecution(selectedDeviceReaderName: String, pluginType: String, aid: String, protocol: String?) {
+    private suspend fun remoteServiceExecution(selectedDeviceReaderName: String, pluginType: String, aidEnums: ArrayList<KeypleManager.AidEnum>, protocol: String?) {
         withContext(Dispatchers.IO) {
             try {
-                val transactionManager = keypleServices.getTransactionManager(selectedDeviceReaderName, aid, protocol)
+                val transactionManager = keypleServices.getTransactionManager(selectedDeviceReaderName, aidEnums, protocol)
                 val analyseContractsInput = AnalyzeContractsInput().setPluginType(pluginType)
                 // unmock for run
                 val compatibleContractOutput = localServiceClient.executeRemoteService("CONTRACT_ANALYSIS",
@@ -136,6 +137,7 @@ class CardReaderActivity : AbstractCardActivity() {
 
                             val contracts = compatibleContractOutput.validContracts
                             val status = if (contracts?.size != null && contracts.size> 0) Status.TICKETS_FOUND else Status.EMPTY_CARD
+                            val finishActivity = device != DeviceEnum.CONTACTLESS_CARD //Only with NFC we can come back to 'wait for device screen'
 
                             changeDisplay(
                                 CardReaderResponse(
@@ -146,7 +148,8 @@ class CardReaderActivity : AbstractCardActivity() {
                                     arrayListOf(),
                                     ""
                                 ),
-                                ByteArrayUtil.toHex(transactionManager.calypsoCard.applicationSerialNumber)
+                                ByteArrayUtil.toHex(transactionManager.calypsoCard.applicationSerialNumber),
+                                finishActivity
                             )
                         }
                     } // success,
@@ -159,7 +162,8 @@ class CardReaderActivity : AbstractCardActivity() {
                 }
             } catch (e: Exception) {
                 Timber.e(e)
-                launchExceptionResponse(e)
+                val finishActivity = device != DeviceEnum.CONTACTLESS_CARD //Only with NFC we can come back to 'wait for device screen'
+                launchExceptionResponse(e, finishActivity)
             }
         }
     }

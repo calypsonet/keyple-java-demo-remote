@@ -30,13 +30,13 @@ import org.cna.keyple.demo.sale.data.endpoint.WriteContractInput
 import org.cna.keyple.demo.sale.data.endpoint.WriteContractOutput
 import org.cna.keyple.demo.sale.data.model.type.PriorityCode
 import org.eclipse.keyple.core.util.ByteArrayUtil
-import org.eclipse.keyple.core.util.protocol.ContactCardCommonProtocol
 import org.eclipse.keyple.core.util.protocol.ContactlessCardCommonProtocol
 import org.calypsonet.keyple.remote.reload.demo.R
 import org.calypsonet.keyple.remote.reload.demo.data.model.CardReaderResponse
 import org.calypsonet.keyple.remote.reload.demo.data.model.DeviceEnum
 import org.calypsonet.keyple.remote.reload.demo.data.model.Status
 import org.calypsonet.keyple.remote.reload.demo.di.scopes.ActivityScoped
+import org.calypsonet.keyple.remote.reload.demo.manager.KeypleManager
 import timber.log.Timber
 
 @ActivityScoped
@@ -58,9 +58,9 @@ class ChargeActivity : AbstractCardActivity() {
                     GlobalScope.launch {
                         remoteServiceExecution(
                             selectedDeviceReaderName,
-                            "Android OMAPI",
-                            keypleServices.aidEnum.aid,
-                            ContactCardCommonProtocol.ISO_7816_3.name
+                            pluginType,
+                            keypleServices.aidEnums,
+                            protocol = null
                         )
                     }
                 }
@@ -92,8 +92,8 @@ class ChargeActivity : AbstractCardActivity() {
             GlobalScope.launch {
                 remoteServiceExecution(
                     selectedDeviceReaderName,
-                    "Android NFC",
-                    keypleServices.aidEnum.aid,
+                    pluginType,
+                    keypleServices.aidEnums,
                     ContactlessCardCommonProtocol.ISO_14443_4.name
                 )
             }
@@ -103,14 +103,14 @@ class ChargeActivity : AbstractCardActivity() {
     private suspend fun remoteServiceExecution(
         selectedDeviceReaderName: String,
         pluginType: String,
-        aid: String,
+        aidEnums: ArrayList<KeypleManager.AidEnum>,
         protocol: String?
     ) {
         withContext(Dispatchers.IO) {
             try {
                 val readCardSerialNumber = intent.getStringExtra(CARD_APPLICATION_NUMBER)
 
-                val transactionManager = keypleServices.getTransactionManager(selectedDeviceReaderName, aid, protocol)
+                val transactionManager = keypleServices.getTransactionManager(selectedDeviceReaderName, aidEnums, protocol)
                 if (ByteArrayUtil.toHex(transactionManager.calypsoCard.applicationSerialNumber) != readCardSerialNumber) {
                     // Ticket would have been bought for the Card read at step one.
                     // To avoid swapping we check thant loading is done on the same card

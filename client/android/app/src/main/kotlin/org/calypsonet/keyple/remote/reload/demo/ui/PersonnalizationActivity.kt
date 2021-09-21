@@ -30,6 +30,7 @@ import org.calypsonet.keyple.remote.reload.demo.data.model.CardReaderResponse
 import org.calypsonet.keyple.remote.reload.demo.data.model.DeviceEnum
 import org.calypsonet.keyple.remote.reload.demo.data.model.Status
 import org.calypsonet.keyple.remote.reload.demo.di.scopes.ActivityScoped
+import org.calypsonet.keyple.remote.reload.demo.manager.KeypleManager
 import timber.log.Timber
 
 @ActivityScoped
@@ -49,7 +50,7 @@ class PersonnalizationActivity : AbstractCardActivity() {
                 showNowPersonnalizingInformation()
                 initOmapiReader() {
                     GlobalScope.launch {
-                        remoteServiceExecution(selectedDeviceReaderName, "Android OMAPI", keypleServices.aidEnum.aid, ContactCardCommonProtocol.ISO_7816_3.name)
+                        remoteServiceExecution(selectedDeviceReaderName, pluginType, keypleServices.aidEnums, null)
                     }
                 }
             }
@@ -103,15 +104,15 @@ class PersonnalizationActivity : AbstractCardActivity() {
                 showNowPersonnalizingInformation()
             }
             GlobalScope.launch {
-                remoteServiceExecution(selectedDeviceReaderName, "Android NFC", keypleServices.aidEnum.aid, ContactlessCardCommonProtocol.ISO_14443_4.name)
+                remoteServiceExecution(selectedDeviceReaderName, pluginType, keypleServices.aidEnums, ContactlessCardCommonProtocol.ISO_14443_4.name)
             }
         }
     }
 
-    private suspend fun remoteServiceExecution(selectedDeviceReaderName: String, pluginType: String, aid: String, protocol: String?) {
+    private suspend fun remoteServiceExecution(selectedDeviceReaderName: String, pluginType: String, aidEnums: ArrayList<KeypleManager.AidEnum>, protocol: String?) {
         withContext(Dispatchers.IO) {
             try {
-                val transactionManager = keypleServices.getTransactionManager(selectedDeviceReaderName, aid, protocol)
+                val transactionManager = keypleServices.getTransactionManager(selectedDeviceReaderName, aidEnums, protocol)
                 val cardIssuanceOutput = localServiceClient.executeRemoteService(
                     "CARD_ISSUANCE",
                     selectedDeviceReaderName,
