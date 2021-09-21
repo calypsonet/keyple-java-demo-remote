@@ -99,6 +99,7 @@ public class TicketingLogic implements PluginObserverSpi {
         CalypsoCard calypsoPo = (CalypsoCard) readerExtension.getInitialCardContent();
         AnalyzeContractsInput input = readerExtension.getInputData(AnalyzeContractsInput.class);
         CardResource samResource = CardResourceServiceProvider.getService().getCardResource(CalypsoConstants.SAM_PROFILE_NAME);
+        String pluginType = input.getPluginType();
 
         try{
 
@@ -106,6 +107,7 @@ public class TicketingLogic implements PluginObserverSpi {
                     .withCalypsoCard(calypsoPo)
                     .withCardReader(reader)
                     .withSamResource(samResource)
+                    .withPluginType(pluginType)
                     .build();
 
 
@@ -158,6 +160,7 @@ public class TicketingLogic implements PluginObserverSpi {
         WriteContractInput writeContractInput = readerExtension.getInputData(WriteContractInput.class);
         CalypsoCard calypsoPo = (CalypsoCard) readerExtension.getInitialCardContent();
         CardResource samResource = CardResourceServiceProvider.getService().getCardResource(CalypsoConstants.SAM_PROFILE_NAME);
+        String pluginType = writeContractInput.getPluginType();
 
         try{
 
@@ -165,6 +168,7 @@ public class TicketingLogic implements PluginObserverSpi {
                     .withCalypsoCard(calypsoPo)
                     .withCardReader(reader)
                     .withSamResource(samResource)
+                    .withPluginType(pluginType)
                     .build();
 
             //re-read card
@@ -234,6 +238,7 @@ public class TicketingLogic implements PluginObserverSpi {
                     .withCalypsoCard(calypsoCard)
                     .withCardReader(reader)
                     .withSamResource(samResource)
+                    .withPluginType("Android NFC")
                     .build();
 
             //init card

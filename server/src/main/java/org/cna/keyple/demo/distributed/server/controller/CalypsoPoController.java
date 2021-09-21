@@ -42,6 +42,9 @@ public class CalypsoPoController {
     private final CalypsoCard calypsoCard;
     private final Reader cardReader;
     private final CardResource samResource;
+    private final String pluginType;
+
+    private static final String PLUGIN_TYPE_ANDROID_OMAPI = "Android OMAPI";
 
     public static Builder newBuilder(){
         return new Builder();
@@ -54,6 +57,7 @@ public class CalypsoPoController {
         private CalypsoCard calypsoCard;
         private  Reader poReader;
         private CardResource samResource;
+        private String pluginType;
 
         /**
          * Specify the calypso Card to which the operation will be executed
@@ -87,9 +91,20 @@ public class CalypsoPoController {
             return this;
         }
 
+        /**
+         * Specify the plugin type
+         * @param pluginType non null instance of a reader
+         * @return next step of configuration
+         */
+        public Builder withPluginType(String pluginType){
+            Assert.getInstance().notNull(samResource,"pluginType");
+            this.pluginType = pluginType;
+            return this;
+        }
+
 
         public CalypsoPoController build(){
-            return new CalypsoPoController(calypsoCard, poReader,samResource);
+            return new CalypsoPoController(calypsoCard, poReader,samResource, pluginType);
         }
 
     }
@@ -100,10 +115,11 @@ public class CalypsoPoController {
      * @param calypsoCard selected smart card
      * @param cardReader reader the smart card is inserted into
      */
-    private CalypsoPoController(CalypsoCard calypsoCard , Reader cardReader,CardResource samResource){
+    private CalypsoPoController(CalypsoCard calypsoCard , Reader cardReader,CardResource samResource, String pluginType){
         this.calypsoCard = calypsoCard;
         this.cardReader = cardReader;
         this.samResource = samResource;
+        this.pluginType = pluginType;
     }
 
     /**
@@ -132,6 +148,12 @@ public class CalypsoPoController {
         // create a secured card transaction
         cardTransaction =
                 cardExtension.createCardTransaction(cardReader, calypsoCard, cardSecuritySetting);
+
+        if(PLUGIN_TYPE_ANDROID_OMAPI.equals(pluginType)){
+            //For OMAPI Reader we release the channel after reading
+            cardTransaction.prepareReleaseCardChannel();
+        }
+
         /*
          * Open Calypso session
          */
@@ -207,6 +229,11 @@ public class CalypsoPoController {
         cardTransaction =
                 cardExtension.createCardTransaction(cardReader, calypsoCard, cardSecuritySetting);
 
+        if(PLUGIN_TYPE_ANDROID_OMAPI.equals(pluginType)){
+            //For OMAPI Reader we release the channel after reading
+            cardTransaction.prepareReleaseCardChannel();
+        }
+
         /* Open Calypso session */
         logger.info("Open Calypso Session - SESSION_LVL_LOAD...");
         cardTransaction.processOpening(WriteAccessLevel.LOAD);
@@ -273,6 +300,11 @@ public class CalypsoPoController {
         // create a secured card transaction
         cardTransaction =
                 cardExtension.createCardTransaction(cardReader, calypsoCard, cardSecuritySetting);
+
+        if(PLUGIN_TYPE_ANDROID_OMAPI.equals(pluginType)){
+            //For OMAPI Reader we release the channel after reading
+            cardTransaction.prepareReleaseCardChannel();
+        }
 
         /*
          * Open Calypso session
