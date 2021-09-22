@@ -17,6 +17,7 @@ import org.eclipse.keyple.card.calypso.CalypsoExtensionService;
 import org.eclipse.keyple.core.service.ConfigurableReader;
 import org.eclipse.keyple.core.service.Plugin;
 import org.eclipse.keyple.core.service.Reader;
+import org.eclipse.keyple.core.service.SmartCardServiceProvider;
 import org.eclipse.keyple.core.service.resource.*;
 import org.eclipse.keyple.core.service.resource.spi.CardResourceProfileExtension;
 import org.eclipse.keyple.core.service.resource.spi.ReaderConfiguratorSpi;
@@ -26,18 +27,14 @@ import org.eclipse.keyple.plugin.pcsc.PcscSupportedContactlessProtocol;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Collection;
+import java.util.regex.Pattern;
+
 /**
  * Utility class providing methods for configuring readers and the card resource service used across
  * several examples.
  */
 public class ConfigurationUtil {
-  private static final Logger logger = LoggerFactory.getLogger(ConfigurationUtil.class);
-
-  // Common reader identifiers
-  // These two regular expressions can be modified to fit the names of the readers used to run these
-  // examples.
-  public static final String CARD_READER_NAME_REGEX = ".*ASK LoGO.*|.*Contactless.*";
-  public static final String SAM_READER_NAME_REGEX = ".*Identive.*|.*HID.*";
 
   /**
    * (private)<br>
@@ -46,33 +43,21 @@ public class ConfigurationUtil {
   private ConfigurationUtil() {}
 
   /**
-   * Retrieves the first available reader in the provided plugin whose name matches the provided
-   * regular expression.
+   * Get the terminal which names match the expected pattern
    *
-   * @param plugin The plugin to which the reader belongs.
-   * @param readerNameRegex A regular expression matching the targeted reader.
-   * @return A not null reference.
-   * @throws IllegalStateException If the reader is not found.
+   * @param pattern Pattern
+   * @return Reader
    */
-  public static Reader getCardReader(Plugin plugin, String readerNameRegex) {
-    for (String readerName : plugin.getReaderNames()) {
-      if (readerName.matches(readerNameRegex)) {
-        ConfigurableReader reader = (ConfigurableReader) plugin.getReader(readerName);
-        // Configure the reader with parameters suitable for contactless operations.
-        reader
-            .getExtension(PcscReader.class)
-            .setContactless(true)
-            .setIsoProtocol(PcscReader.IsoProtocol.T1)
-            .setSharingMode(PcscReader.SharingMode.SHARED);
-        reader.activateProtocol(
-            PcscSupportedContactlessProtocol.ISO_14443_4.name(),
-            ContactlessCardCommonProtocol.ISO_14443_4.name());
-        logger.info("Card reader, plugin; {}, name: {}", plugin.getName(), reader.getName());
-        return reader;
+  public static Reader getReaderByPattern(String pattern) {
+    Pattern p = Pattern.compile(pattern);
+    for (Plugin plugin : SmartCardServiceProvider.getService().getPlugins()) {
+      for (Reader reader : plugin.getReaders()) {
+        if (p.matcher(reader.getName()).matches()) {
+          return reader;
+        }
       }
     }
-    throw new IllegalStateException(
-        String.format("Reader '%s' not found in plugin '%s'", readerNameRegex, plugin.getName()));
+    return null;
   }
 
   /**

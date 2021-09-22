@@ -11,7 +11,7 @@
  ************************************************************************************** */
 package org.cna.keyple.demo.distributed.integration.client;
 
-import org.cna.keyple.demo.distributed.server.endpoint.EndpointServer;
+import org.cna.keyple.demo.distributed.server.endpoint.RemotePluginEndpoint;
 import org.eclipse.keyple.distributed.MessageDto;
 import org.eclipse.keyple.distributed.spi.SyncEndpointClientSpi;
 import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
@@ -25,7 +25,7 @@ import java.util.List;
 /**
  * Example of a {@link SyncEndpointClientSpi} implementation using Web Services.
  *
- * <p>Sends requests to the {@link EndpointServer}.
+ * <p>Sends requests to the {@link RemotePluginEndpoint}.
  */
 @RegisterRestClient(configKey = "remote-plugin-api")
 public interface EndpointClient extends SyncEndpointClientSpi {

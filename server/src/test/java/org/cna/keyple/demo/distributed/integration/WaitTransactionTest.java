@@ -4,10 +4,9 @@ import io.quarkus.test.junit.QuarkusTest;
 import org.calypsonet.terminal.reader.CardReaderEvent;
 import org.calypsonet.terminal.reader.spi.CardReaderObserverSpi;
 import org.cna.keyple.demo.distributed.integration.client.EndpointClient;
-import org.cna.keyple.demo.distributed.server.util.PcscReaderUtils;
+import org.cna.keyple.demo.local.procedure.LocalConfigurationUtil;
 import org.eclipse.keyple.core.service.ObservableReader;
 import org.eclipse.keyple.core.service.Reader;
-import org.eclipse.keyple.core.service.ReaderEvent;
 import org.eclipse.keyple.core.service.SmartCardServiceProvider;
 import org.eclipse.keyple.distributed.LocalServiceClientFactory;
 import org.eclipse.keyple.distributed.LocalServiceClientFactoryBuilder;
@@ -20,7 +19,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Random;
 
-import static org.calypsonet.terminal.reader.CardReaderEvent.Type.CARD_INSERTED;
 import static org.calypsonet.terminal.reader.ObservableCardReader.DetectionMode.REPEATING;
 
 @QuarkusTest
@@ -58,7 +56,7 @@ public class WaitTransactionTest {
     @BeforeEach
     public void setUp(){
         /* Get PO Reader */
-        poReader = PcscReaderUtils.initPoReader(PO_READER_FILTER);
+        poReader = LocalConfigurationUtil.initReader(PO_READER_FILTER);
     }
 
     @Test

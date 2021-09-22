@@ -1,4 +1,4 @@
-package org.cna.keyple.demo.distributed.server.controller;
+package org.cna.keyple.demo.distributed.server.calypso;
 
 
 import org.calypsonet.terminal.calypso.WriteAccessLevel;
@@ -6,7 +6,6 @@ import org.calypsonet.terminal.calypso.card.CalypsoCard;
 import org.calypsonet.terminal.calypso.sam.CalypsoSam;
 import org.calypsonet.terminal.calypso.transaction.CardSecuritySetting;
 import org.calypsonet.terminal.calypso.transaction.CardTransactionManager;
-import org.cna.keyple.demo.distributed.server.util.CalypsoClassicInfo;
 import org.cna.keyple.demo.distributed.server.util.CalypsoConstants;
 import org.cna.keyple.demo.sale.data.model.ContractStructureDto;
 import org.cna.keyple.demo.sale.data.model.EnvironmentHolderStructureDto;
@@ -20,7 +19,6 @@ import org.cna.keyple.demo.sale.data.model.type.VersionNumber;
 import org.eclipse.keyple.card.calypso.CalypsoExtensionService;
 import org.eclipse.keyple.core.service.Reader;
 import org.eclipse.keyple.core.service.resource.CardResource;
-import org.eclipse.keyple.core.service.resource.CardResourceServiceProvider;
 import org.eclipse.keyple.core.util.Assert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,14 +29,14 @@ import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.util.List;
 
-import static org.cna.keyple.demo.distributed.server.util.CalypsoClassicInfo.*;
+import static org.cna.keyple.demo.distributed.server.util.CalypsoConstants.*;
 
 /**
  * Perform operations with a calypso PO inserted in a Reader. It requires a {@link CalypsoSam} to perform secured operations
  */
-public class CalypsoPoController {
+public class CalypsoCardController {
 
-    private static final Logger logger = LoggerFactory.getLogger(CalypsoPoController.class);
+    private static final Logger logger = LoggerFactory.getLogger(CalypsoCardController.class);
     private final CalypsoCard calypsoCard;
     private final Reader cardReader;
     private final CardResource samResource;
@@ -103,8 +101,8 @@ public class CalypsoPoController {
         }
 
 
-        public CalypsoPoController build(){
-            return new CalypsoPoController(calypsoCard, poReader,samResource, pluginType);
+        public CalypsoCardController build(){
+            return new CalypsoCardController(calypsoCard, poReader,samResource, pluginType);
         }
 
     }
@@ -115,7 +113,7 @@ public class CalypsoPoController {
      * @param calypsoCard selected smart card
      * @param cardReader reader the smart card is inserted into
      */
-    private CalypsoPoController(CalypsoCard calypsoCard , Reader cardReader,CardResource samResource, String pluginType){
+    private CalypsoCardController(CalypsoCard calypsoCard , Reader cardReader, CardResource samResource, String pluginType){
         this.calypsoCard = calypsoCard;
         this.cardReader = cardReader;
         this.samResource = samResource;
@@ -127,7 +125,7 @@ public class CalypsoPoController {
      * Read all files on the calypso PO inserted in the Reader
      * @return card content
      */
-    public CalypsoPoRepresentation readCard(){
+    public CalypsoCardRepresentation readCard(){
         // Create the card transaction manager
         CardTransactionManager cardTransaction;
 
@@ -161,31 +159,31 @@ public class CalypsoPoController {
         cardTransaction.processOpening(WriteAccessLevel.LOAD);
 
         // Prepare reading of environment record
-        cardTransaction.prepareReadRecordFile(SFI_EnvironmentAndHolder, RECORD_NUMBER_1);
+        cardTransaction.prepareReadRecordFile(SFI_ENVIRONMENT_AND_HOLDER, RECORD_NUMBER_1);
 
         // Prepare reading of last event record
         cardTransaction.prepareReadRecordFile(
-                CalypsoClassicInfo.SFI_EventLog, CalypsoClassicInfo.RECORD_NUMBER_1);
+                CalypsoConstants.SFI_EVENT_LOG, CalypsoConstants.RECORD_NUMBER_1);
 
         // Prepare reading of contract records (Calypso Light)
         cardTransaction.prepareReadRecordFile(
-                SFI_Contracts, CalypsoClassicInfo.RECORD_NUMBER_1);
+                SFI_CONTRACTS, CalypsoConstants.RECORD_NUMBER_1);
         cardTransaction.prepareReadRecordFile(
-                SFI_Contracts, CalypsoClassicInfo.RECORD_NUMBER_2);
+                SFI_CONTRACTS, CalypsoConstants.RECORD_NUMBER_2);
         cardTransaction.prepareReadRecordFile(
-                SFI_Contracts, CalypsoClassicInfo.RECORD_NUMBER_3);
+                SFI_CONTRACTS, CalypsoConstants.RECORD_NUMBER_3);
         cardTransaction.prepareReadRecordFile(
-                SFI_Contracts, CalypsoClassicInfo.RECORD_NUMBER_4);
+                SFI_CONTRACTS, CalypsoConstants.RECORD_NUMBER_4);
 
         // Prepare reading of simulated counter record
         cardTransaction.prepareReadCounterFile(
-                SFI_Counters_1, CalypsoClassicInfo.RECORD_NUMBER_1);
+                SFI_Counters_1, CalypsoConstants.RECORD_NUMBER_1);
         cardTransaction.prepareReadCounterFile(
-                SFI_Counters_2, CalypsoClassicInfo.RECORD_NUMBER_1);
+                SFI_Counters_2, CalypsoConstants.RECORD_NUMBER_1);
         cardTransaction.prepareReadCounterFile(
-                SFI_Counters_3, CalypsoClassicInfo.RECORD_NUMBER_1);
+                SFI_Counters_3, CalypsoConstants.RECORD_NUMBER_1);
         cardTransaction.prepareReadCounterFile(
-                SFI_Counters_4, CalypsoClassicInfo.RECORD_NUMBER_1);
+                SFI_Counters_4, CalypsoConstants.RECORD_NUMBER_1);
 
 
         logger.info("Read Card...");
@@ -198,15 +196,15 @@ public class CalypsoPoController {
         cardTransaction.processClosing();
 
         logger.info("Calypso Session Closed.");
-        return CalypsoPoRepresentation.parse(calypsoCard);
+        return CalypsoCardRepresentation.parse(calypsoCard);
     }
 
     /**
      * Write the card content into the inserted card. Only updated-marked files will be physically updated.
-     * @param calypsoPoContent updated content to be written
+     * @param calypsoCardContent updated content to be written
      * @return status code
      */
-    public int writeCard(CalypsoPoRepresentation calypsoPoContent){
+    public int writeCard(CalypsoCardRepresentation calypsoCardContent){
         // Create the card transaction manager
         CardTransactionManager cardTransaction;
 
@@ -239,15 +237,15 @@ public class CalypsoPoController {
         cardTransaction.processOpening(WriteAccessLevel.LOAD);
 
         /* Update contract records */
-        if(!calypsoPoContent.getUpdatedContracts().isEmpty()){
+        if(!calypsoCardContent.getUpdatedContracts().isEmpty()){
             for(int i=0;i<4;i++){
 
-                ContractStructureDto contract = calypsoPoContent.getContracts().get(i);
+                ContractStructureDto contract = calypsoCardContent.getContracts().get(i);
 
-                if(calypsoPoContent.getUpdatedContracts().contains(contract)){
+                if(calypsoCardContent.getUpdatedContracts().contains(contract)){
                    //update contract
                     cardTransaction.prepareUpdateRecord(
-                            SFI_Contracts,
+                            SFI_CONTRACTS,
                             i+1,
                             ContractStructureParser.unparse(contract));
 
@@ -263,9 +261,9 @@ public class CalypsoPoController {
         }
 
         /* Update event */
-        if(calypsoPoContent.isEventUpdated()){
-            cardTransaction.prepareUpdateRecord(SFI_EventLog, 1,
-                    EventStructureParser.unparse(buildEvent(calypsoPoContent.getEvent(), calypsoPoContent.getContracts())));
+        if(calypsoCardContent.isEventUpdated()){
+            cardTransaction.prepareUpdateRecord(SFI_EVENT_LOG, 1,
+                    EventStructureParser.unparse(buildEvent(calypsoCardContent.getEvent(), calypsoCardContent.getContracts())));
         }
 
         /* Close Session */
@@ -316,26 +314,26 @@ public class CalypsoPoController {
          * Prepare file update
          */
         //Fill the environment structure with predefined values
-        cardTransaction.prepareUpdateRecord(SFI_EnvironmentAndHolder, 1,
+        cardTransaction.prepareUpdateRecord(SFI_ENVIRONMENT_AND_HOLDER, 1,
                 EnvironmentHolderStructureParser.unparse(getEnvironmentInit()));
 
         //Clear the first event (update with a byte array filled with 0s).
-        cardTransaction.prepareUpdateRecord(SFI_EventLog, 1,
+        cardTransaction.prepareUpdateRecord(SFI_EVENT_LOG, 1,
                 EnvironmentHolderStructureParser.getEmpty());
 
         //Clear all contracts (update with a byte array filled with 0s).
         //TODO do not support CLAP
-        cardTransaction.prepareUpdateRecord(SFI_Contracts, 1,
+        cardTransaction.prepareUpdateRecord(SFI_CONTRACTS, 1,
                 ContractStructureParser.getEmpty());
-        cardTransaction.prepareUpdateRecord(SFI_Contracts, 2,
+        cardTransaction.prepareUpdateRecord(SFI_CONTRACTS, 2,
                 ContractStructureParser.getEmpty());
-        cardTransaction.prepareUpdateRecord(SFI_Contracts, 3,
+        cardTransaction.prepareUpdateRecord(SFI_CONTRACTS, 3,
                 ContractStructureParser.getEmpty());
-        cardTransaction.prepareUpdateRecord(SFI_Contracts, 4,
+        cardTransaction.prepareUpdateRecord(SFI_CONTRACTS, 4,
                 ContractStructureParser.getEmpty());
 
         //Clear the counter file (update with a byte array filled with 0s).
-        cardTransaction.prepareUpdateRecord(SFI_Counters, 1, EventStructureParser.getEmpty());
+        cardTransaction.prepareUpdateRecord(SFI_COUNTERS, 1, EventStructureParser.getEmpty());
 
         /*
          * Close Calypso session

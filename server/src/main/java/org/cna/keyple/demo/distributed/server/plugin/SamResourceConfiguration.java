@@ -1,9 +1,8 @@
 package org.cna.keyple.demo.distributed.server.plugin;
 
 
-import io.quarkus.runtime.Startup;
 import org.cna.keyple.demo.distributed.server.util.CalypsoConstants;
-import org.cna.keyple.demo.distributed.server.util.PcscReaderUtils;
+import org.cna.keyple.demo.distributed.server.util.ConfigurationUtil;
 import org.eclipse.keyple.core.service.Plugin;
 import org.eclipse.keyple.core.service.Reader;
 import org.eclipse.keyple.core.service.SmartCardService;
@@ -15,7 +14,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Singleton;
 
 import static org.cna.keyple.demo.distributed.server.util.ConfigurationUtil.setupCardResourceService;
 
@@ -23,8 +21,8 @@ import static org.cna.keyple.demo.distributed.server.util.ConfigurationUtil.setu
  * This Singleton configure the SAM reader and the SAM resource Manager
  */
 @ApplicationScoped
-public class SamCardConfiguration {
-    private static final Logger logger = LoggerFactory.getLogger(SamCardConfiguration.class);
+public class SamResourceConfiguration {
+    private static final Logger logger = LoggerFactory.getLogger(SamResourceConfiguration.class);
 
     //filter to define which reader is used for SAM
     @ConfigProperty(name = "sam.pcsc.reader.filter")
@@ -33,22 +31,21 @@ public class SamCardConfiguration {
     //Plugin to use for the SAM
     Plugin plugin;
 
-    public SamCardConfiguration(){
+    public SamResourceConfiguration(){
         this.samReaderFilter =ConfigProvider.getConfig().getValue("sam.pcsc.reader.filter", String.class);
         logger.info("Init SamCardConfiguration with filter : {}", samReaderFilter);
-        initSam();
+        //initSam();
     }
     /**
      * Public constructor invoked at server boot.
      * Initialize the Sam Reader and the Sam Resource Manager.
      */
-    public SamCardConfiguration(String samReaderFilter){
+    public SamResourceConfiguration(String samReaderFilter){
         this.samReaderFilter = samReaderFilter;
         logger.info("Init SamCardConfiguration with filter : {}", samReaderFilter);
-        initSam();
     }
 
-    public void initSam(){
+    public void init(){
         plugin = initSamPlugin();
         //PcscReaderUtils.initSamReader(samReaderFilter);
         setupCardResourceService(
@@ -60,7 +57,7 @@ public class SamCardConfiguration {
      * @return a not nullable instance of a reader
      */
     public Reader getSamReader(){
-        return PcscReaderUtils.getReaderByPattern(samReaderFilter);
+        return ConfigurationUtil.getReaderByPattern(samReaderFilter);
     }
 
     private Plugin initSamPlugin(){

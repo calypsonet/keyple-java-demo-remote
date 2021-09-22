@@ -9,46 +9,26 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ************************************************************************************** */
-package org.cna.keyple.demo.distributed.server.util;
+package org.cna.keyple.demo.local.procedure;
 
-import org.eclipse.keyple.core.service.*;
+import org.cna.keyple.demo.distributed.server.util.ConfigurationUtil;
+import org.eclipse.keyple.core.service.ConfigurableReader;
+import org.eclipse.keyple.core.service.Reader;
 import org.eclipse.keyple.core.util.protocol.ContactlessCardCommonProtocol;
 import org.eclipse.keyple.plugin.pcsc.PcscReader;
 import org.eclipse.keyple.plugin.pcsc.PcscSupportedContactlessProtocol;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Collection;
-import java.util.regex.Pattern;
 
 /** PCSC Reader Utilities to read properties file and differentiate SAM and PO reader */
-public final class PcscReaderUtils {
-  private static final Logger logger = LoggerFactory.getLogger(PcscReaderUtils.class);
+public final class LocalConfigurationUtil {
 
-  /*
-   * Get the terminal which names match the expected pattern
-   *
-   * @param pattern Pattern
-   * @return Reader
-   * @throws KeypleReaderException the reader is not found or readers are not initialized
-   */
-  public static Reader getReaderByPattern(String pattern) {
-    Pattern p = Pattern.compile(pattern);
-    Collection<Plugin> plugins = SmartCardServiceProvider.getService().getPlugins();
-    for (Plugin plugin : plugins) {
-      Collection<Reader> readers = plugin.getReaders();
-      for (Reader reader : readers) {
-        if (p.matcher(reader.getName()).matches()) {
-          return reader;
-        }
-      }
-    }
-   return null;
-  }
+  private static final Logger logger = LoggerFactory.getLogger(LocalConfigurationUtil.class);
 
-  static public Reader initPoReader(String poReaderFilter) {
+  static public Reader initReader(String poReaderFilter) {
 
-    Reader reader = PcscReaderUtils.getReaderByPattern(poReaderFilter);
+    Reader reader = ConfigurationUtil.getReaderByPattern(poReaderFilter);
 
     if(reader==null){
       return null;

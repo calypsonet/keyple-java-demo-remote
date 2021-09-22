@@ -14,10 +14,13 @@ package org.cna.keyple.demo.distributed.server;
 import io.quarkus.runtime.Quarkus;
 import io.quarkus.runtime.QuarkusApplication;
 import io.quarkus.runtime.annotations.QuarkusMain;
+import org.cna.keyple.demo.distributed.server.plugin.CalypsoCardResourceConfiguration;
+import org.cna.keyple.demo.distributed.server.plugin.SamResourceConfiguration;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.inject.Inject;
 import java.awt.*;
 import java.net.URI;
 
@@ -41,12 +44,32 @@ public class Main {
     @ConfigProperty(name = "quarkus.http.port")
     Integer assignedPort;
 
+    @Inject
+    CalypsoCardResourceConfiguration calypsoCardResourceConfiguration;
+
+    @Inject
+    SamResourceConfiguration samResourceConfiguration;
+
     /** {@inheritDoc} */
     @Override
     public int run(String... args)  throws Exception  {
-      URI webappUri = new URI("http://localhost:" + assignedPort + "/");
 
+      /*
+       *  Start the SAM card configuration
+       */
+      samResourceConfiguration.init();
+
+      /*
+       *  Start the PO card configuration
+       */
+      calypsoCardResourceConfiguration.init();
+
+      /*
+       * Open the dashboard on the default browser
+       */
+      URI webappUri = new URI("http://localhost:" + assignedPort + "/");
       Desktop.getDesktop().browse(webappUri);
+
       logger.info("Keyple Distributed Server Demo Started at port : {}", assignedPort);
       Quarkus.waitForExit();
       return 0;

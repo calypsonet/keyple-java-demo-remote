@@ -20,13 +20,12 @@ import org.eclipse.keyple.core.service.SmartCardService;
 import org.eclipse.keyple.core.service.SmartCardServiceProvider;
 
 public final class CalypsoUtils {
-
-
+  
   /**
    * Operate the PO selection
    *
    * @param cardReader the reader where to operate the PO selection
-   * @return a CalypsoPo object if the selection succeed
+   * @return a CalypsoCard object if the selection succeed
    * @throws IllegalStateException if the selection fails
    */
   public static CalypsoCard selectCard(Reader cardReader) {
@@ -66,7 +65,7 @@ public final class CalypsoUtils {
    * Operate the PO selection with the read of the environment file
    *
    * @param cardReader the reader where to operate the PO selection
-   * @return a CalypsoPo object if the selection succeed
+   * @return a CalypsoCard object if the selection succeed
    * @throws IllegalStateException if the selection fails
    */
   public static CalypsoCard selectCardWithEnvironment(Reader cardReader) {

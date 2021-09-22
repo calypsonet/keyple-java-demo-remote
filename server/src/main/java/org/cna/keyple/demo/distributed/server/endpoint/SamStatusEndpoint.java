@@ -12,9 +12,8 @@
 package org.cna.keyple.demo.distributed.server.endpoint;
 
 import com.google.gson.JsonObject;
-import org.cna.keyple.demo.distributed.server.plugin.SamCardConfiguration;
-import org.eclipse.keyple.core.service.resource.CardResourceService;
-import org.eclipse.keyple.core.service.resource.CardResourceServiceProvider;
+import org.calypsonet.terminal.reader.ReaderCommunicationException;
+import org.cna.keyple.demo.distributed.server.plugin.SamResourceConfiguration;
 
 import javax.inject.Inject;
 import javax.ws.rs.GET;
@@ -27,10 +26,10 @@ import javax.ws.rs.core.Response;
  * Check if the sam is ready
  */
 @Path("/sam")
-public class EndpointSam {
+public class SamStatusEndpoint {
 
   @Inject
-  SamCardConfiguration samResourceService;
+  SamResourceConfiguration samResourceService;
 
   /**
    * Check if sam is present
@@ -39,8 +38,13 @@ public class EndpointSam {
   @GET
   @Produces(MediaType.APPLICATION_JSON)
   public Response isSamReady() {
-
-    Boolean isSamReady  =  samResourceService.getSamReader().isCardPresent(); //ping sam
+    Boolean isSamReady;
+    try{
+      isSamReady  =  samResourceService.getSamReader().isCardPresent(); //ping sam
+    }catch (ReaderCommunicationException e){
+      //reader is disconnected
+      isSamReady = false;
+    }
 
     JsonObject object = new JsonObject();
     object.addProperty("isSamReady", isSamReady);

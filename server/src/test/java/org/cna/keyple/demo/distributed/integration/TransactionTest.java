@@ -6,17 +6,15 @@ import org.calypsonet.terminal.reader.selection.spi.SmartCard;
 import org.cna.keyple.demo.distributed.integration.client.EndpointClient;
 import org.cna.keyple.demo.distributed.integration.client.SamClient;
 import org.cna.keyple.demo.distributed.server.util.CalypsoUtils;
-import org.cna.keyple.demo.distributed.server.util.PcscReaderUtils;
+import org.cna.keyple.demo.local.procedure.LocalConfigurationUtil;
 import org.cna.keyple.demo.sale.data.endpoint.*;
 import org.cna.keyple.demo.sale.data.model.ContractStructureDto;
 import org.cna.keyple.demo.sale.data.model.type.PriorityCode;
-import org.eclipse.keyple.core.service.Plugin;
 import org.eclipse.keyple.core.service.Reader;
 import org.eclipse.keyple.core.service.SmartCardServiceProvider;
 import org.eclipse.keyple.distributed.LocalServiceClient;
 import org.eclipse.keyple.distributed.LocalServiceClientFactory;
 import org.eclipse.keyple.distributed.LocalServiceClientFactoryBuilder;
-import org.eclipse.keyple.plugin.pcsc.PcscPluginFactoryBuilder;
 import org.eclipse.microprofile.rest.client.RestClientBuilder;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 import org.junit.jupiter.api.BeforeAll;
@@ -75,7 +73,7 @@ public class TransactionTest {
     @BeforeEach
     public void setUp(){
         /* Get PO Reader */
-        poReader = PcscReaderUtils.initPoReader(PO_READER_FILTER);
+        poReader = LocalConfigurationUtil.initReader(PO_READER_FILTER);
     }
 
     @Test

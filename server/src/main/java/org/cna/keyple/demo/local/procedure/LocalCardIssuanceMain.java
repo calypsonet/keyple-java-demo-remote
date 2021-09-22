@@ -1,14 +1,13 @@
-package org.cna.keyple.demo.procedure;
+package org.cna.keyple.demo.local.procedure;
 
 import org.calypsonet.terminal.calypso.card.CalypsoCard;
 import org.calypsonet.terminal.calypso.card.ElementaryFile;
 import org.calypsonet.terminal.reader.selection.CardSelectionManager;
 import org.calypsonet.terminal.reader.selection.CardSelectionResult;
-import org.cna.keyple.demo.distributed.server.controller.CalypsoPoController;
-import org.cna.keyple.demo.distributed.server.plugin.SamCardConfiguration;
+import org.cna.keyple.demo.distributed.server.calypso.CalypsoCardController;
+import org.cna.keyple.demo.distributed.server.plugin.SamResourceConfiguration;
 import org.cna.keyple.demo.distributed.server.util.CalypsoConstants;
 import org.cna.keyple.demo.distributed.server.util.CalypsoUtils;
-import org.cna.keyple.demo.distributed.server.util.PcscReaderUtils;
 import org.cna.keyple.demo.sale.data.model.EnvironmentHolderStructureDto;
 import org.cna.keyple.demo.sale.data.model.parser.EnvironmentHolderStructureParser;
 import org.eclipse.keyple.card.calypso.CalypsoExtensionService;
@@ -30,12 +29,12 @@ public class LocalCardIssuanceMain {
     public static String samReaderFilter = ".*(Cherry TC|SCM Microsystems|Identive|HID|Generic).*";
 
     public static void main(String[] args) {
-        SamCardConfiguration samCardConfiguration = new SamCardConfiguration(samReaderFilter);
+        SamResourceConfiguration samResourceConfiguration = new SamResourceConfiguration(samReaderFilter);
 
         /*
          * Init readers
          */
-         Reader poReader = PcscReaderUtils.initPoReader(poReaderFilter);
+         Reader poReader = LocalConfigurationUtil.initReader(poReaderFilter);
 
 
         /*
@@ -43,18 +42,19 @@ public class LocalCardIssuanceMain {
          */
         CalypsoCard calypsoPo = CalypsoUtils.selectCard(poReader);
 
-        CardResource samResource = CardResourceServiceProvider.getService().getCardResource(CalypsoConstants.SAM_PROFILE_NAME);
+        CardResource samResource = CardResourceServiceProvider.getService()
+                .getCardResource(CalypsoConstants.SAM_PROFILE_NAME);
 
         /*
          * Reset environment file
          */
-        CalypsoPoController calypsoPoController = CalypsoPoController.newBuilder()
+        CalypsoCardController calypsoCardController = CalypsoCardController.newBuilder()
                 .withCalypsoCard(calypsoPo)
                 .withCardReader(poReader)
                 .withSamResource(samResource)
                 .build();
-        calypsoPoController.initCard();
-        logger.info(calypsoPoController.readCard().toString());
+        calypsoCardController.initCard();
+        logger.info(calypsoCardController.readCard().toString());
         logger.info("Is card init : {}", verifyEnvironmentFile(poReader));
         CardResourceServiceProvider.getService().releaseCardResource(samResource);
     }
@@ -116,7 +116,7 @@ public class LocalCardIssuanceMain {
         // Log the result
         logger.info("EnvironmentAndHolder file data: {}", environmentAndHolder);
 
-        return environmentAndHolder.equals(CalypsoPoController.getEnvironmentInit());
+        return environmentAndHolder.equals(CalypsoCardController.getEnvironmentInit());
     }
 
 }

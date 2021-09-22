@@ -1,7 +1,7 @@
-package org.cna.keyple.demo.distributed.server.controller;
+package org.cna.keyple.demo.distributed.server.calypso;
 
 import org.calypsonet.terminal.calypso.card.FileData;
-import org.cna.keyple.demo.distributed.server.util.CalypsoClassicInfo;
+import org.cna.keyple.demo.distributed.server.util.CalypsoConstants;
 import org.cna.keyple.demo.sale.data.model.ContractStructureDto;
 import org.cna.keyple.demo.sale.data.model.CounterStructureDto;
 import org.cna.keyple.demo.sale.data.model.EnvironmentHolderStructureDto;
@@ -24,14 +24,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.cna.keyple.demo.distributed.server.util.CalypsoClassicInfo.*;
+import static org.cna.keyple.demo.distributed.server.util.CalypsoConstants.*;
 
 /**
  * Holds a PO Content and provides method to prepare an update of the card. Use the {@link #parse(CalypsoCard)} method to build this object.
  */
-public class CalypsoPoRepresentation {
+public class CalypsoCardRepresentation {
 
-    private static final Logger logger = LoggerFactory.getLogger(CalypsoPoRepresentation.class);
+    private static final Logger logger = LoggerFactory.getLogger(CalypsoCardRepresentation.class);
 
     private EventStructureDto event;
     private final List<ContractStructureDto> contracts ;
@@ -40,7 +40,7 @@ public class CalypsoPoRepresentation {
     private final List<ContractStructureDto> updatedContracts;//Updated contracts in this object
     private Boolean isEventUpdated;
 
-    private CalypsoPoRepresentation(){
+    private CalypsoCardRepresentation(){
         contracts = new ArrayList<>();
         updatedContracts = new ArrayList<>();
         isEventUpdated = false;
@@ -48,25 +48,25 @@ public class CalypsoPoRepresentation {
 
     /**
      * Parse a Calypso PO SmartCard object to a card content object
-     * @param calypsoPo not null calypsoPo object
+     * @param calypsoCard not null calypsoCard object
      * @return cardSession not null object
      */
-    public static CalypsoPoRepresentation parse(CalypsoCard calypsoPo){
-        CalypsoPoRepresentation card = new CalypsoPoRepresentation();
+    public static CalypsoCardRepresentation parse(CalypsoCard calypsoCard){
+        CalypsoCardRepresentation card = new CalypsoCardRepresentation();
 
         //parse event
         card.event = EventStructureParser.parse(
-                calypsoPo.getFileBySfi(SFI_EventLog).getData().getContent());
+                calypsoCard.getFileBySfi(SFI_EVENT_LOG).getData().getContent());
 
         //parse contracts
-        FileData fileData = calypsoPo.getFileBySfi(SFI_Contracts).getData();
+        FileData fileData = calypsoCard.getFileBySfi(SFI_CONTRACTS).getData();
         if(fileData!=null){
             for(int i=1;i<5;i++){
                 ContractStructureDto contract = ContractStructureParser.parse(fileData.getContent(i));
                 card.contracts.add(contract);
 
                 //update counter tied to contract
-                FileData counterFile = calypsoPo.getFileBySfi(SFI_Counters_simulated.get(i-1)).getData();
+                FileData counterFile = calypsoCard.getFileBySfi(SFI_Counters_simulated.get(i-1)).getData();
                 if(counterFile!=null){
                     contract.setCounter(CounterStructureParser.parse(counterFile.getContent()));
                 }
@@ -75,8 +75,8 @@ public class CalypsoPoRepresentation {
 
         //parse environment
         card.environment =
-                EnvironmentHolderStructureParser.parse(calypsoPo.getFileBySfi(
-                        CalypsoClassicInfo.SFI_EnvironmentAndHolder).getData().getContent());
+                EnvironmentHolderStructureParser.parse(calypsoCard.getFileBySfi(
+                        CalypsoConstants.SFI_ENVIRONMENT_AND_HOLDER).getData().getContent());
 
         return card;
     }
@@ -228,7 +228,7 @@ public class CalypsoPoRepresentation {
 
     @Override
     public String toString() {
-        return "CalypsoPoContent{" +
+        return "CalypsoCardContent{" +
                 "event=" + event +
                 ", contracts=" + Arrays.deepToString(contracts.toArray()) +
                 ", environment=" + environment +

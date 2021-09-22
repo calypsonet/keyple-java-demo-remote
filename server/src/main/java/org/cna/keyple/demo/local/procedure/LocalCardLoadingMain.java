@@ -1,11 +1,10 @@
-package org.cna.keyple.demo.procedure;
+package org.cna.keyple.demo.local.procedure;
 
 import org.calypsonet.terminal.calypso.card.CalypsoCard;
-import org.cna.keyple.demo.distributed.server.plugin.SamCardConfiguration;
-import org.cna.keyple.demo.distributed.server.controller.CalypsoPoRepresentation;
-import org.cna.keyple.demo.distributed.server.controller.CalypsoPoController;
+import org.cna.keyple.demo.distributed.server.plugin.SamResourceConfiguration;
+import org.cna.keyple.demo.distributed.server.calypso.CalypsoCardRepresentation;
+import org.cna.keyple.demo.distributed.server.calypso.CalypsoCardController;
 import org.cna.keyple.demo.distributed.server.util.CalypsoConstants;
-import org.cna.keyple.demo.distributed.server.util.PcscReaderUtils;
 import org.cna.keyple.demo.sale.data.model.type.PriorityCode;
 import org.eclipse.keyple.core.service.Reader;
 import org.eclipse.keyple.core.service.resource.CardResource;
@@ -24,41 +23,40 @@ public class LocalCardLoadingMain {
     public static String samReaderFilter = ".*(Cherry TC|SCM Microsystems|Identive|HID|Generic).*";
 
     public static void main(String[] args) {
-        SamCardConfiguration samCardConfiguration = new SamCardConfiguration(samReaderFilter);
+        SamResourceConfiguration samResourceConfiguration = new SamResourceConfiguration(samReaderFilter);
 
         /*
          * Init readers
          */
-        //SmartCardService.getInstance().registerPlugin(new PcscPluginFactory(null, null));
-        Reader poReader = PcscReaderUtils.initPoReader(poReaderFilter);
+        Reader poReader = LocalConfigurationUtil.initReader(poReaderFilter);
 
         /*
          * Select cards
          */
         CalypsoCard calypsoCard = selectCardWithEnvironment(poReader);
-
-        CardResource samResource = CardResourceServiceProvider.getService().getCardResource(CalypsoConstants.SAM_PROFILE_NAME);
+        CardResource samResource = CardResourceServiceProvider.getService()
+                .getCardResource(CalypsoConstants.SAM_PROFILE_NAME);
 
         /*
          * Load a contract
          */
-        CalypsoPoController calypsoPoController = CalypsoPoController.newBuilder()
+        CalypsoCardController calypsoCardController = CalypsoCardController.newBuilder()
                 .withCalypsoCard(calypsoCard)
                 .withCardReader(poReader)
                 .withSamResource(samResource)
                 .build();
 
-        CalypsoPoRepresentation calypsoPoContent = calypsoPoController.readCard();
-        logger.info(calypsoPoContent.toString());
-        calypsoPoContent.listValidContracts();
+        CalypsoCardRepresentation calypsoCardContent = calypsoCardController.readCard();
+        logger.info(calypsoCardContent.toString());
+        calypsoCardContent.listValidContracts();
 
         //WriteContractInput writeContractInput = new WriteContractInput().setContractTariff(PriorityCode.MULTI_TRIP_TICKET).setTicketToLoad(2);
         //WriteContractInput writeContractInput = new WriteContractInput().setContractTariff(PriorityCode.STORED_VALUE).setTicketToLoad(13);
 
-        calypsoPoContent.insertNewContract(PriorityCode.SEASON_PASS, 10);
-        calypsoPoController.writeCard(calypsoPoContent);
+        calypsoCardContent.insertNewContract(PriorityCode.SEASON_PASS, 10);
+        calypsoCardController.writeCard(calypsoCardContent);
 
-        logger.info(calypsoPoContent.toString());
+        logger.info(calypsoCardContent.toString());
         CardResourceServiceProvider.getService().releaseCardResource(samResource);
         System.exit(0);
     }

@@ -29,7 +29,7 @@ import static org.cna.keyple.demo.distributed.server.Main.KeypleDistributedServe
  * Server Controller.
  */
 @Path("/remote-plugin")
-public class EndpointServer {
+public class RemotePluginEndpoint {
 
   /**
    * The unique endpoint access.

@@ -12,7 +12,7 @@ import javax.ws.rs.core.Response;
 import java.util.List;
 
 @Path("/dashboard")
-public class EndpointDashboard {
+public class DashboardEndpoint {
 
     @Inject
     TransactionLogStore transactionLogStore;

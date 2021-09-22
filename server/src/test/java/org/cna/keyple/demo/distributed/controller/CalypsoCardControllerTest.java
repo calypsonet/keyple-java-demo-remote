@@ -1,12 +1,12 @@
 package org.cna.keyple.demo.distributed.controller;
 
 import org.calypsonet.terminal.calypso.card.CalypsoCard;
-import org.cna.keyple.demo.distributed.server.controller.CalypsoPoRepresentation;
-import org.cna.keyple.demo.distributed.server.plugin.SamCardConfiguration;
-import org.cna.keyple.demo.distributed.server.controller.CalypsoPoController;
+import org.cna.keyple.demo.distributed.server.calypso.CalypsoCardRepresentation;
+import org.cna.keyple.demo.distributed.server.plugin.SamResourceConfiguration;
+import org.cna.keyple.demo.distributed.server.calypso.CalypsoCardController;
 import org.cna.keyple.demo.distributed.server.util.CalypsoConstants;
 import org.cna.keyple.demo.distributed.server.util.CalypsoUtils;
-import org.cna.keyple.demo.distributed.server.util.PcscReaderUtils;
+import org.cna.keyple.demo.local.procedure.LocalConfigurationUtil;
 import org.cna.keyple.demo.sale.data.model.ContractStructureDto;
 import org.cna.keyple.demo.sale.data.model.EventStructureDto;
 import org.cna.keyple.demo.sale.data.model.type.DateCompact;
@@ -24,11 +24,11 @@ import java.time.Instant;
 /**
  * Test the read and write operations atomically
  */
-public class CalypsoPoControllerTest {
-    private static final Logger logger = LoggerFactory.getLogger(CalypsoPoControllerTest.class);
+public class CalypsoCardControllerTest {
+    private static final Logger logger = LoggerFactory.getLogger(CalypsoCardControllerTest.class);
 
     private Reader poReader;
-    private CalypsoPoController calypsoPoController;
+    private CalypsoCardController calypsoCardController;
     private CalypsoCard calypsoPo;
     private CardResource samResource;
     private static final String poReaderFilter = ".*(ASK|ACS).*";
@@ -36,20 +36,20 @@ public class CalypsoPoControllerTest {
 
     @BeforeAll
     public static void staticSetUp(){
-        new SamCardConfiguration(samReaderFilter);
+        new SamResourceConfiguration(samReaderFilter);
     }
 
     @BeforeEach
     public void setUp(){
         /* Get PO Reader */
-        poReader = PcscReaderUtils.initPoReader(poReaderFilter);
+        poReader = LocalConfigurationUtil.initReader(poReaderFilter);
 
         /* select PO*/
         calypsoPo = CalypsoUtils.selectCard(poReader);
 
         samResource = CardResourceServiceProvider.getService().getCardResource(CalypsoConstants.SAM_PROFILE_NAME);
 
-        calypsoPoController =  CalypsoPoController.newBuilder()
+        calypsoCardController =  CalypsoCardController.newBuilder()
                 .withCalypsoCard(calypsoPo)
                 .withCardReader(poReader)
                 .withSamResource(samResource)
@@ -64,10 +64,10 @@ public class CalypsoPoControllerTest {
     @Test
     public void init_card(){
         //init card
-        calypsoPoController.initCard();
+        calypsoCardController.initCard();
 
         //read card
-        CalypsoPoRepresentation card = calypsoPoController.readCard();
+        CalypsoCardRepresentation card = calypsoCardController.readCard();
         Assertions.assertEquals(4, card.getContracts().size());
         Assertions.assertEquals(0, card.listValidContracts().size());
         Assertions.assertEquals(PriorityCode.FORBIDDEN, card.getContractByCalypsoIndex(1).getContractTariff());
@@ -87,12 +87,12 @@ public class CalypsoPoControllerTest {
         init_card();
 
         //test
-        CalypsoPoRepresentation card = calypsoPoController.readCard();
+        CalypsoCardRepresentation card = calypsoCardController.readCard();
         card.insertNewContract(PriorityCode.SEASON_PASS, null);
-        calypsoPoController.writeCard(card);
+        calypsoCardController.writeCard(card);
 
         //check
-        CalypsoPoRepresentation updatedCard = calypsoPoController.readCard();
+        CalypsoCardRepresentation updatedCard = calypsoCardController.readCard();
         ContractStructureDto updatedContract = updatedCard.getContractByCalypsoIndex(1);
         logger.trace("updatedCard : {}", updatedCard);
         Assertions.assertEquals(1, updatedCard.listValidContracts().size());
@@ -112,12 +112,12 @@ public class CalypsoPoControllerTest {
         load_season_pass_on_empty_card();
 
         //test
-        CalypsoPoRepresentation card = calypsoPoController.readCard();
+        CalypsoCardRepresentation card = calypsoCardController.readCard();
         card.insertNewContract(PriorityCode.SEASON_PASS, null);
-        calypsoPoController.writeCard(card);
+        calypsoCardController.writeCard(card);
 
         //check
-        CalypsoPoRepresentation updatedCard = calypsoPoController.readCard();
+        CalypsoCardRepresentation updatedCard = calypsoCardController.readCard();
         ContractStructureDto updatedContract = updatedCard.getContractByCalypsoIndex(1);
         DateCompact today = new DateCompact(Instant.now());
 
@@ -142,12 +142,12 @@ public class CalypsoPoControllerTest {
         init_card();
 
         //test
-        CalypsoPoRepresentation card = calypsoPoController.readCard();
+        CalypsoCardRepresentation card = calypsoCardController.readCard();
         card.insertNewContract(PriorityCode.MULTI_TRIP_TICKET, 1);
-        calypsoPoController.writeCard(card);
+        calypsoCardController.writeCard(card);
 
         //check
-        CalypsoPoRepresentation updatedCard = calypsoPoController.readCard();
+        CalypsoCardRepresentation updatedCard = calypsoCardController.readCard();
         ContractStructureDto updatedContract = updatedCard.getContractByCalypsoIndex(1);
 
         //logger.trace("updatedCard : {}", updatedCard);
@@ -163,12 +163,12 @@ public class CalypsoPoControllerTest {
         load_ticket_on_empty_card();
 
         //test
-        CalypsoPoRepresentation card = calypsoPoController.readCard();
+        CalypsoCardRepresentation card = calypsoCardController.readCard();
         card.insertNewContract(PriorityCode.MULTI_TRIP_TICKET, 1);
-        calypsoPoController.writeCard(card);
+        calypsoCardController.writeCard(card);
 
         //check
-        CalypsoPoRepresentation updatedCard = calypsoPoController.readCard();
+        CalypsoCardRepresentation updatedCard = calypsoCardController.readCard();
         ContractStructureDto updatedContract = updatedCard.getContractByCalypsoIndex(1);
         EventStructureDto event = updatedCard.getEvent();
 
@@ -189,12 +189,12 @@ public class CalypsoPoControllerTest {
         load_ticket_on_empty_card();
 
         //test
-        CalypsoPoRepresentation card = calypsoPoController.readCard();
+        CalypsoCardRepresentation card = calypsoCardController.readCard();
         card.insertNewContract(PriorityCode.SEASON_PASS, null);
-        calypsoPoController.writeCard(card);
+        calypsoCardController.writeCard(card);
 
         //check
-        CalypsoPoRepresentation updatedCard = calypsoPoController.readCard();
+        CalypsoCardRepresentation updatedCard = calypsoCardController.readCard();
         ContractStructureDto updatedContract = updatedCard.getContractByCalypsoIndex(2);
         EventStructureDto event = updatedCard.getEvent();
 
@@ -209,17 +209,17 @@ public class CalypsoPoControllerTest {
     public void load_ticket_on_card_with_season_pass(){
         //prepare card
         init_card();
-        CalypsoPoRepresentation initCard = calypsoPoController.readCard();
+        CalypsoCardRepresentation initCard = calypsoCardController.readCard();
         initCard.insertNewContract(PriorityCode.SEASON_PASS, null);
-        calypsoPoController.writeCard(initCard);
+        calypsoCardController.writeCard(initCard);
 
         //test
-        CalypsoPoRepresentation card = calypsoPoController.readCard();
+        CalypsoCardRepresentation card = calypsoCardController.readCard();
         card.insertNewContract(PriorityCode.MULTI_TRIP_TICKET, 1);
-        calypsoPoController.writeCard(card);
+        calypsoCardController.writeCard(card);
 
         //check
-        CalypsoPoRepresentation updatedCard = calypsoPoController.readCard();
+        CalypsoCardRepresentation updatedCard = calypsoCardController.readCard();
         ContractStructureDto updatedContract = updatedCard.getContractByCalypsoIndex(2);
         EventStructureDto event = updatedCard.getEvent();
 

@@ -1,12 +1,10 @@
 package org.cna.keyple.demo.distributed.server;
 
 import org.calypsonet.terminal.calypso.card.CalypsoCard;
-import org.calypsonet.terminal.reader.selection.spi.SmartCard;
-import org.cna.keyple.demo.distributed.server.controller.CalypsoPoController;
-import org.cna.keyple.demo.distributed.server.controller.CalypsoPoRepresentation;
+import org.cna.keyple.demo.distributed.server.calypso.CalypsoCardController;
+import org.cna.keyple.demo.distributed.server.calypso.CalypsoCardRepresentation;
 import org.cna.keyple.demo.distributed.server.log.TransactionLog;
 import org.cna.keyple.demo.distributed.server.log.TransactionLogStore;
-import org.cna.keyple.demo.distributed.server.plugin.SamCardConfiguration;
 import org.cna.keyple.demo.distributed.server.util.CalypsoConstants;
 import org.cna.keyple.demo.sale.data.endpoint.*;
 import org.cna.keyple.demo.sale.data.model.ContractStructureDto;
@@ -23,17 +21,19 @@ import org.eclipse.keyple.distributed.RemoteReaderServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
 import java.util.List;
 
-public class TicketingLogic implements PluginObserverSpi {
+@ApplicationScoped
+public class RemoteCalypsoCardPluginObserver implements PluginObserverSpi {
 
-    private static final Logger logger = LoggerFactory.getLogger(TicketingLogic.class);
+    private static final Logger logger = LoggerFactory.getLogger(RemoteCalypsoCardPluginObserver.class);
 
-    private final TransactionLogStore transactionLogStore;
+    @Inject
+    TransactionLogStore transactionLogStore;
 
-    public TicketingLogic(TransactionLogStore transactionLogStore) {
-        this.transactionLogStore = transactionLogStore;
-    }
+    public RemoteCalypsoCardPluginObserver() {}
 
     /** {@inheritDoc} */
     @Override
@@ -96,33 +96,36 @@ public class TicketingLogic implements PluginObserverSpi {
         /*
          * Retrieves the compatibleContractInput and initial calypsoPO specified by the client when executing the remote service.
          */
-        CalypsoCard calypsoPo = (CalypsoCard) readerExtension.getInitialCardContent();
+        CalypsoCard calypsoCard = (CalypsoCard) readerExtension.getInitialCardContent();
         AnalyzeContractsInput input = readerExtension.getInputData(AnalyzeContractsInput.class);
         CardResource samResource = CardResourceServiceProvider.getService().getCardResource(CalypsoConstants.SAM_PROFILE_NAME);
         String pluginType = input.getPluginType();
 
         try{
 
-            CalypsoPoController calypsoPoController = CalypsoPoController.newBuilder()
-                    .withCalypsoCard(calypsoPo)
+            /*
+             * Builds a CalypsoCardController to handle Read/Write operations
+             */
+            CalypsoCardController calypsoCardController = CalypsoCardController.newBuilder()
+                    .withCalypsoCard(calypsoCard)
                     .withCardReader(reader)
                     .withSamResource(samResource)
                     .withPluginType(pluginType)
                     .build();
 
 
-            CalypsoPoRepresentation calypsoPoContent = calypsoPoController.readCard();
+            CalypsoCardRepresentation calypsoCardContent = calypsoCardController.readCard();
 
-            logger.info(calypsoPoContent.toString());
+            logger.info(calypsoCardContent.toString());
 
-            List<ContractStructureDto> validContracts = calypsoPoContent.listValidContracts();
+            List<ContractStructureDto> validContracts = calypsoCardContent.listValidContracts();
 
-            //push a transaction log
+            //Log a transaction to the dashboard store
             transactionLogStore.push(new TransactionLog()
                     .setPlugin(input.getPluginType()==null?"Android NFC":input.getPluginType())
                     .setStatus("SUCCESS")
                     .setType("SECURED READ")
-                    .setPoSn(ByteArrayUtil.toHex(calypsoPo.getApplicationSerialNumber())));
+                    .setPoSn(ByteArrayUtil.toHex(calypsoCard.getApplicationSerialNumber())));
 
             return new AnalyzeContractsOutput()
                     .setValidContracts(validContracts)
@@ -130,12 +133,13 @@ public class TicketingLogic implements PluginObserverSpi {
 
         }catch(RuntimeException e){
             logger.error("An error occurred while analyzing the contracts : {}", e.getMessage());
-            //push a transaction log
+
+            //Log a transaction to the dashboard store
             transactionLogStore.push(new TransactionLog()
                     .setPlugin(input.getPluginType()==null?"Android NFC":input.getPluginType())
                     .setStatus("FAIL")
                     .setType("SECURED READ")
-                    .setPoSn(ByteArrayUtil.toHex(calypsoPo.getApplicationSerialNumber())));
+                    .setPoSn(ByteArrayUtil.toHex(calypsoCard.getApplicationSerialNumber())));
 
             return new AnalyzeContractsOutput()
                     .setStatusCode(1);
@@ -158,34 +162,40 @@ public class TicketingLogic implements PluginObserverSpi {
          * Retrieves the userInputData and initial calypsoPO specified by the client when executing the remote service.
          */
         WriteContractInput writeContractInput = readerExtension.getInputData(WriteContractInput.class);
-        CalypsoCard calypsoPo = (CalypsoCard) readerExtension.getInitialCardContent();
+        CalypsoCard calypsoCard = (CalypsoCard) readerExtension.getInitialCardContent();
         CardResource samResource = CardResourceServiceProvider.getService().getCardResource(CalypsoConstants.SAM_PROFILE_NAME);
         String pluginType = writeContractInput.getPluginType();
 
         try{
 
-            CalypsoPoController calypsoPoController = CalypsoPoController.newBuilder()
-                    .withCalypsoCard(calypsoPo)
+            /*
+             * Builds a CalypsoCardController to handle Read/Write operations
+             */
+            CalypsoCardController calypsoCardController = CalypsoCardController.newBuilder()
+                    .withCalypsoCard(calypsoCard)
                     .withCardReader(reader)
                     .withSamResource(samResource)
                     .withPluginType(pluginType)
                     .build();
 
-            //re-read card
-            CalypsoPoRepresentation calypsoPoContent = calypsoPoController.readCard();
+            //read card
+            CalypsoCardRepresentation calypsoCardContent = calypsoCardController.readCard();
 
-            if(calypsoPoContent ==null){
+            if(calypsoCardContent ==null){
                 //is card has not been read previously, throw error
                 return new WriteContractOutput().setStatusCode(3);
             }
 
-            logger.info(calypsoPoContent.toString());
+            logger.info(calypsoCardContent.toString());
 
-            calypsoPoContent.insertNewContract(
+            calypsoCardContent.insertNewContract(
                     writeContractInput.getContractTariff(),
                     writeContractInput.getTicketToLoad());
 
-            int statusCode = calypsoPoController.writeCard(calypsoPoContent);
+            /*
+             * Write the updated content to the calypso card
+             */
+            int statusCode = calypsoCardController.writeCard(calypsoCardContent);
 
             //push a transaction log
             transactionLogStore.push(new TransactionLog()
@@ -193,7 +203,7 @@ public class TicketingLogic implements PluginObserverSpi {
                     .setPlugin(writeContractInput.getPluginType()==null?"Android NFC":writeContractInput.getPluginType())
                     .setStatus("SUCCESS")
                     .setType("RELOAD")
-                    .setPoSn(ByteArrayUtil.toHex(calypsoPo.getApplicationSerialNumber()))
+                    .setPoSn(ByteArrayUtil.toHex(calypsoCard.getApplicationSerialNumber()))
                     .setContractLoaded(writeContractInput.getContractTariff().toString().replace("_", " ")+
                             ((writeContractInput.getTicketToLoad()!=null && writeContractInput.getTicketToLoad()!=0)? " : " +writeContractInput.getTicketToLoad():""))
             );
@@ -209,7 +219,7 @@ public class TicketingLogic implements PluginObserverSpi {
                     .setPlugin(writeContractInput.getPluginType()==null?"Android NFC":writeContractInput.getPluginType())
                     .setStatus("FAIL")
                     .setType("RELOAD")
-                    .setPoSn(ByteArrayUtil.toHex(calypsoPo.getApplicationSerialNumber()))
+                    .setPoSn(ByteArrayUtil.toHex(calypsoCard.getApplicationSerialNumber()))
                     .setContractLoaded("")
             );
             return new WriteContractOutput().setStatusCode(1);
@@ -234,7 +244,7 @@ public class TicketingLogic implements PluginObserverSpi {
         try{
 
             //Create a Calypso PO controller
-            CalypsoPoController calypsoPoController = CalypsoPoController.newBuilder()
+            CalypsoCardController calypsoCardController = CalypsoCardController.newBuilder()
                     .withCalypsoCard(calypsoCard)
                     .withCardReader(reader)
                     .withSamResource(samResource)
@@ -242,7 +252,7 @@ public class TicketingLogic implements PluginObserverSpi {
                     .build();
 
             //init card
-            calypsoPoController.initCard();
+            calypsoCardController.initCard();
 
             //push a transaction log
             transactionLogStore.push(new TransactionLog()
