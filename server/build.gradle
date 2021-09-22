@@ -1,3 +1,5 @@
+import org.apache.tools.ant.taskdefs.condition.Os
+
 plugins {
     id 'java'
     id 'io.quarkus'
@@ -32,20 +34,22 @@ task('runDevServer',  group:'keyple'){
     dependsOn 'quarkusDev'
 }
 
-task('runServerExecutable',  group:'keyple',type:Exec){
+task('runPackagedServer',  group:'keyple',type:Exec){
     workingDir 'build'
     commandLine 'java', '-jar', artifactName + version +".jar"
 }
 
-task('buildServerExecutable', group:'keyple'){
+task('buildPackagedServer', group:'keyple'){
     dependsOn 'copyDashboard', 'quarkusBuild'
 }
 
 task buildDashboard(type:Exec){
     workingDir 'dashboard-app'
-    //executable 'npm'
-    //args ['-l']
-    commandLine 'npm', 'run', 'build'
+    String npm = 'npm'
+    if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+        npm = 'npm.cmd'
+    }
+    commandLine npm, 'run', 'build'
 }
 
 task copyDashboard(type:Copy){
@@ -67,14 +71,14 @@ dependencies {
     //implementation group: 'org.eclipse.keyple', name: 'keyple-util-java-lib', version:  keyple_v,  changing: true
     implementation('org.eclipse.keyple:keyple-util-java-lib') {
         version {
-            strictly '2.0.0-SNAPSHOT'
+            strictly keyple_v
         }
     }
 
     //implementation group: 'org.eclipse.keyple', name: 'keyple-service-java-lib',  version: '2.0.0-SNAPSHOT',  changing: true
     implementation('org.eclipse.keyple:keyple-service-java-lib') {
         version {
-            strictly '2.0.0-SNAPSHOT'
+            strictly keyple_v
         }
     }
 
