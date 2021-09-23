@@ -30,10 +30,6 @@ public final class LocalConfigurationUtil {
 
     Reader reader = ConfigurationUtil.getReaderByPattern(poReaderFilter);
 
-    if(reader==null){
-      return null;
-    }
-
     // Get and configure the PO reader
     reader.getExtension(PcscReader.class).setContactless(true).setIsoProtocol(PcscReader.IsoProtocol.T1);
 
