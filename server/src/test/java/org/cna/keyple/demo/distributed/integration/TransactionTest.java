@@ -5,6 +5,8 @@ import org.calypsonet.terminal.calypso.card.CalypsoCard;
 import org.calypsonet.terminal.reader.selection.spi.SmartCard;
 import org.cna.keyple.demo.distributed.integration.client.EndpointClient;
 import org.cna.keyple.demo.distributed.integration.client.SamClient;
+import org.cna.keyple.demo.distributed.server.plugin.CalypsoCardResourceConfiguration;
+import org.cna.keyple.demo.distributed.server.plugin.SamResourceConfiguration;
 import org.cna.keyple.demo.distributed.server.util.CalypsoUtils;
 import org.cna.keyple.demo.local.procedure.LocalConfigurationUtil;
 import org.cna.keyple.demo.sale.data.endpoint.*;
@@ -42,6 +44,12 @@ public class TransactionTest {
 
     static EndpointClient endpointClient;
 
+    @Inject
+    CalypsoCardResourceConfiguration calypsoCardResourceConfiguration;
+
+    @Inject
+    SamResourceConfiguration samResourceConfiguration;
+
     static {
         try {
             endpointClient = RestClientBuilder.newBuilder()
@@ -52,7 +60,7 @@ public class TransactionTest {
         }
     }
 
-    Reader poReader;
+    Reader cardReader;
 
     @BeforeAll
     public static void setUpAll(){
@@ -64,16 +72,17 @@ public class TransactionTest {
 
         // Init the local service using the associated factory.
         SmartCardServiceProvider.getService().registerDistributedLocalService(factory);
-
-        // Register the PcscPlugin with the SmartCardService, do not specify any regex for the type
-        //Plugin plugin = SmartCardServiceProvider.getService().registerPlugin(PcscPluginFactoryBuilder.builder().build());
-
     }
 
     @BeforeEach
     public void setUp(){
+
+        samResourceConfiguration.init();
+
+        calypsoCardResourceConfiguration.init();
+
         /* Get PO Reader */
-        poReader = LocalConfigurationUtil.initReader(PO_READER_FILTER);
+        cardReader = LocalConfigurationUtil.initReader(PO_READER_FILTER);
     }
 
     @Test
@@ -83,7 +92,7 @@ public class TransactionTest {
 
     @Test
     public void execute_successful_load_tickets() {
-        reset_load_tickets(poReader);
+        reset_load_tickets(cardReader);
     }
 
     @Test
@@ -96,11 +105,11 @@ public class TransactionTest {
 
     /**
      * Reset card, read valid contract and write a MULTI TRIP CONTRACT with X titles
-     * @param poReader
+     * @param cardReader
      */
-    static void reset_load_tickets(Reader poReader){
+    static void reset_load_tickets(Reader cardReader){
         /* Select PO */
-        SmartCard calypsoCard = CalypsoUtils.selectCard(poReader);
+        SmartCard calypsoCard = CalypsoUtils.selectCard(cardReader);
 
         // Retrieves the local service.
         LocalServiceClient localService =
@@ -112,7 +121,7 @@ public class TransactionTest {
         CardIssuanceOutput cardIssuanceOutput =
                 localService.executeRemoteService(
                 "CARD_ISSUANCE",
-                    poReader.getName(),
+                    cardReader.getName(),
                     calypsoCard,
                     null,
                     CardIssuanceOutput.class);
@@ -126,7 +135,7 @@ public class TransactionTest {
         AnalyzeContractsOutput contractAnalysisOutput =
                 localService.executeRemoteService(
                     "CONTRACT_ANALYSIS",
-                    poReader.getName(),
+                    cardReader.getName(),
                         calypsoCard,
                     compatibleContractInput,
                     AnalyzeContractsOutput.class);
@@ -139,12 +148,12 @@ public class TransactionTest {
          * User select the title....
          */
 
-        load_tickets(poReader);
+        load_tickets(cardReader);
 
         /* Execute Remote Service : Check that MULTI-TRIP is written in the card */
         AnalyzeContractsOutput passExpected = localService.executeRemoteService(
                 "CONTRACT_ANALYSIS",
-                poReader.getName(),
+                cardReader.getName(),
                 calypsoCard,
                 compatibleContractInput,
                 AnalyzeContractsOutput.class);

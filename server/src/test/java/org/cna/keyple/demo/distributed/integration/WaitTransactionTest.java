@@ -2,8 +2,11 @@ package org.cna.keyple.demo.distributed.integration;
 
 import io.quarkus.test.junit.QuarkusTest;
 import org.calypsonet.terminal.reader.CardReaderEvent;
+import org.calypsonet.terminal.reader.spi.CardReaderObservationExceptionHandlerSpi;
 import org.calypsonet.terminal.reader.spi.CardReaderObserverSpi;
 import org.cna.keyple.demo.distributed.integration.client.EndpointClient;
+import org.cna.keyple.demo.distributed.server.plugin.CalypsoCardResourceConfiguration;
+import org.cna.keyple.demo.distributed.server.plugin.SamResourceConfiguration;
 import org.cna.keyple.demo.local.procedure.LocalConfigurationUtil;
 import org.eclipse.keyple.core.service.ObservableReader;
 import org.eclipse.keyple.core.service.Reader;
@@ -14,7 +17,10 @@ import org.eclipse.microprofile.rest.client.RestClientBuilder;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import javax.inject.Inject;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Random;
@@ -25,9 +31,18 @@ import static org.calypsonet.terminal.reader.ObservableCardReader.DetectionMode.
 public class WaitTransactionTest {
 
     private static String LOCAL_SERVICE_NAME = "TransactionTest";
-    private static String PO_READER_FILTER = ".*(ASK|ACS).*";
+    private static String CALYPSO_CARD_READER_FILTER = ".*(ASK|ACS).*";
+
+    private static final Logger logger = LoggerFactory.getLogger(WaitTransactionTest.class);
+
 
     static EndpointClient endpointClient;
+
+    @Inject
+    CalypsoCardResourceConfiguration calypsoCardResourceConfiguration;
+
+    @Inject
+    SamResourceConfiguration samResourceConfiguration;
 
     static {
         try {
@@ -39,7 +54,7 @@ public class WaitTransactionTest {
         }
     }
 
-    Reader poReader;
+    Reader cardReader;
 
     @BeforeAll
     public static void setUpAll(){
@@ -55,30 +70,42 @@ public class WaitTransactionTest {
 
     @BeforeEach
     public void setUp(){
+
+        samResourceConfiguration.init();
+
+        calypsoCardResourceConfiguration.init();
+
         /* Get PO Reader */
-        poReader = LocalConfigurationUtil.initReader(PO_READER_FILTER);
+        cardReader = LocalConfigurationUtil.initReader(CALYPSO_CARD_READER_FILTER);
     }
 
     @Test
-    public void execute_wait_for_po() throws InterruptedException {
+    public void execute_wait_for_calypso_card() throws InterruptedException {
 
-        ((ObservableReader)poReader).addObserver(new CardReaderObserverSpi() {
+        ((ObservableReader) cardReader).setReaderObservationExceptionHandler(new CardReaderObservationExceptionHandlerSpi() {
+            @Override
+            public void onReaderObservationError(String contextInfo, String readerName, Throwable e) {
+                logger.error("onReaderObservationError", e);
+            }
+        });
+
+        ((ObservableReader) cardReader).addObserver(new CardReaderObserverSpi() {
             @Override
             public void onReaderEvent(CardReaderEvent event) {
                 switch (event.getType()){
                     case CARD_INSERTED:
                         //Randomly load tickets or season pass
                         if(new Random().nextInt()%2==0){
-                            TransactionTest.reset_load_tickets(poReader);
+                            TransactionTest.reset_load_tickets(cardReader);
                         }else{
-                            TransactionTest.load_season_pass(poReader);
+                            TransactionTest.load_season_pass(cardReader);
                         }
                         break;
                 }
             }
         });
 
-        ((ObservableReader) poReader).startCardDetection(REPEATING);
+        ((ObservableReader) cardReader).startCardDetection(REPEATING);
 
         // Wait indefinitely. CTRL-C to exit.
         synchronized (waitForEnd) {
