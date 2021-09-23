@@ -3,7 +3,7 @@ plugins {
 }
 
 group 'org.cna.keyple.demo.sale.data.model'
-version '2021.04'
+version '2021.09'
 
 sourceCompatibility = 1.8
 

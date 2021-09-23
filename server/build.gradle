@@ -24,7 +24,7 @@ ext {
 }
 
 group 'org.cna.keyple.demo.remote.server'
-version '2021.04'
+project.version '2021.09'
 
 quarkus{
     finalName artifactName
