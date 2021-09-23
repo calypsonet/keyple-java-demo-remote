@@ -29,11 +29,6 @@ function Row(props) {
   return (
     <React.Fragment>
       <TableRow className={row.id === lastRowId ? (row.status === "SUCCESS" ? `newRowSuccess`:`newRowError`)  : classes.root} key={row.id}>
-        <TableCell>
-          <IconButton aria-label="expand row" size="small" onClick={() => setOpen(!open)}>
-            {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
-          </IconButton>
-        </TableCell>
         <TableCell align="center">{row.id}</TableCell>
         <TableCell align="center">{row.startedAt}</TableCell>
         <TableCell align="center">{row.plugin}</TableCell>
@@ -109,7 +104,6 @@ export default function CollapsibleTable(props) {
       <Table aria-label="collapsible table">
         <TableHead>
           <TableRow>
-            <TableCell />
             <TableCell align="center">ID</TableCell>
             <TableCell align="center">Started At</TableCell>
             <TableCell align="center">Plugin</TableCell>
