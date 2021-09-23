@@ -1,5 +1,5 @@
 /* **************************************************************************************
- * Copyright (c) 2020 Calypso Networks Association https://www.calypsonet-asso.org/
+ * Copyright (c) 2020 Calypso Networks Association https://calypsonet.org/
  *
  * See the NOTICE file(s) distributed with this work for additional information
  * regarding copyright ownership.
@@ -11,16 +11,15 @@
  ************************************************************************************** */
 package org.cna.keyple.demo.distributed.integration.client;
 
-import org.cna.keyple.demo.distributed.server.endpoint.RemotePluginEndpoint;
-import org.eclipse.keyple.distributed.MessageDto;
-import org.eclipse.keyple.distributed.spi.SyncEndpointClientSpi;
-import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
-
+import java.util.List;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-import java.util.List;
+import org.cna.keyple.demo.distributed.server.endpoint.RemotePluginEndpoint;
+import org.eclipse.keyple.distributed.MessageDto;
+import org.eclipse.keyple.distributed.spi.SyncEndpointClientSpi;
+import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 
 /**
  * Example of a {@link SyncEndpointClientSpi} implementation using Web Services.

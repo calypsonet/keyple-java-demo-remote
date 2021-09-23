@@ -1,5 +1,5 @@
 /* **************************************************************************************
- * Copyright (c) 2018 Calypso Networks Association https://www.calypsonet-asso.org/
+ * Copyright (c) 2018 Calypso Networks Association https://calypsonet.org/
  *
  * See the NOTICE file(s) distributed with this work for additional information
  * regarding copyright ownership.
@@ -54,19 +54,15 @@ public final class CalypsoConstants {
   public static final byte SFI_Counters_3 = (byte) 0x0C;
   public static final byte SFI_Counters_4 = (byte) 0x0D;
 
-  public static final List<Byte> SFI_Counters_simulated = Arrays.asList(
-          SFI_Counters_1,
-          SFI_Counters_2,
-          SFI_Counters_3,
-          SFI_Counters_4);
+  public static final List<Byte> SFI_Counters_simulated =
+      Arrays.asList(SFI_Counters_1, SFI_Counters_2, SFI_Counters_3, SFI_Counters_4);
 
   public static final short LID_DF_RT = 0x2000;
   public static final short LID_EVENT_LOG = 0x2010;
 
-
   // Sample data
   public static final String EVENT_LOG_DATA_FILL =
-          "00112233445566778899AABBCCDDEEFF00112233445566778899AABBCC";
+      "00112233445566778899AABBCCDDEEFF00112233445566778899AABBCC";
 
   // Security settings
   public static final String SAM_PROFILE_NAME = "SAM C1";
@@ -80,5 +76,4 @@ public final class CalypsoConstants {
   public static final byte[] PIN_KO = {(byte) 0x30, (byte) 0x30, (byte) 0x30, (byte) 0x31};
 
   private CalypsoConstants() {}
-
 }

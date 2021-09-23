@@ -1,5 +1,5 @@
 /* **************************************************************************************
- * Copyright (c) 2018 Calypso Networks Association https://www.calypsonet-asso.org/
+ * Copyright (c) 2018 Calypso Networks Association https://calypsonet.org/
  *
  * See the NOTICE file(s) distributed with this work for additional information
  * regarding copyright ownership.
@@ -20,27 +20,27 @@ import org.eclipse.keyple.plugin.pcsc.PcscSupportedContactlessProtocol;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 /** PCSC Reader Utilities to read properties file and differentiate SAM and PO reader */
 public final class LocalConfigurationUtil {
 
   private static final Logger logger = LoggerFactory.getLogger(LocalConfigurationUtil.class);
 
-  static public Reader initReader(String poReaderFilter) {
+  public static Reader initReader(String poReaderFilter) {
 
     Reader reader = ConfigurationUtil.getReaderByPattern(poReaderFilter);
 
     // Get and configure the PO reader
-    reader.getExtension(PcscReader.class).setContactless(true).setIsoProtocol(PcscReader.IsoProtocol.T1);
+    reader
+        .getExtension(PcscReader.class)
+        .setContactless(true)
+        .setIsoProtocol(PcscReader.IsoProtocol.T1);
 
     ((ConfigurableReader) reader)
-            .activateProtocol(
-                    PcscSupportedContactlessProtocol.ISO_14443_4.name(),
-                    ContactlessCardCommonProtocol.ISO_14443_4.name());
+        .activateProtocol(
+            PcscSupportedContactlessProtocol.ISO_14443_4.name(),
+            ContactlessCardCommonProtocol.ISO_14443_4.name());
 
     logger.info("PO Reader configured : {}", reader.getName());
     return reader;
-
   }
-
 }

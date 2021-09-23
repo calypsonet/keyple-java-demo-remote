@@ -1,5 +1,5 @@
 /* **************************************************************************************
- * Copyright (c) 2020 Calypso Networks Association https://www.calypsonet-asso.org/
+ * Copyright (c) 2020 Calypso Networks Association https://calypsonet.org/
  *
  * See the NOTICE file(s) distributed with this work for additional information
  * regarding copyright ownership.
@@ -12,37 +12,34 @@
 package org.cna.keyple.demo.distributed.server.endpoint;
 
 import com.google.gson.JsonObject;
-import org.calypsonet.terminal.reader.ReaderCommunicationException;
-import org.cna.keyple.demo.distributed.server.plugin.SamResourceConfiguration;
-
 import javax.inject.Inject;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import org.calypsonet.terminal.reader.ReaderCommunicationException;
+import org.cna.keyple.demo.distributed.server.plugin.SamResourceConfiguration;
 
-/**
- * Check if the sam is ready
- */
+/** Check if the sam is ready */
 @Path("/sam")
 public class SamStatusEndpoint {
 
-  @Inject
-  SamResourceConfiguration samResourceService;
+  @Inject SamResourceConfiguration samResourceService;
 
   /**
    * Check if sam is present
+   *
    * @return {isSamReady:true} is sam is ready
    */
   @GET
   @Produces(MediaType.APPLICATION_JSON)
   public Response isSamReady() {
     Boolean isSamReady;
-    try{
-      isSamReady  =  samResourceService.getSamReader().isCardPresent(); //ping sam
-    }catch (ReaderCommunicationException e){
-      //reader is disconnected
+    try {
+      isSamReady = samResourceService.getSamReader().isCardPresent(); // ping sam
+    } catch (ReaderCommunicationException e) {
+      // reader is disconnected
       isSamReady = false;
     }
 

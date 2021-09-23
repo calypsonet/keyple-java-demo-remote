@@ -1,5 +1,5 @@
 /* **************************************************************************************
- * Copyright (c) 2020 Calypso Networks Association https://www.calypsonet-asso.org/
+ * Copyright (c) 2020 Calypso Networks Association https://calypsonet.org/
  *
  * See the NOTICE file(s) distributed with this work for additional information
  * regarding copyright ownership.
@@ -14,19 +14,16 @@ package org.cna.keyple.demo.distributed.server;
 import io.quarkus.runtime.Quarkus;
 import io.quarkus.runtime.QuarkusApplication;
 import io.quarkus.runtime.annotations.QuarkusMain;
+import java.awt.*;
+import java.net.URI;
+import javax.inject.Inject;
 import org.cna.keyple.demo.distributed.server.plugin.CalypsoCardResourceConfiguration;
 import org.cna.keyple.demo.distributed.server.plugin.SamResourceConfiguration;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.inject.Inject;
-import java.awt.*;
-import java.net.URI;
-
-/**
- * Main class of quarkus
- */
+/** Main class of quarkus */
 @QuarkusMain
 public class Main {
 
@@ -44,15 +41,13 @@ public class Main {
     @ConfigProperty(name = "quarkus.http.port")
     Integer assignedPort;
 
-    @Inject
-    CalypsoCardResourceConfiguration calypsoCardResourceConfiguration;
+    @Inject CalypsoCardResourceConfiguration calypsoCardResourceConfiguration;
 
-    @Inject
-    SamResourceConfiguration samResourceConfiguration;
+    @Inject SamResourceConfiguration samResourceConfiguration;
 
     /** {@inheritDoc} */
     @Override
-    public int run(String... args)  throws Exception  {
+    public int run(String... args) throws Exception {
 
       /*
        *  Start the SAM card configuration

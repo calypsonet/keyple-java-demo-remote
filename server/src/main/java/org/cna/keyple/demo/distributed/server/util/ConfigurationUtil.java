@@ -11,30 +11,26 @@
  ************************************************************************************** */
 package org.cna.keyple.demo.distributed.server.util;
 
+import java.util.regex.Pattern;
 import org.calypsonet.terminal.calypso.sam.CalypsoSam;
 import org.calypsonet.terminal.calypso.sam.CalypsoSamSelection;
 import org.eclipse.keyple.card.calypso.CalypsoExtensionService;
-import org.eclipse.keyple.core.service.ConfigurableReader;
 import org.eclipse.keyple.core.service.Plugin;
 import org.eclipse.keyple.core.service.Reader;
 import org.eclipse.keyple.core.service.SmartCardServiceProvider;
 import org.eclipse.keyple.core.service.resource.*;
 import org.eclipse.keyple.core.service.resource.spi.CardResourceProfileExtension;
 import org.eclipse.keyple.core.service.resource.spi.ReaderConfiguratorSpi;
-import org.eclipse.keyple.core.util.protocol.ContactlessCardCommonProtocol;
 import org.eclipse.keyple.plugin.pcsc.PcscReader;
-import org.eclipse.keyple.plugin.pcsc.PcscSupportedContactlessProtocol;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.Collection;
-import java.util.regex.Pattern;
 
 /**
  * Utility class providing methods for configuring readers and the card resource service used across
  * several examples.
  */
 public class ConfigurationUtil {
+  private static final Logger logger = LoggerFactory.getLogger(ConfigurationUtil.class);
 
   /**
    * (private)<br>
@@ -70,6 +66,12 @@ public class ConfigurationUtil {
    */
   public static void setupCardResourceService(
       Plugin plugin, String readerNameRegex, String samProfileName) {
+
+    logger.info(
+        "Setup CardResourceService for plugin {} with readerNameRegex {} and samProfileName {}",
+        plugin.getName(),
+        readerNameRegex,
+        samProfileName);
 
     // Create a card resource extension expecting a SAM "C1".
     CalypsoSamSelection samSelection =
