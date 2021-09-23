@@ -112,10 +112,10 @@ export default function CollapsibleTable(props) {
             <TableCell />
             <TableCell align="center">ID</TableCell>
             <TableCell align="center">Started At</TableCell>
-            <TableCell align="center">Status</TableCell>
+            <TableCell align="center">Plugin</TableCell>
             <TableCell align="center">Action</TableCell>
             <TableCell align="center">Card S/N</TableCell>
-            <TableCell align="center">Plugin</TableCell>
+            <TableCell align="center">Status</TableCell>
             <TableCell align="center">Contract Loaded</TableCell>
           </TableRow>
         </TableHead>
