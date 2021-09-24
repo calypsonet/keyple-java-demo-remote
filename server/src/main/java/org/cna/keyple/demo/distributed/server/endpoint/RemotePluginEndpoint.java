@@ -1,5 +1,5 @@
 /* **************************************************************************************
- * Copyright (c) 2020 Calypso Networks Association https://www.calypsonet-asso.org/
+ * Copyright (c) 2020 Calypso Networks Association https://calypsonet.org/
  *
  * See the NOTICE file(s) distributed with this work for additional information
  * regarding copyright ownership.
@@ -11,25 +11,22 @@
  ************************************************************************************** */
 package org.cna.keyple.demo.distributed.server.endpoint;
 
-import org.eclipse.keyple.distributed.MessageDto;
-import org.eclipse.keyple.distributed.RemotePluginServer;
-import org.eclipse.keyple.distributed.SyncNodeServer;
-import org.eclipse.keyple.core.service.SmartCardServiceProvider;
+import static org.cna.keyple.demo.distributed.server.Main.KeypleDistributedServerDemo.REMOTE_PLUGIN_NAME;
 
+import java.util.List;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-import java.util.List;
+import org.eclipse.keyple.core.service.SmartCardServiceProvider;
+import org.eclipse.keyple.distributed.MessageDto;
+import org.eclipse.keyple.distributed.RemotePluginServer;
+import org.eclipse.keyple.distributed.SyncNodeServer;
 
-import static org.cna.keyple.demo.distributed.server.Main.KeypleDistributedServerDemo.REMOTE_PLUGIN_NAME;
-
-/**
- * Server Controller.
- */
+/** Server Controller. */
 @Path("/remote-plugin")
-public class EndpointServer {
+public class RemotePluginEndpoint {
 
   /**
    * The unique endpoint access.
@@ -44,10 +41,10 @@ public class EndpointServer {
 
     // Retrieves the node associated to the remote plugin.
     SyncNodeServer node =
-            SmartCardServiceProvider.getService()
-                    .getPlugin(REMOTE_PLUGIN_NAME)
-                    .getExtension(RemotePluginServer.class)
-                    .getSyncNode();
+        SmartCardServiceProvider.getService()
+            .getPlugin(REMOTE_PLUGIN_NAME)
+            .getExtension(RemotePluginServer.class)
+            .getSyncNode();
 
     // Forwards the message to the node and returns the response to the client.
     return node.onRequest(message);

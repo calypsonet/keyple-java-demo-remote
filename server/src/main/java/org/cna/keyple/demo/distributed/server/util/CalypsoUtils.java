@@ -1,5 +1,5 @@
 /* **************************************************************************************
- * Copyright (c) 2018 Calypso Networks Association https://www.calypsonet-asso.org/
+ * Copyright (c) 2018 Calypso Networks Association https://calypsonet.org/
  *
  * See the NOTICE file(s) distributed with this work for additional information
  * regarding copyright ownership.
@@ -21,12 +21,11 @@ import org.eclipse.keyple.core.service.SmartCardServiceProvider;
 
 public final class CalypsoUtils {
 
-
   /**
    * Operate the PO selection
    *
    * @param cardReader the reader where to operate the PO selection
-   * @return a CalypsoPo object if the selection succeed
+   * @return a CalypsoCard object if the selection succeed
    * @throws IllegalStateException if the selection fails
    */
   public static CalypsoCard selectCard(Reader cardReader) {
@@ -43,19 +42,19 @@ public final class CalypsoUtils {
     // Prepare the selection by adding the created Calypso card selection to the card selection
     // scenario.
     cardSelectionManager.prepareSelection(
-            cardExtension
-                    .createCardSelection()
-                    .acceptInvalidatedCard()
-                    .filterByDfName(CalypsoConstants.AID));
+        cardExtension
+            .createCardSelection()
+            .acceptInvalidatedCard()
+            .filterByDfName(CalypsoConstants.AID));
 
     // Actual card communication: run the selection scenario.
     CardSelectionResult selectionResult =
-            cardSelectionManager.processCardSelectionScenario(cardReader);
+        cardSelectionManager.processCardSelectionScenario(cardReader);
 
     // Check the selection result.
     if (selectionResult.getActiveSmartCard() == null) {
       throw new IllegalStateException(
-              "The selection of the application " + CalypsoConstants.AID + " failed.");
+          "The selection of the application " + CalypsoConstants.AID + " failed.");
     }
 
     // Get the SmartCard resulting of the selection.
@@ -66,11 +65,11 @@ public final class CalypsoUtils {
    * Operate the PO selection with the read of the environment file
    *
    * @param cardReader the reader where to operate the PO selection
-   * @return a CalypsoPo object if the selection succeed
+   * @return a CalypsoCard object if the selection succeed
    * @throws IllegalStateException if the selection fails
    */
   public static CalypsoCard selectCardWithEnvironment(Reader cardReader) {
-// Get the instance of the SmartCardService (singleton pattern)
+    // Get the instance of the SmartCardService (singleton pattern)
     SmartCardService smartCardService = SmartCardServiceProvider.getService();
 
     // Get the Calypso card extension service
@@ -83,26 +82,24 @@ public final class CalypsoUtils {
     // Prepare the selection by adding the created Calypso card selection to the card selection
     // scenario.
     cardSelectionManager.prepareSelection(
-            cardExtension
-                    .createCardSelection()
-                    .filterByDfName(CalypsoConstants.AID)
-                    .acceptInvalidatedCard()
-                    .prepareReadRecordFile(
-                            CalypsoConstants.SFI_ENVIRONMENT_AND_HOLDER, CalypsoConstants.RECORD_NUMBER_1));
-
+        cardExtension
+            .createCardSelection()
+            .filterByDfName(CalypsoConstants.AID)
+            .acceptInvalidatedCard()
+            .prepareReadRecordFile(
+                CalypsoConstants.SFI_ENVIRONMENT_AND_HOLDER, CalypsoConstants.RECORD_NUMBER_1));
 
     // Actual card communication: run the selection scenario.
     CardSelectionResult selectionResult =
-            cardSelectionManager.processCardSelectionScenario(cardReader);
+        cardSelectionManager.processCardSelectionScenario(cardReader);
 
     // Check the selection result.
     if (selectionResult.getActiveSmartCard() == null) {
       throw new IllegalStateException(
-              "The selection of the application " + CalypsoConstants.AID + " failed.");
+          "The selection of the application " + CalypsoConstants.AID + " failed.");
     }
 
     // Get the SmartCard resulting of the selection.
     return (CalypsoCard) selectionResult.getActiveSmartCard();
   }
-
 }

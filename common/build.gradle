@@ -3,7 +3,7 @@ plugins {
 }
 
 group 'org.cna.keyple.demo.sale.data.model'
-version '2021.04'
+version '2021.09'
 
 sourceCompatibility = 1.8
 
@@ -25,3 +25,7 @@ dependencies {
     implementation group: 'org.eclipse.keyple', name: 'keyple-util-java-lib', version:  "2.0.+"
     testCompile group: 'junit', name: 'junit', version: '4.12'
 }
+
+///////////////////////////////////////////////////////////////////////////////
+//  TASKS CONFIGURATION
+///////////////////////////////////////////////////////////////////////////////

@@ -1,8 +1,14 @@
+import org.apache.tools.ant.taskdefs.condition.Os
+
 plugins {
     id 'java'
     id 'io.quarkus'
+    id("com.diffplug.spotless") version "5.10.2"
 }
 
+///////////////////////////////////////////////////////////////////////////////
+//  APP CONFIGURATION
+///////////////////////////////////////////////////////////////////////////////
 repositories {
     mavenLocal()
     mavenCentral()
@@ -22,37 +28,12 @@ ext {
 }
 
 group 'org.cna.keyple.demo.remote.server'
-version '2021.04'
+project.version '2021.09'
 
 quarkus{
     finalName artifactName
 }
 
-task('runDevServer',  group:'keyple'){
-    dependsOn 'quarkusDev'
-}
-
-task('runServerExecutable',  group:'keyple',type:Exec){
-    workingDir 'build'
-    commandLine 'java', '-jar', artifactName + version +".jar"
-}
-
-task('buildServerExecutable', group:'keyple'){
-    dependsOn 'copyDashboard', 'quarkusBuild'
-}
-
-task buildDashboard(type:Exec){
-    workingDir 'dashboard-app'
-    //executable 'npm'
-    //args ['-l']
-    commandLine 'npm', 'run', 'build'
-}
-
-task copyDashboard(type:Copy){
-    from 'dashboard-app/build'
-    into 'src/main/resources/META-INF/resources'
-    dependsOn 'buildDashboard'
-}
 
 
 dependencies {
@@ -119,4 +100,46 @@ test {
     systemProperty "java.util.logging.manager", "org.jboss.logmanager.LogManager"
     systemProperty "quarkus.log.level", "INFO"
     exclude '**/**WaitTransactionTest.java'
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//  TASKS CONFIGURATION
+///////////////////////////////////////////////////////////////////////////////
+spotless {
+    java {
+        target("src/**/*.java")
+        licenseHeaderFile("${project.rootDir}/LICENSE_HEADER")
+        importOrder("java", "javax", "org", "com", "")
+        removeUnusedImports()
+        googleJavaFormat()
+    }
+}
+
+
+task('runDevServer',  group:'keyple'){
+    dependsOn 'quarkusDev'
+}
+
+task('runPackagedServer',  group:'keyple',type:Exec){
+    workingDir 'build'
+    commandLine 'java', '-jar', artifactName + version +".jar"
+}
+
+task('buildPackagedServer', group:'keyple'){
+    dependsOn 'copyDashboard', 'quarkusBuild'
+}
+
+task buildDashboard(type:Exec){
+    workingDir 'dashboard-app'
+    String npm = 'npm'
+    if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+        npm = 'npm.cmd'
+    }
+    commandLine npm, 'run', 'build'
+}
+
+task copyDashboard(type:Copy){
+    from 'dashboard-app/build'
+    into 'src/main/resources/META-INF/resources'
+    dependsOn 'buildDashboard'
 }

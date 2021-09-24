@@ -11,25 +11,25 @@
  ************************************************************************************** */
 package org.cna.keyple.demo.distributed.server.util;
 
+import java.util.Arrays;
+import java.util.List;
+
 /**
- * Helper class to provide specific constants to manipulate Calypso cards from the Keyple demo kit.
+ * Helper class to provide specific elements to handle Calypso cards.
  *
  * <ul>
  *   <li>AID application selection (default Calypso AID)
- *   <li>File
- *   <li>File definitions and identifiers (SFI)
- *   <li>Sample data
- *   <li>Security settings
+ *   <li>SAM_C1_ATR_REGEX regular expression matching the expected C1 SAM ATR
+ *   <li>Files infos (SFI, rec number, etc) for
+ *       <ul>
+ *         <li>Environment and Holder
+ *         <li>Event Log
+ *         <li>Contract List
+ *         <li>Contracts
+ *       </ul>
  * </ul>
  */
 public final class CalypsoConstants {
-
-  /**
-   * (private)<br>
-   * Constructor.
-   */
-  private CalypsoConstants() {}
-
   // Application
   /** AID: Keyple test kit profile 1, Application 2 */
   public static final String AID = "315449432E49434131";
@@ -45,8 +45,17 @@ public final class CalypsoConstants {
   // File identifiers
   public static final byte SFI_ENVIRONMENT_AND_HOLDER = (byte) 0x07;
   public static final byte SFI_EVENT_LOG = (byte) 0x08;
-  public static final byte SFI_CONTRACT_LIST = (byte) 0x1E;
   public static final byte SFI_CONTRACTS = (byte) 0x09;
+  public static final byte SFI_CONTRACT_LIST = (byte) 0x1E;
+
+  public static final byte SFI_COUNTERS = (byte) 0x19;
+  public static final byte SFI_Counters_1 = (byte) 0x0A;
+  public static final byte SFI_Counters_2 = (byte) 0x0B;
+  public static final byte SFI_Counters_3 = (byte) 0x0C;
+  public static final byte SFI_Counters_4 = (byte) 0x0D;
+
+  public static final List<Byte> SFI_Counters_simulated =
+      Arrays.asList(SFI_Counters_1, SFI_Counters_2, SFI_Counters_3, SFI_Counters_4);
 
   public static final short LID_DF_RT = 0x2000;
   public static final short LID_EVENT_LOG = 0x2010;
@@ -65,4 +74,6 @@ public final class CalypsoConstants {
 
   public static final byte[] PIN_OK = {(byte) 0x30, (byte) 0x30, (byte) 0x30, (byte) 0x30};
   public static final byte[] PIN_KO = {(byte) 0x30, (byte) 0x30, (byte) 0x30, (byte) 0x31};
+
+  private CalypsoConstants() {}
 }
