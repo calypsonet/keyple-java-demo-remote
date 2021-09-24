@@ -199,7 +199,7 @@ class CardReaderActivity : AbstractCardActivity() {
             PriorityCode.STORED_VALUE -> {
                  CardTitle("STORED_VALUE", "", false)
             }
-            else -> CardTitle("Else", "", false)
+            else -> CardTitle("UNKNOWN", "", false)
         }
     }
 
