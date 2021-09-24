@@ -188,6 +188,17 @@ class CardReaderActivity : AbstractCardActivity() {
                 val validity = DateTime.now() in saleDate..validityEndDate
                 CardTitle("Season pass", "From ${saleDate.toString(dateTimeFormatter)} to ${validityEndDate.toString(dateTimeFormatter)}", validity)
             }
+            PriorityCode.EXPIRED -> {
+                val saleDate = DateTime.parse("2010-01-01T00:00").plusDays(contractStructureDto.contactSaleDate.daysSinceReference.toInt())
+                val validityEndDate = DateTime.parse("2010-01-01T00:00").plusDays(contractStructureDto.contractValidityEndDate.daysSinceReference.toInt())
+                CardTitle("Season pass - Expired", "From ${saleDate.toString(dateTimeFormatter)} to ${validityEndDate.toString(dateTimeFormatter)}", false)
+            }
+            PriorityCode.FORBIDDEN -> {
+                CardTitle("FORBIDDEN", "", false)
+            }
+            PriorityCode.STORED_VALUE -> {
+                 CardTitle("STORED_VALUE", "", false)
+            }
             else -> CardTitle("Else", "", false)
         }
     }
