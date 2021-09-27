@@ -30,7 +30,6 @@ import org.cna.keyple.demo.sale.data.model.ContractStructureDto;
 import org.cna.keyple.demo.sale.data.model.EnvironmentHolderStructureDto;
 import org.cna.keyple.demo.sale.data.model.EventStructureDto;
 import org.cna.keyple.demo.sale.data.model.parser.ContractStructureParser;
-import org.cna.keyple.demo.sale.data.model.parser.CounterStructureParser;
 import org.cna.keyple.demo.sale.data.model.parser.EnvironmentHolderStructureParser;
 import org.cna.keyple.demo.sale.data.model.parser.EventStructureParser;
 import org.cna.keyple.demo.sale.data.model.type.DateCompact;
@@ -167,20 +166,20 @@ public class CalypsoCardController {
     logger.info("Open Calypso Session...");
     cardTransaction.processOpening(WriteAccessLevel.LOAD);
 
-   // Prepare reading of environment record
+    // Prepare reading of environment record
     cardTransaction.prepareReadRecordFile(SFI_ENVIRONMENT_AND_HOLDER, RECORD_NUMBER_1);
     // Prepare reading of last event record
     cardTransaction.prepareReadRecordFile(
         CalypsoConstants.SFI_EVENT_LOG, CalypsoConstants.RECORD_NUMBER_1);
 
     // Prepare reading of contract records (Calypso Light)
-    cardTransaction.prepareReadRecordFile(SFI_CONTRACTS, CalypsoConstants.RECORD_NUMBER_1, contractCount, CONTRACT_RECORD_SIZE);
-
+    cardTransaction.prepareReadRecordFile(
+        SFI_CONTRACTS, CalypsoConstants.RECORD_NUMBER_1, contractCount, CONTRACT_RECORD_SIZE);
 
     // Prepare reading of counter record
     cardTransaction.prepareReadCounterFile(SFI_COUNTERS, CalypsoConstants.RECORD_NUMBER_4);
- /*
-*/
+    /*
+     */
     logger.info("Read Card...");
 
     cardTransaction.processCardCommands();
@@ -192,7 +191,7 @@ public class CalypsoCardController {
 
     logger.info("Calypso Session Closed.");
     return CalypsoCardRepresentation.parse(calypsoCard);
-    //return null;
+    // return null;
   }
 
   /**
@@ -245,9 +244,7 @@ public class CalypsoCardController {
           // update counter
           if (contract.getCounter() != null) {
             cardTransaction.prepareSetCounter(
-                SFI_COUNTERS,
-                    contractIndex,
-                contract.getCounter().getCounterValue());
+                SFI_COUNTERS, contractIndex, contract.getCounter().getCounterValue());
           }
         }
       }
@@ -321,7 +318,7 @@ public class CalypsoCardController {
     cardTransaction.prepareUpdateRecord(SFI_CONTRACTS, 1, ContractStructureParser.getEmpty());
     cardTransaction.prepareUpdateRecord(SFI_CONTRACTS, 2, ContractStructureParser.getEmpty());
 
-    if(contractCount>2){
+    if (contractCount > 2) {
       cardTransaction.prepareUpdateRecord(SFI_CONTRACTS, 3, ContractStructureParser.getEmpty());
       cardTransaction.prepareUpdateRecord(SFI_CONTRACTS, 4, ContractStructureParser.getEmpty());
     }
@@ -375,20 +372,21 @@ public class CalypsoCardController {
       EventStructureDto oldEvent, List<ContractStructureDto> contracts) {
     int contractCount = contracts.size();
 
-    EventStructureDto.Builder eventStructureBuilder =  EventStructureDto.newBuilder()
-        .setEventVersionNumber(VersionNumber.CURRENT_VERSION)
-        .setEventDateStamp(oldEvent.getEventDateStamp())
-        .setEventTimeStamp(oldEvent.getEventTimeStamp())
-        .setEventLocation(oldEvent.getEventLocation())
-        .setEventContractUsed(oldEvent.getEventContractUsed())
-        .setContractPriority1(contracts.get(0).getContractTariff())
-        .setContractPriority2(contracts.get(1).getContractTariff());
+    EventStructureDto.Builder eventStructureBuilder =
+        EventStructureDto.newBuilder()
+            .setEventVersionNumber(VersionNumber.CURRENT_VERSION)
+            .setEventDateStamp(oldEvent.getEventDateStamp())
+            .setEventTimeStamp(oldEvent.getEventTimeStamp())
+            .setEventLocation(oldEvent.getEventLocation())
+            .setEventContractUsed(oldEvent.getEventContractUsed())
+            .setContractPriority1(contracts.get(0).getContractTariff())
+            .setContractPriority2(contracts.get(1).getContractTariff());
 
-    if(contractCount==4){
+    if (contractCount == 4) {
       eventStructureBuilder
-            .setContractPriority3(contracts.get(2).getContractTariff())
-            .setContractPriority4(contracts.get(3).getContractTariff());
+          .setContractPriority3(contracts.get(2).getContractTariff())
+          .setContractPriority4(contracts.get(3).getContractTariff());
     }
-      return eventStructureBuilder.build();
+    return eventStructureBuilder.build();
   }
 }

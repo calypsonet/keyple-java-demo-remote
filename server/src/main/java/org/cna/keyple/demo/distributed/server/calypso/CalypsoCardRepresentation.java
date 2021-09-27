@@ -26,7 +26,6 @@ import org.cna.keyple.demo.sale.data.model.CounterStructureDto;
 import org.cna.keyple.demo.sale.data.model.EnvironmentHolderStructureDto;
 import org.cna.keyple.demo.sale.data.model.EventStructureDto;
 import org.cna.keyple.demo.sale.data.model.parser.ContractStructureParser;
-import org.cna.keyple.demo.sale.data.model.parser.CounterStructureParser;
 import org.cna.keyple.demo.sale.data.model.parser.EnvironmentHolderStructureParser;
 import org.cna.keyple.demo.sale.data.model.parser.EventStructureParser;
 import org.cna.keyple.demo.sale.data.model.type.DateCompact;
@@ -74,16 +73,15 @@ public class CalypsoCardRepresentation {
     // parse contracts
     FileData fileData = calypsoCard.getFileBySfi(SFI_CONTRACTS).getData();
     if (fileData != null) {
-      for (int i = 1; i < contractCount+1; i++) {
+      for (int i = 1; i < contractCount + 1; i++) {
         ContractStructureDto contract = ContractStructureParser.parse(fileData.getContent(i));
         card.contracts.add(contract);
 
         // update counter tied to contract
         int counterValue =
-                calypsoCard.getFileBySfi(SFI_COUNTERS).getData().getContentAsCounterValue(i);
+            calypsoCard.getFileBySfi(SFI_COUNTERS).getData().getContentAsCounterValue(i);
 
         contract.setCounter(CounterStructureDto.newBuilder().setCounterValue(counterValue).build());
-
       }
     }
 

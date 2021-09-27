@@ -11,9 +11,8 @@
  ************************************************************************************** */
 package org.cna.keyple.demo.distributed.controller;
 
-import java.time.Instant;
-
 import io.quarkus.test.junit.QuarkusTest;
+import java.time.Instant;
 import org.calypsonet.terminal.calypso.card.CalypsoCard;
 import org.cna.keyple.demo.distributed.server.calypso.CalypsoCardController;
 import org.cna.keyple.demo.distributed.server.calypso.CalypsoCardRepresentation;
@@ -32,7 +31,6 @@ import org.eclipse.keyple.core.service.resource.CardResourceServiceProvider;
 import org.junit.jupiter.api.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 
 /** Test the read and write operations atomically */
 @QuarkusTest
@@ -60,14 +58,13 @@ public class CalypsoCardControllerTest {
     calypsoPo = CalypsoUtils.selectCard(poReader);
   }
 
-
   @BeforeEach
   public void setUp() {
 
     /* Calculate how many contracts are expected on the card;
-    * 4 contracts for a Calypso PRIME;
-    * 2 contracts for a Calypso LIGHT;
-    * */
+     * 4 contracts for a Calypso PRIME;
+     * 2 contracts for a Calypso LIGHT;
+     * */
     contractCount = CalypsoUtils.getContractCount(calypsoPo);
 
     /* Request SAM resource before each test */
@@ -89,7 +86,6 @@ public class CalypsoCardControllerTest {
     CardResourceServiceProvider.getService().releaseCardResource(samResource);
   }
 
-
   @Test
   public void init_card() {
     // init card
@@ -100,16 +96,16 @@ public class CalypsoCardControllerTest {
     Assertions.assertEquals(contractCount, card.getContracts().size());
     Assertions.assertEquals(0, card.listValidContracts().size());
     Assertions.assertEquals(
-            PriorityCode.FORBIDDEN, card.getContractByCalypsoIndex(1).getContractTariff());
+        PriorityCode.FORBIDDEN, card.getContractByCalypsoIndex(1).getContractTariff());
     Assertions.assertEquals(
-            PriorityCode.FORBIDDEN, card.getContractByCalypsoIndex(2).getContractTariff());
+        PriorityCode.FORBIDDEN, card.getContractByCalypsoIndex(2).getContractTariff());
     Assertions.assertEquals(PriorityCode.FORBIDDEN, card.getEvent().getContractPriorityAt(1));
     Assertions.assertEquals(PriorityCode.FORBIDDEN, card.getEvent().getContractPriorityAt(2));
-    if(contractCount>2){
+    if (contractCount > 2) {
       Assertions.assertEquals(
-              PriorityCode.FORBIDDEN, card.getContractByCalypsoIndex(3).getContractTariff());
+          PriorityCode.FORBIDDEN, card.getContractByCalypsoIndex(3).getContractTariff());
       Assertions.assertEquals(
-              PriorityCode.FORBIDDEN, card.getContractByCalypsoIndex(4).getContractTariff());
+          PriorityCode.FORBIDDEN, card.getContractByCalypsoIndex(4).getContractTariff());
       Assertions.assertEquals(PriorityCode.FORBIDDEN, card.getEvent().getContractPriorityAt(3));
       Assertions.assertEquals(PriorityCode.FORBIDDEN, card.getEvent().getContractPriorityAt(4));
     }
@@ -173,15 +169,15 @@ public class CalypsoCardControllerTest {
         PriorityCode.SEASON_PASS, updatedCard.getEvent().getContractPriorityAt(1));
     Assertions.assertEquals(
         PriorityCode.FORBIDDEN, updatedCard.getEvent().getContractPriorityAt(2));
-    if(contractCount>2){
+    if (contractCount > 2) {
       Assertions.assertEquals(
-              PriorityCode.FORBIDDEN, updatedCard.getContractByCalypsoIndex(3).getContractTariff());
+          PriorityCode.FORBIDDEN, updatedCard.getContractByCalypsoIndex(3).getContractTariff());
       Assertions.assertEquals(
-              PriorityCode.FORBIDDEN, updatedCard.getContractByCalypsoIndex(4).getContractTariff());
+          PriorityCode.FORBIDDEN, updatedCard.getContractByCalypsoIndex(4).getContractTariff());
       Assertions.assertEquals(
-              PriorityCode.FORBIDDEN, updatedCard.getEvent().getContractPriorityAt(3));
+          PriorityCode.FORBIDDEN, updatedCard.getEvent().getContractPriorityAt(3));
       Assertions.assertEquals(
-              PriorityCode.FORBIDDEN, updatedCard.getEvent().getContractPriorityAt(4));
+          PriorityCode.FORBIDDEN, updatedCard.getEvent().getContractPriorityAt(4));
     }
   }
 
@@ -229,15 +225,15 @@ public class CalypsoCardControllerTest {
         PriorityCode.FORBIDDEN, updatedCard.getContractByCalypsoIndex(2).getContractTariff());
     Assertions.assertEquals(PriorityCode.MULTI_TRIP_TICKET, event.getContractPriorityAt(1));
     Assertions.assertEquals(PriorityCode.FORBIDDEN, event.getContractPriorityAt(2));
-   if(contractCount>2){
+    if (contractCount > 2) {
 
-     Assertions.assertEquals(
-             PriorityCode.FORBIDDEN, updatedCard.getContractByCalypsoIndex(3).getContractTariff());
-     Assertions.assertEquals(
-             PriorityCode.FORBIDDEN, updatedCard.getContractByCalypsoIndex(4).getContractTariff());
-     Assertions.assertEquals(PriorityCode.FORBIDDEN, event.getContractPriorityAt(3));
-     Assertions.assertEquals(PriorityCode.FORBIDDEN, event.getContractPriorityAt(4));
-   }
+      Assertions.assertEquals(
+          PriorityCode.FORBIDDEN, updatedCard.getContractByCalypsoIndex(3).getContractTariff());
+      Assertions.assertEquals(
+          PriorityCode.FORBIDDEN, updatedCard.getContractByCalypsoIndex(4).getContractTariff());
+      Assertions.assertEquals(PriorityCode.FORBIDDEN, event.getContractPriorityAt(3));
+      Assertions.assertEquals(PriorityCode.FORBIDDEN, event.getContractPriorityAt(4));
+    }
   }
 
   @Test
@@ -291,5 +287,4 @@ public class CalypsoCardControllerTest {
     Assertions.assertEquals(PriorityCode.SEASON_PASS, event.getContractPriorityAt(1));
     Assertions.assertEquals(PriorityCode.MULTI_TRIP_TICKET, event.getContractPriorityAt(2));
   }
-
 }

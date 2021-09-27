@@ -11,6 +11,8 @@
  ************************************************************************************** */
 package org.cna.keyple.demo.distributed.server.util;
 
+import static org.cna.keyple.demo.distributed.server.util.CalypsoConstants.*;
+
 import org.calypsonet.terminal.calypso.card.CalypsoCard;
 import org.calypsonet.terminal.reader.selection.CardSelectionManager;
 import org.calypsonet.terminal.reader.selection.CardSelectionResult;
@@ -19,7 +21,6 @@ import org.eclipse.keyple.core.service.Reader;
 import org.eclipse.keyple.core.service.SmartCardService;
 import org.eclipse.keyple.core.service.SmartCardServiceProvider;
 
-import static org.cna.keyple.demo.distributed.server.util.CalypsoConstants.*;
 public final class CalypsoUtils {
 
   /**
@@ -49,18 +50,16 @@ public final class CalypsoUtils {
             .filterByDfName(AID_CALYPSO_PRIME));
 
     cardSelectionManager.prepareSelection(
-            cardExtension
-                    .createCardSelection()
-                    .acceptInvalidatedCard()
-                    .filterByDfName(AID_CALYPSO_LIGHT));
-
+        cardExtension
+            .createCardSelection()
+            .acceptInvalidatedCard()
+            .filterByDfName(AID_CALYPSO_LIGHT));
 
     cardSelectionManager.prepareSelection(
-            cardExtension
-                    .createCardSelection()
-                    .acceptInvalidatedCard()
-                    .filterByDfName(AID_NORMALIZED_IDF));
-
+        cardExtension
+            .createCardSelection()
+            .acceptInvalidatedCard()
+            .filterByDfName(AID_NORMALIZED_IDF));
 
     // Actual card communication: run the selection scenario.
     CardSelectionResult selectionResult =
@@ -101,24 +100,21 @@ public final class CalypsoUtils {
             .createCardSelection()
             .filterByDfName(AID_CALYPSO_PRIME)
             .acceptInvalidatedCard()
-            .prepareReadRecordFile(
-                SFI_ENVIRONMENT_AND_HOLDER, RECORD_NUMBER_1));
+            .prepareReadRecordFile(SFI_ENVIRONMENT_AND_HOLDER, RECORD_NUMBER_1));
 
     cardSelectionManager.prepareSelection(
-            cardExtension
-                    .createCardSelection()
-                    .filterByDfName(AID_CALYPSO_LIGHT)
-                    .acceptInvalidatedCard()
-                    .prepareReadRecordFile(
-                            SFI_ENVIRONMENT_AND_HOLDER, RECORD_NUMBER_1));
+        cardExtension
+            .createCardSelection()
+            .filterByDfName(AID_CALYPSO_LIGHT)
+            .acceptInvalidatedCard()
+            .prepareReadRecordFile(SFI_ENVIRONMENT_AND_HOLDER, RECORD_NUMBER_1));
 
     cardSelectionManager.prepareSelection(
-            cardExtension
-                    .createCardSelection()
-                    .filterByDfName(AID_NORMALIZED_IDF)
-                    .acceptInvalidatedCard()
-                    .prepareReadRecordFile(
-                            SFI_ENVIRONMENT_AND_HOLDER, RECORD_NUMBER_1));
+        cardExtension
+            .createCardSelection()
+            .filterByDfName(AID_NORMALIZED_IDF)
+            .acceptInvalidatedCard()
+            .prepareReadRecordFile(SFI_ENVIRONMENT_AND_HOLDER, RECORD_NUMBER_1));
 
     // Actual card communication: run the selection scenario.
     CardSelectionResult selectionResult =
@@ -134,8 +130,7 @@ public final class CalypsoUtils {
     return (CalypsoCard) selectionResult.getActiveSmartCard();
   }
 
-  public static int getContractCount(CalypsoCard calypsoCard){
+  public static int getContractCount(CalypsoCard calypsoCard) {
     return calypsoCard.getApplicationSubtype() == 50 ? 2 : 4;
   }
-
 }
