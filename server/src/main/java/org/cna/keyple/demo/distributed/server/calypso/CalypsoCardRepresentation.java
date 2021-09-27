@@ -20,6 +20,7 @@ import java.util.List;
 import org.calypsonet.terminal.calypso.card.CalypsoCard;
 import org.calypsonet.terminal.calypso.card.FileData;
 import org.cna.keyple.demo.distributed.server.util.CalypsoConstants;
+import org.cna.keyple.demo.distributed.server.util.CalypsoUtils;
 import org.cna.keyple.demo.sale.data.model.ContractStructureDto;
 import org.cna.keyple.demo.sale.data.model.CounterStructureDto;
 import org.cna.keyple.demo.sale.data.model.EnvironmentHolderStructureDto;
@@ -64,7 +65,7 @@ public class CalypsoCardRepresentation {
    */
   public static CalypsoCardRepresentation parse(CalypsoCard calypsoCard) {
     CalypsoCardRepresentation card = new CalypsoCardRepresentation();
-    int contractCount = calypsoCard.getApplicationSubtype() == 32 ? 2 : 4;
+    int contractCount = CalypsoUtils.getContractCount(calypsoCard);
 
     // parse event
     card.event =
@@ -111,7 +112,7 @@ public class CalypsoCardRepresentation {
 
     // find contract in card
     int existingContractIndex = isReload(contractTariff);
-    int newContractIndex = 0;
+    int newContractIndex;
 
     EventStructureDto currentEvent = getEvent();
     ContractStructureDto newContract = null;

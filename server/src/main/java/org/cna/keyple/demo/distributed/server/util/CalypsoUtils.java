@@ -20,9 +20,6 @@ import org.eclipse.keyple.core.service.SmartCardService;
 import org.eclipse.keyple.core.service.SmartCardServiceProvider;
 
 import static org.cna.keyple.demo.distributed.server.util.CalypsoConstants.*;
-import static org.cna.keyple.demo.distributed.server.util.CalypsoConstants.AID_CALYPSO_LIGHT;
-import static org.cna.keyple.demo.distributed.server.util.CalypsoConstants.AID_NORMALIZED_IDF;
-
 public final class CalypsoUtils {
 
   /**
@@ -136,4 +133,9 @@ public final class CalypsoUtils {
     // Get the SmartCard resulting of the selection.
     return (CalypsoCard) selectionResult.getActiveSmartCard();
   }
+
+  public static int getContractCount(CalypsoCard calypsoCard){
+    return calypsoCard.getApplicationSubtype() == 50 ? 2 : 4;
+  }
+
 }
