@@ -50,7 +50,7 @@ public class LocalCardIssuanceMain {
     /*
      * Select cards
      */
-    CalypsoCard calypsoPo = CalypsoUtils.selectCard(poReader);
+    CalypsoCard calypsoPo = CalypsoUtils.selectCardWithEnvironment(poReader);
 
     CardResource samResource =
         CardResourceServiceProvider.getService().getCardResource(CalypsoConstants.SAM_PROFILE_NAME);
@@ -83,7 +83,7 @@ public class LocalCardIssuanceMain {
     // Get the Calypso card extension service
     CalypsoExtensionService cardExtension = CalypsoExtensionService.getInstance();
 
-    logger.info("= #### Select application with AID = '{}'.", CalypsoConstants.AID);
+    logger.info("= #### Select application with AID = '{}'.", CalypsoConstants.AID_CALYPSO_PRIME);
 
     // Get the core card selection manager.
     CardSelectionManager cardSelectionManager = smartCardService.createCardSelectionManager();
@@ -94,7 +94,7 @@ public class LocalCardIssuanceMain {
     cardSelectionManager.prepareSelection(
         cardExtension
             .createCardSelection()
-            .filterByDfName(CalypsoConstants.AID)
+            .filterByDfName(CalypsoConstants.AID_CALYPSO_PRIME)
             .acceptInvalidatedCard()
             .prepareReadRecordFile(
                 CalypsoConstants.SFI_ENVIRONMENT_AND_HOLDER, CalypsoConstants.RECORD_NUMBER_1));
@@ -106,7 +106,7 @@ public class LocalCardIssuanceMain {
     // Check the selection result.
     if (selectionResult.getActiveSmartCard() == null) {
       throw new IllegalStateException(
-          "The selection of the application '" + CalypsoConstants.AID + "' failed.");
+          "The selection of the application '" + CalypsoConstants.AID_CALYPSO_PRIME + "' failed.");
     }
 
     // Get the SmartCard resulting of the selection.

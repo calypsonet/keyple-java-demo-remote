@@ -32,7 +32,11 @@ import java.util.List;
 public final class CalypsoConstants {
   // Application
   /** AID: Keyple test kit profile 1, Application 2 */
-  public static final String AID = "315449432E49434131";
+  public static final String AID_CALYPSO_PRIME = "315449432E49434131";
+
+  public static final String AID_CALYPSO_LIGHT = "315449432E49434133";
+
+  public static final String AID_NORMALIZED_IDF = "A0000004040125090101";
 
   // File structure
   public static final int REC_SIZE = 29;

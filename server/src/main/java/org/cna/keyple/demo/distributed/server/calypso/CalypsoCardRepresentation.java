@@ -64,6 +64,7 @@ public class CalypsoCardRepresentation {
    */
   public static CalypsoCardRepresentation parse(CalypsoCard calypsoCard) {
     CalypsoCardRepresentation card = new CalypsoCardRepresentation();
+    int contractCount = calypsoCard.getApplicationSubtype() == 32 ? 2 : 4;
 
     // parse event
     card.event =
@@ -72,16 +73,16 @@ public class CalypsoCardRepresentation {
     // parse contracts
     FileData fileData = calypsoCard.getFileBySfi(SFI_CONTRACTS).getData();
     if (fileData != null) {
-      for (int i = 1; i < 5; i++) {
+      for (int i = 1; i < contractCount+1; i++) {
         ContractStructureDto contract = ContractStructureParser.parse(fileData.getContent(i));
         card.contracts.add(contract);
 
         // update counter tied to contract
-        FileData counterFile =
-            calypsoCard.getFileBySfi(SFI_Counters_simulated.get(i - 1)).getData();
-        if (counterFile != null) {
-          contract.setCounter(CounterStructureParser.parse(counterFile.getContent()));
-        }
+        int counterValue =
+                calypsoCard.getFileBySfi(SFI_COUNTERS).getData().getContentAsCounterValue(i);
+
+        contract.setCounter(CounterStructureDto.newBuilder().setCounterValue(counterValue).build());
+
       }
     }
 
@@ -297,7 +298,8 @@ public class CalypsoCardRepresentation {
    * @return calypso index (1-4), 0 if none
    */
   private int isReload(PriorityCode contractTariff) {
-    for (int i = 0; i < 4; i++) {
+    int contractCount = this.contracts.size();
+    for (int i = 0; i < contractCount; i++) {
       if (contractTariff.equals(contracts.get(i).getContractTariff())) {
         return i + 1;
       }
@@ -311,13 +313,14 @@ public class CalypsoCardRepresentation {
    * @return calypso index (1-4), 0 if none
    */
   private int findAvailablePosition() {
-    for (int i = 0; i < 4; i++) {
+    int contractCount = this.contracts.size();
+    for (int i = 0; i < contractCount; i++) {
       if (PriorityCode.FORBIDDEN.equals(contracts.get(i).getContractTariff())) {
         return i + 1;
       }
     }
 
-    for (int i = 0; i < 4; i++) {
+    for (int i = 0; i < contractCount; i++) {
       if (PriorityCode.EXPIRED.equals(contracts.get(i).getContractTariff())) {
         return i + 1;
       }

@@ -19,6 +19,10 @@ import org.eclipse.keyple.core.service.Reader;
 import org.eclipse.keyple.core.service.SmartCardService;
 import org.eclipse.keyple.core.service.SmartCardServiceProvider;
 
+import static org.cna.keyple.demo.distributed.server.util.CalypsoConstants.*;
+import static org.cna.keyple.demo.distributed.server.util.CalypsoConstants.AID_CALYPSO_LIGHT;
+import static org.cna.keyple.demo.distributed.server.util.CalypsoConstants.AID_NORMALIZED_IDF;
+
 public final class CalypsoUtils {
 
   /**
@@ -45,7 +49,21 @@ public final class CalypsoUtils {
         cardExtension
             .createCardSelection()
             .acceptInvalidatedCard()
-            .filterByDfName(CalypsoConstants.AID));
+            .filterByDfName(AID_CALYPSO_PRIME));
+
+    cardSelectionManager.prepareSelection(
+            cardExtension
+                    .createCardSelection()
+                    .acceptInvalidatedCard()
+                    .filterByDfName(AID_CALYPSO_LIGHT));
+
+
+    cardSelectionManager.prepareSelection(
+            cardExtension
+                    .createCardSelection()
+                    .acceptInvalidatedCard()
+                    .filterByDfName(AID_NORMALIZED_IDF));
+
 
     // Actual card communication: run the selection scenario.
     CardSelectionResult selectionResult =
@@ -54,7 +72,7 @@ public final class CalypsoUtils {
     // Check the selection result.
     if (selectionResult.getActiveSmartCard() == null) {
       throw new IllegalStateException(
-          "The selection of the application " + CalypsoConstants.AID + " failed.");
+          "The selection of the application " + AID_CALYPSO_PRIME + " failed.");
     }
 
     // Get the SmartCard resulting of the selection.
@@ -84,10 +102,26 @@ public final class CalypsoUtils {
     cardSelectionManager.prepareSelection(
         cardExtension
             .createCardSelection()
-            .filterByDfName(CalypsoConstants.AID)
+            .filterByDfName(AID_CALYPSO_PRIME)
             .acceptInvalidatedCard()
             .prepareReadRecordFile(
-                CalypsoConstants.SFI_ENVIRONMENT_AND_HOLDER, CalypsoConstants.RECORD_NUMBER_1));
+                SFI_ENVIRONMENT_AND_HOLDER, RECORD_NUMBER_1));
+
+    cardSelectionManager.prepareSelection(
+            cardExtension
+                    .createCardSelection()
+                    .filterByDfName(AID_CALYPSO_LIGHT)
+                    .acceptInvalidatedCard()
+                    .prepareReadRecordFile(
+                            SFI_ENVIRONMENT_AND_HOLDER, RECORD_NUMBER_1));
+
+    cardSelectionManager.prepareSelection(
+            cardExtension
+                    .createCardSelection()
+                    .filterByDfName(AID_NORMALIZED_IDF)
+                    .acceptInvalidatedCard()
+                    .prepareReadRecordFile(
+                            SFI_ENVIRONMENT_AND_HOLDER, RECORD_NUMBER_1));
 
     // Actual card communication: run the selection scenario.
     CardSelectionResult selectionResult =
@@ -96,7 +130,7 @@ public final class CalypsoUtils {
     // Check the selection result.
     if (selectionResult.getActiveSmartCard() == null) {
       throw new IllegalStateException(
-          "The selection of the application " + CalypsoConstants.AID + " failed.");
+          "The selection of the application " + AID_CALYPSO_PRIME + " failed.");
     }
 
     // Get the SmartCard resulting of the selection.
