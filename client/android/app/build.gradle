@@ -64,6 +64,11 @@ android {
             //applicationIdSuffix ".debug"
             resValue "string", "app_name", "Keyple Remote Reload Demo Debug"
         }
+        debug {
+            versionNameSuffix "-DEBUG"
+            //applicationIdSuffix ".debug"
+            resValue "string", "app_name", "Keyple Remote Reload Demo Debug"
+        }
         orange {
             versionNameSuffix "-ORANGE"
             debuggable false
