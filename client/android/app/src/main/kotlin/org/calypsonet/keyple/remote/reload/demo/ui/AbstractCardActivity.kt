@@ -63,6 +63,7 @@ abstract class AbstractCardActivity : AbstractDemoActivity(), CardReaderObserver
                 pluginType = "Android OMAPI"
                 keypleServices.aidEnums.clear()
                 keypleServices.aidEnums.add(KeypleManager.AidEnum.CDLIGHT_GTML)
+                keypleServices.aidEnums.add(KeypleManager.AidEnum.NAVIGO2013)
                 AndroidOmapiReader.READER_NAME_SIM_1
             }
             DeviceEnum.WEARABLE -> {
