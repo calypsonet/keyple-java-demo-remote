@@ -343,8 +343,8 @@ public class EventStructureDto {
         private Byte eventContractUsed;
         private PriorityCode contractPriority1;
         private PriorityCode contractPriority2;
-        private PriorityCode contractPriority3;
-        private PriorityCode contractPriority4;
+        private PriorityCode contractPriority3 = PriorityCode.FORBIDDEN;
+        private PriorityCode contractPriority4 = PriorityCode.FORBIDDEN;
         private byte[] eventPadding;
 
         private Builder() {
@@ -473,9 +473,7 @@ public class EventStructureDto {
                 || this.eventLocation == null
                 || this.eventContractUsed == null
                 || this.contractPriority1 == null
-                || this.contractPriority2 == null
-                || this.contractPriority3 == null
-                || this.contractPriority4 == null)
+                || this.contractPriority2 == null)
                 throw new IllegalStateException("Missing Mandatory parameters");
             return new EventStructureDto(this);
         }

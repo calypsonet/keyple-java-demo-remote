@@ -176,6 +176,12 @@ public class CalypsoCardRemotePluginObserver implements PluginObserverSpi {
         CardResourceServiceProvider.getService().getCardResource(CalypsoConstants.SAM_PROFILE_NAME);
     String pluginType = writeContractInput.getPluginType();
 
+    String asnHex = ByteArrayUtil.toHex(calypsoCard.getApplicationSerialNumber());
+    String dfName = ByteArrayUtil.toHex(calypsoCard.getApplicationSerialNumber());
+
+    logger.info("Inserted card application serial number : {}", asnHex);
+    logger.info("Inserted card df name : {}", dfName);
+
     try {
 
       /*

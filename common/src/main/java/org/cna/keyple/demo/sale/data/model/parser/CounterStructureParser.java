@@ -1,10 +1,14 @@
 package org.cna.keyple.demo.sale.data.model.parser;
 
+import org.cna.keyple.demo.sale.data.model.ContractStructureDto;
 import org.cna.keyple.demo.sale.data.model.CounterStructureDto;
 import org.cna.keyple.demo.sale.data.util.ByteArrayParserUtil;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Parse/Unparse CounterStructureDto to an array of bytes
@@ -41,6 +45,8 @@ public class CounterStructureParser {
                 .setCounterValue(ByteArrayUtil.threeBytesSignedToInt(file,0))
                 .build();
     }
+
+
     public static byte[] getEmpty(){
         return ByteBuffer.allocate(COUNTER_VALUE_SIZE).array();
     }

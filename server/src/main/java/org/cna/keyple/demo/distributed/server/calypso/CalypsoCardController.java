@@ -12,6 +12,7 @@
 package org.cna.keyple.demo.distributed.server.calypso;
 
 import static org.cna.keyple.demo.distributed.server.util.CalypsoConstants.*;
+import static org.cna.keyple.demo.sale.data.model.parser.ContractStructureParser.CONTRACT_RECORD_SIZE;
 
 import java.time.Instant;
 import java.time.LocalDate;
@@ -24,11 +25,11 @@ import org.calypsonet.terminal.calypso.sam.CalypsoSam;
 import org.calypsonet.terminal.calypso.transaction.CardSecuritySetting;
 import org.calypsonet.terminal.calypso.transaction.CardTransactionManager;
 import org.cna.keyple.demo.distributed.server.util.CalypsoConstants;
+import org.cna.keyple.demo.distributed.server.util.CalypsoUtils;
 import org.cna.keyple.demo.sale.data.model.ContractStructureDto;
 import org.cna.keyple.demo.sale.data.model.EnvironmentHolderStructureDto;
 import org.cna.keyple.demo.sale.data.model.EventStructureDto;
 import org.cna.keyple.demo.sale.data.model.parser.ContractStructureParser;
-import org.cna.keyple.demo.sale.data.model.parser.CounterStructureParser;
 import org.cna.keyple.demo.sale.data.model.parser.EnvironmentHolderStructureParser;
 import org.cna.keyple.demo.sale.data.model.parser.EventStructureParser;
 import org.cna.keyple.demo.sale.data.model.type.DateCompact;
@@ -146,13 +147,7 @@ public class CalypsoCardController {
     CardSecuritySetting cardSecuritySetting =
         CalypsoExtensionService.getInstance()
             .createCardSecuritySetting()
-            .setSamResource(samResource.getReader(), (CalypsoSam) samResource.getSmartCard())
-            .setPinVerificationCipheringKey(
-                CalypsoConstants.PIN_VERIFICATION_CIPHERING_KEY_KIF,
-                CalypsoConstants.PIN_VERIFICATION_CIPHERING_KEY_KVC)
-            .setPinModificationCipheringKey(
-                CalypsoConstants.PIN_MODIFICATION_CIPHERING_KEY_KIF,
-                CalypsoConstants.PIN_MODIFICATION_CIPHERING_KEY_KVC);
+            .setSamResource(samResource.getReader(), (CalypsoSam) samResource.getSmartCard());
 
     // create a secured card transaction
     cardTransaction =
@@ -163,6 +158,8 @@ public class CalypsoCardController {
       cardTransaction.prepareReleaseCardChannel();
     }
 
+    int contractCount = CalypsoUtils.getContractCount(calypsoCard);
+
     /*
      * Open Calypso session
      */
@@ -171,23 +168,18 @@ public class CalypsoCardController {
 
     // Prepare reading of environment record
     cardTransaction.prepareReadRecordFile(SFI_ENVIRONMENT_AND_HOLDER, RECORD_NUMBER_1);
-
     // Prepare reading of last event record
     cardTransaction.prepareReadRecordFile(
         CalypsoConstants.SFI_EVENT_LOG, CalypsoConstants.RECORD_NUMBER_1);
 
     // Prepare reading of contract records (Calypso Light)
-    cardTransaction.prepareReadRecordFile(SFI_CONTRACTS, CalypsoConstants.RECORD_NUMBER_1);
-    cardTransaction.prepareReadRecordFile(SFI_CONTRACTS, CalypsoConstants.RECORD_NUMBER_2);
-    cardTransaction.prepareReadRecordFile(SFI_CONTRACTS, CalypsoConstants.RECORD_NUMBER_3);
-    cardTransaction.prepareReadRecordFile(SFI_CONTRACTS, CalypsoConstants.RECORD_NUMBER_4);
+    cardTransaction.prepareReadRecordFile(
+        SFI_CONTRACTS, CalypsoConstants.RECORD_NUMBER_1, contractCount, CONTRACT_RECORD_SIZE);
 
-    // Prepare reading of simulated counter record
-    cardTransaction.prepareReadCounterFile(SFI_Counters_1, CalypsoConstants.RECORD_NUMBER_1);
-    cardTransaction.prepareReadCounterFile(SFI_Counters_2, CalypsoConstants.RECORD_NUMBER_1);
-    cardTransaction.prepareReadCounterFile(SFI_Counters_3, CalypsoConstants.RECORD_NUMBER_1);
-    cardTransaction.prepareReadCounterFile(SFI_Counters_4, CalypsoConstants.RECORD_NUMBER_1);
-
+    // Prepare reading of counter record
+    cardTransaction.prepareReadCounterFile(SFI_COUNTERS, CalypsoConstants.RECORD_NUMBER_4);
+    /*
+     */
     logger.info("Read Card...");
 
     cardTransaction.processCardCommands();
@@ -199,6 +191,7 @@ public class CalypsoCardController {
 
     logger.info("Calypso Session Closed.");
     return CalypsoCardRepresentation.parse(calypsoCard);
+    // return null;
   }
 
   /**
@@ -220,13 +213,8 @@ public class CalypsoCardController {
     CardSecuritySetting cardSecuritySetting =
         CalypsoExtensionService.getInstance()
             .createCardSecuritySetting()
-            .setSamResource(samResource.getReader(), (CalypsoSam) samResource.getSmartCard())
-            .setPinVerificationCipheringKey(
-                CalypsoConstants.PIN_VERIFICATION_CIPHERING_KEY_KIF,
-                CalypsoConstants.PIN_VERIFICATION_CIPHERING_KEY_KVC)
-            .setPinModificationCipheringKey(
-                CalypsoConstants.PIN_MODIFICATION_CIPHERING_KEY_KIF,
-                CalypsoConstants.PIN_MODIFICATION_CIPHERING_KEY_KVC);
+            .setSamResource(samResource.getReader(), (CalypsoSam) samResource.getSmartCard());
+
     // create a secured card transaction
     cardTransaction =
         cardExtension.createCardTransaction(cardReader, calypsoCard, cardSecuritySetting);
@@ -240,23 +228,23 @@ public class CalypsoCardController {
     logger.info("Open Calypso Session - SESSION_LVL_LOAD...");
     cardTransaction.processOpening(WriteAccessLevel.LOAD);
 
+    int contractCount = calypsoCardContent.getContracts().size();
+
     /* Update contract records */
     if (!calypsoCardContent.getUpdatedContracts().isEmpty()) {
-      for (int i = 0; i < 4; i++) {
-
+      for (int i = 0; i < contractCount; i++) {
+        int contractIndex = i + 1;
         ContractStructureDto contract = calypsoCardContent.getContracts().get(i);
 
         if (calypsoCardContent.getUpdatedContracts().contains(contract)) {
           // update contract
           cardTransaction.prepareUpdateRecord(
-              SFI_CONTRACTS, i + 1, ContractStructureParser.unparse(contract));
+              SFI_CONTRACTS, contractIndex, ContractStructureParser.unparse(contract));
 
           // update counter
           if (contract.getCounter() != null) {
-            cardTransaction.prepareUpdateRecord(
-                SFI_Counters_simulated.get(i),
-                1,
-                CounterStructureParser.unparse(contract.getCounter()));
+            cardTransaction.prepareSetCounter(
+                SFI_COUNTERS, contractIndex, contract.getCounter().getCounterValue());
           }
         }
       }
@@ -294,13 +282,8 @@ public class CalypsoCardController {
     CardSecuritySetting cardSecuritySetting =
         CalypsoExtensionService.getInstance()
             .createCardSecuritySetting()
-            .setSamResource(samResource.getReader(), (CalypsoSam) samResource.getSmartCard())
-            .setPinVerificationCipheringKey(
-                CalypsoConstants.PIN_VERIFICATION_CIPHERING_KEY_KIF,
-                CalypsoConstants.PIN_VERIFICATION_CIPHERING_KEY_KVC)
-            .setPinModificationCipheringKey(
-                CalypsoConstants.PIN_MODIFICATION_CIPHERING_KEY_KIF,
-                CalypsoConstants.PIN_MODIFICATION_CIPHERING_KEY_KVC);
+            .setSamResource(samResource.getReader(), (CalypsoSam) samResource.getSmartCard());
+
     // create a secured card transaction
     cardTransaction =
         cardExtension.createCardTransaction(cardReader, calypsoCard, cardSecuritySetting);
@@ -329,12 +312,16 @@ public class CalypsoCardController {
     cardTransaction.prepareUpdateRecord(
         SFI_EVENT_LOG, 1, EnvironmentHolderStructureParser.getEmpty());
 
+    int contractCount = CalypsoUtils.getContractCount(calypsoCard);
+
     // Clear all contracts (update with a byte array filled with 0s).
-    // TODO do not support CLAP
     cardTransaction.prepareUpdateRecord(SFI_CONTRACTS, 1, ContractStructureParser.getEmpty());
     cardTransaction.prepareUpdateRecord(SFI_CONTRACTS, 2, ContractStructureParser.getEmpty());
-    cardTransaction.prepareUpdateRecord(SFI_CONTRACTS, 3, ContractStructureParser.getEmpty());
-    cardTransaction.prepareUpdateRecord(SFI_CONTRACTS, 4, ContractStructureParser.getEmpty());
+
+    if (contractCount > 2) {
+      cardTransaction.prepareUpdateRecord(SFI_CONTRACTS, 3, ContractStructureParser.getEmpty());
+      cardTransaction.prepareUpdateRecord(SFI_CONTRACTS, 4, ContractStructureParser.getEmpty());
+    }
 
     // Clear the counter file (update with a byte array filled with 0s).
     cardTransaction.prepareUpdateRecord(SFI_COUNTERS, 1, EventStructureParser.getEmpty());
@@ -383,16 +370,23 @@ public class CalypsoCardController {
    */
   private EventStructureDto buildEvent(
       EventStructureDto oldEvent, List<ContractStructureDto> contracts) {
-    return EventStructureDto.newBuilder()
-        .setEventVersionNumber(VersionNumber.CURRENT_VERSION)
-        .setEventDateStamp(oldEvent.getEventDateStamp())
-        .setEventTimeStamp(oldEvent.getEventTimeStamp())
-        .setEventLocation(oldEvent.getEventLocation())
-        .setEventContractUsed(oldEvent.getEventContractUsed())
-        .setContractPriority1(contracts.get(0).getContractTariff())
-        .setContractPriority2(contracts.get(1).getContractTariff())
-        .setContractPriority3(contracts.get(2).getContractTariff())
-        .setContractPriority4(contracts.get(3).getContractTariff())
-        .build();
+    int contractCount = contracts.size();
+
+    EventStructureDto.Builder eventStructureBuilder =
+        EventStructureDto.newBuilder()
+            .setEventVersionNumber(VersionNumber.CURRENT_VERSION)
+            .setEventDateStamp(oldEvent.getEventDateStamp())
+            .setEventTimeStamp(oldEvent.getEventTimeStamp())
+            .setEventLocation(oldEvent.getEventLocation())
+            .setEventContractUsed(oldEvent.getEventContractUsed())
+            .setContractPriority1(contracts.get(0).getContractTariff())
+            .setContractPriority2(contracts.get(1).getContractTariff());
+
+    if (contractCount == 4) {
+      eventStructureBuilder
+          .setContractPriority3(contracts.get(2).getContractTariff())
+          .setContractPriority4(contracts.get(3).getContractTariff());
+    }
+    return eventStructureBuilder.build();
   }
 }
