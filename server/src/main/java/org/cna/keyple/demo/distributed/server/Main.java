@@ -1,5 +1,5 @@
 /* **************************************************************************************
- * Copyright (c) 2020 Calypso Networks Association https://www.calypsonet-asso.org/
+ * Copyright (c) 2020 Calypso Networks Association https://calypsonet.org/
  *
  * See the NOTICE file(s) distributed with this work for additional information
  * regarding copyright ownership.
@@ -14,16 +14,16 @@ package org.cna.keyple.demo.distributed.server;
 import io.quarkus.runtime.Quarkus;
 import io.quarkus.runtime.QuarkusApplication;
 import io.quarkus.runtime.annotations.QuarkusMain;
+import java.awt.*;
+import java.net.URI;
+import javax.inject.Inject;
+import org.cna.keyple.demo.distributed.server.plugin.CalypsoCardResourceConfiguration;
+import org.cna.keyple.demo.distributed.server.plugin.SamResourceConfiguration;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.awt.*;
-import java.net.URI;
-
-/**
- * Main class of quarkus
- */
+/** Main class of quarkus */
 @QuarkusMain
 public class Main {
 
@@ -36,15 +36,35 @@ public class Main {
   /** Main class of the Demo Application. */
   public static class KeypleDistributedServerDemo implements QuarkusApplication {
 
+    public static final String REMOTE_PLUGIN_NAME = "REMOTE_PLUGIN_#1";
+
     @ConfigProperty(name = "quarkus.http.port")
     Integer assignedPort;
 
+    @Inject CalypsoCardResourceConfiguration calypsoCardResourceConfiguration;
+
+    @Inject SamResourceConfiguration samResourceConfiguration;
+
     /** {@inheritDoc} */
     @Override
-    public int run(String... args)  throws Exception  {
-      URI webappUri = new URI("http://localhost:" + assignedPort + "/");
+    public int run(String... args) throws Exception {
 
+      /*
+       *  Start the SAM card configuration
+       */
+      samResourceConfiguration.init();
+
+      /*
+       *  Start the PO card configuration
+       */
+      calypsoCardResourceConfiguration.init();
+
+      /*
+       * Open the dashboard on the default browser
+       */
+      URI webappUri = new URI("http://localhost:" + assignedPort + "/");
       Desktop.getDesktop().browse(webappUri);
+
       logger.info("Keyple Distributed Server Demo Started at port : {}", assignedPort);
       Quarkus.waitForExit();
       return 0;

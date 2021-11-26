@@ -17,16 +17,22 @@ By default the server starts only if a PCSC reader is connected. The PC/SC reade
 
 If you want to use a different filter, start the server with the parameter ``-Dsam.pcsc.reader.filter=XXX`` where XXX is a matching regex of your PC/SC reader.
 
-For instance: 
-```
->java -Dsam.pcsc.reader.filter="Identive CLOUD 2700 R Smart Card Reader.*" -jar keyple-demo-remote-server-vYYYY.MM.jar 
-```
-The command below starts the server with the PCSC reader "Identive CLOUD 2700 R Smart Card Reader"
+- For Windows Command Prompt
 
+The command hereafter starts the server with the PCSC reader "Identive CLOUD 2700 R Smart Card Reader"
 ```
->java -Dsam.pcsc.reader.filter=.* -jar keyple-demo-remote-server-vYYYY.MM.jar 
+java "-Dsam.pcsc.reader.filter=Identive CLOUD 2700 R Smart Card Reader.*" -jar keyple-demo-remote-server-v2021.09.jar 
 ```
 The command below starts the server with any PC/SC reader connected. Be aware that if multiple readers are connected, the server will select one of them randomly.
+```
+java "-Dsam.pcsc.reader.filter=.*" -jar keyple-demo-remote-server-vYYYY.MM.jar
+```
+- For Windows Powershell
+Beware of the syntax on Windows Powershell to pass an argument
+```
+java '-Dsam.pcsc.reader.filter=Identive CLOUD 2700 R Smart Card Reader.*' -jar .\keyple-demo-remote-server-v2021.09.jar
+```
+
 
 
 ## Running the server from the source

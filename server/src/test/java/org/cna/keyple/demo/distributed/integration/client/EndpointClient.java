@@ -1,5 +1,5 @@
 /* **************************************************************************************
- * Copyright (c) 2020 Calypso Networks Association https://www.calypsonet-asso.org/
+ * Copyright (c) 2020 Calypso Networks Association https://calypsonet.org/
  *
  * See the NOTICE file(s) distributed with this work for additional information
  * regarding copyright ownership.
@@ -11,24 +11,23 @@
  ************************************************************************************** */
 package org.cna.keyple.demo.distributed.integration.client;
 
-import org.cna.keyple.demo.distributed.server.endpoint.EndpointServer;
-import org.eclipse.keyple.distributed.MessageDto;
-import org.eclipse.keyple.distributed.spi.SyncEndpointClient;
-import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
-
+import java.util.List;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-import java.util.List;
+import org.cna.keyple.demo.distributed.server.endpoint.RemotePluginEndpoint;
+import org.eclipse.keyple.distributed.MessageDto;
+import org.eclipse.keyple.distributed.spi.SyncEndpointClientSpi;
+import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 
 /**
- * Example of a {@link SyncEndpointClient} implementation using Web Services.
+ * Example of a {@link SyncEndpointClientSpi} implementation using Web Services.
  *
- * <p>Sends requests to the {@link EndpointServer}.
+ * <p>Sends requests to the {@link RemotePluginEndpoint}.
  */
 @RegisterRestClient(configKey = "remote-plugin-api")
-public interface EndpointClient extends SyncEndpointClient {
+public interface EndpointClient extends SyncEndpointClientSpi {
 
   @POST
   @Path("/remote-plugin")

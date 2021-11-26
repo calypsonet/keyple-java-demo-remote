@@ -1,5 +1,5 @@
 /* **************************************************************************************
- * Copyright (c) 2020 Calypso Networks Association https://www.calypsonet-asso.org/
+ * Copyright (c) 2020 Calypso Networks Association https://calypsonet.org/
  *
  * See the NOTICE file(s) distributed with this work for additional information
  * regarding copyright ownership.
@@ -11,16 +11,13 @@
  ************************************************************************************** */
 package org.cna.keyple.demo.distributed.integration.client;
 
-import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
-
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.MediaType;
+import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 
-/**
- * Heartbeat tests client
- */
+/** Heartbeat tests client */
 @RegisterRestClient(configKey = "heartbeat")
 public interface SamClient {
 

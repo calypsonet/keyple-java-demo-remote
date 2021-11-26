@@ -13,13 +13,13 @@ if (project.rootProject.file("local.properties").exists()) {
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
     defaultConfig {
-        applicationId "org.eclipse.keyple.demo.remote"
+        applicationId "org.calypsonet.keyple.remote.reload.demo"
         //applicationId "org.keyple.examples.wizway"
         multiDexEnabled true
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 1
-        versionName "2021.04"
+        versionCode 3
+        versionName "2021.11"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         setProperty("archivesBaseName", "keyple-demo-remote-client_v$versionName")
     }
@@ -62,7 +62,12 @@ android {
         debug {
             versionNameSuffix "-DEBUG"
             //applicationIdSuffix ".debug"
-            resValue "string", "app_name", "Keyple Demo Remote Debug"
+            resValue "string", "app_name", "Keyple Remote Reload Demo Debug"
+        }
+        debug {
+            versionNameSuffix "-DEBUG"
+            //applicationIdSuffix ".debug"
+            resValue "string", "app_name", "Keyple Remote Reload Demo Debug"
         }
         orange {
             versionNameSuffix "-ORANGE"
@@ -70,7 +75,7 @@ android {
             minifyEnabled false
             shrinkResources false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            resValue "string", "app_name", "Keyple Demo Remote Orange"
+            resValue "string", "app_name", "Keyple Remote Reload Demo Orange"
         }
         cna {
             versionNameSuffix ""
@@ -78,7 +83,7 @@ android {
             minifyEnabled false
             shrinkResources false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            resValue "string", "app_name", "Keyple Demo Remote"
+            resValue "string", "app_name", "Keyple Remote Reload Demo"
         }
     }
 
@@ -133,12 +138,9 @@ android {
         exclude 'META-INF/notice.txt'
         exclude 'META-INF/ASL2.0'
         exclude 'META-INF/keyple-core.properties'
+        exclude("META-INF/*.kotlin_module")
         exclude 'config.properties'
     }
-}
-
-preBuild.doFirst {
-    println project.name + " - Using keyple_version parameter with value " + keypleVersion
 }
 
 dependencies {
@@ -152,11 +154,22 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 
     // Keyple Java Component
-    implementation "org.eclipse.keyple:keyple-java-core:$keypleVersion"
-    implementation "org.eclipse.keyple:keyple-java-calypso:$keypleVersion"
-    implementation "org.eclipse.keyple:keyple-java-distributed-local:$keypleVersion"
-    implementation "org.eclipse.keyple:keyple-android-plugin-nfc:$keypleVersion"
-    implementation "org.eclipse.keyple:keyple-android-plugin-omapi:$keypleVersion"
+    implementation("org.calypsonet.terminal:calypsonet-terminal-reader-java-api:1.0.+")
+    implementation("org.calypsonet.terminal:calypsonet-terminal-card-java-api:1.0.+")
+    implementation("org.calypsonet.terminal:calypsonet-terminal-calypso-java-api:1.0.+")
+
+    implementation("org.eclipse.keyple:keyple-service-java-lib:2.0.0")
+    implementation("org.eclipse.keyple:keyple-card-calypso-java-lib:2.0.0")
+    implementation("org.eclipse.keyple:keyple-card-generic-java-lib:2.0.0")
+    implementation("org.eclipse.keyple:keyple-util-java-lib:2.+")
+    implementation("org.eclipse.keyple:keyple-common-java-api:2.0.+")
+
+    implementation("org.eclipse.keyple:keyple-distributed-local-java-lib:2.0.0")
+    implementation "org.eclipse.keyple:keyple-distributed-network-java-lib:2.0.0"
+    implementation("org.eclipse.keyple:keyple-plugin-java-api:2.0.0")
+
+    implementation "org.eclipse.keyple:keyple-plugin-android-nfc-java-lib:2.0.0"
+    implementation "org.eclipse.keyple:keyple-plugin-android-omapi-java-lib:2.0.0"
 
     implementation project(":common")
 
