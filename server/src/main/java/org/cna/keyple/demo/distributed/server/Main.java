@@ -55,7 +55,7 @@ public class Main {
       samResourceConfiguration.init();
 
       /*
-       *  Start the PO card configuration
+       *  Start the Calypso Card  configuration
        */
       calypsoCardResourceConfiguration.init();
 

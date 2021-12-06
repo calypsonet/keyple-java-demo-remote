@@ -38,9 +38,6 @@ public final class CalypsoConstants {
 
   public static final String AID_NORMALIZED_IDF = "A0000004040125090101";
 
-  // File structure
-  public static final int REC_SIZE = 29;
-
   public static final byte RECORD_NUMBER_1 = 1;
   public static final byte RECORD_NUMBER_2 = 2;
   public static final byte RECORD_NUMBER_3 = 3;
@@ -50,34 +47,11 @@ public final class CalypsoConstants {
   public static final byte SFI_ENVIRONMENT_AND_HOLDER = (byte) 0x07;
   public static final byte SFI_EVENT_LOG = (byte) 0x08;
   public static final byte SFI_CONTRACTS = (byte) 0x09;
-  public static final byte SFI_CONTRACT_LIST = (byte) 0x1E;
 
   public static final byte SFI_COUNTERS = (byte) 0x19;
-  public static final byte SFI_Counters_1 = (byte) 0x0A;
-  public static final byte SFI_Counters_2 = (byte) 0x0B;
-  public static final byte SFI_Counters_3 = (byte) 0x0C;
-  public static final byte SFI_Counters_4 = (byte) 0x0D;
-
-  public static final List<Byte> SFI_Counters_simulated =
-      Arrays.asList(SFI_Counters_1, SFI_Counters_2, SFI_Counters_3, SFI_Counters_4);
-
-  public static final short LID_DF_RT = 0x2000;
-  public static final short LID_EVENT_LOG = 0x2010;
-
-  // Sample data
-  public static final String EVENT_LOG_DATA_FILL =
-      "00112233445566778899AABBCCDDEEFF00112233445566778899AABBCC";
 
   // Security settings
   public static final String SAM_PROFILE_NAME = "SAM C1";
-
-  public static final byte PIN_MODIFICATION_CIPHERING_KEY_KIF = (byte) 0x21;
-  public static final byte PIN_MODIFICATION_CIPHERING_KEY_KVC = (byte) 0x79;
-  public static final byte PIN_VERIFICATION_CIPHERING_KEY_KIF = (byte) 0x30;
-  public static final byte PIN_VERIFICATION_CIPHERING_KEY_KVC = (byte) 0x79;
-
-  public static final byte[] PIN_OK = {(byte) 0x30, (byte) 0x30, (byte) 0x30, (byte) 0x30};
-  public static final byte[] PIN_KO = {(byte) 0x30, (byte) 0x30, (byte) 0x30, (byte) 0x31};
 
   private CalypsoConstants() {}
 }

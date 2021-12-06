@@ -28,7 +28,7 @@ import org.slf4j.LoggerFactory;
 /** Execute locally a write contract operation */
 public class LocalCardLoadingMain {
   private static final Logger logger = LoggerFactory.getLogger(LocalCardLoadingMain.class);
-  public static String poReaderFilter = ".*(ASK|ACS).*";
+  public static String calypsoCardReaderFilter = ".*(ASK|ACS).*";
   public static String samReaderFilter = ".*(Cherry TC|SCM Microsystems|Identive|HID|Generic).*";
 
   public static void main(String[] args) {
@@ -39,12 +39,12 @@ public class LocalCardLoadingMain {
     /*
      * Init readers
      */
-    Reader poReader = LocalConfigurationUtil.initReader(poReaderFilter);
+    Reader calypsoCardReader = LocalConfigurationUtil.initReader(calypsoCardReaderFilter);
 
     /*
      * Select cards
      */
-    CalypsoCard calypsoCard = selectCardWithEnvironment(poReader);
+    CalypsoCard calypsoCard = selectCardWithEnvironment(calypsoCardReader);
     CardResource samResource =
         CardResourceServiceProvider.getService().getCardResource(CalypsoConstants.SAM_PROFILE_NAME);
 
@@ -54,7 +54,7 @@ public class LocalCardLoadingMain {
     CalypsoCardController calypsoCardController =
         CalypsoCardController.newBuilder()
             .withCalypsoCard(calypsoCard)
-            .withCardReader(poReader)
+            .withCardReader(calypsoCardReader)
             .withSamResource(samResource)
             .build();
 
