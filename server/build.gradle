@@ -28,7 +28,7 @@ ext {
 }
 
 group 'org.cna.keyple.demo.remote.server'
-project.version '2021.09'
+project.version '2021.12.rc1'
 
 quarkus{
     finalName artifactName
@@ -45,20 +45,8 @@ dependencies {
     implementation group: 'org.eclipse.keyple', name: 'keyple-distributed-remote-java-lib', version: keyple_v,  changing: true
     implementation group: 'org.eclipse.keyple', name: 'keyple-distributed-local-java-lib', version: keyple_v,  changing: true
     implementation group: 'org.eclipse.keyple', name: 'keyple-common-java-api', version:  keyple_v,  changing: true
-    //implementation group: 'org.eclipse.keyple', name: 'keyple-util-java-lib', version:  keyple_v,  changing: true
-    implementation('org.eclipse.keyple:keyple-util-java-lib') {
-        version {
-            strictly '2.0.0-SNAPSHOT'
-        }
-    }
-
-    //implementation group: 'org.eclipse.keyple', name: 'keyple-service-java-lib',  version: '2.0.0-SNAPSHOT',  changing: true
-    implementation('org.eclipse.keyple:keyple-service-java-lib') {
-        version {
-            strictly '2.0.0-SNAPSHOT'
-        }
-    }
-
+    implementation group: 'org.eclipse.keyple', name: 'keyple-util-java-lib', version:  keyple_v,  changing: true
+    implementation group: 'org.eclipse.keyple', name: 'keyple-service-java-lib',  version: keyple_v,  changing: true
     implementation group: 'org.eclipse.keyple', name: 'keyple-service-resource-java-lib',  version: keyple_v,  changing: true
 
     implementation group: 'org.calypsonet.terminal', name: 'calypsonet-terminal-reader-java-api', version: "1.0.+"

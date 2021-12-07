@@ -98,7 +98,12 @@ public class TransactionTest {
 
   @Test
   public void execute_successful_load_tickets() {
-    reset_load_tickets(cardReader);
+    issue_card_then_load_tickets(cardReader);
+  }
+
+  @Test
+  public void execute_successful_load_season_pass() {
+    issue_card_then_load_season_pass(cardReader);
   }
 
   @Test
@@ -109,12 +114,20 @@ public class TransactionTest {
     }
   }
 
+  @Test
+  public void execute_successful_load_pass_N_times() {
+    final int N = 3;
+    for (int i = 0; i < N; i++) {
+      execute_successful_load_season_pass();
+    }
+  }
+
   /**
    * Reset card, read valid contract and write a MULTI TRIP CONTRACT with X titles
    *
    * @param cardReader
    */
-  static void reset_load_tickets(Reader cardReader) {
+  static void issue_card_then_load_tickets(Reader cardReader) {
     /* Select PO */
     SmartCard calypsoCard = CalypsoUtils.selectCard(cardReader);
 
@@ -168,6 +181,66 @@ public class TransactionTest {
     ContractStructureDto writtenContract = passExpected.getValidContracts().get(0);
     assertEquals(PriorityCode.MULTI_TRIP_TICKET, writtenContract.getContractTariff());
     assertEquals(TICKETS_TO_LOAD, writtenContract.getCounter().getCounterValue());
+  }
+
+  /**
+   * Reset card, read valid contract and write a MULTI TRIP CONTRACT with X titles
+   *
+   * @param cardReader
+   */
+  static void issue_card_then_load_season_pass(Reader cardReader) {
+    /* Select PO */
+    SmartCard calypsoCard = CalypsoUtils.selectCard(cardReader);
+
+    // Retrieves the local service.
+    LocalServiceClient localService =
+            SmartCardServiceProvider.getService()
+                    .getDistributedLocalService(LOCAL_SERVICE_NAME)
+                    .getExtension(LocalServiceClient.class);
+
+    /* Execute Remote Service : Reset card */
+    CardIssuanceOutput cardIssuanceOutput =
+            localService.executeRemoteService(
+                    "CARD_ISSUANCE", cardReader.getName(), calypsoCard, null, CardIssuanceOutput.class);
+
+    assertEquals(0, cardIssuanceOutput.getStatusCode());
+
+    AnalyzeContractsInput compatibleContractInput =
+            new AnalyzeContractsInput().setPluginType("Android NFC");
+
+    /* Execute Remote Service : Get Valid Contracts */
+    AnalyzeContractsOutput contractAnalysisOutput =
+            localService.executeRemoteService(
+                    "CONTRACT_ANALYSIS",
+                    cardReader.getName(),
+                    calypsoCard,
+                    compatibleContractInput,
+                    AnalyzeContractsOutput.class);
+
+    assertNotNull(contractAnalysisOutput);
+    assertEquals(0, contractAnalysisOutput.getStatusCode());
+    assertEquals(0, contractAnalysisOutput.getValidContracts().size());
+
+    /*
+     * User select the title....
+     */
+
+    load_season_pass(cardReader);
+
+    /* Execute Remote Service : Check that SEASON PASS is written in the card */
+    AnalyzeContractsOutput passExpected =
+            localService.executeRemoteService(
+                    "CONTRACT_ANALYSIS",
+                    cardReader.getName(),
+                    calypsoCard,
+                    compatibleContractInput,
+                    AnalyzeContractsOutput.class);
+
+    assertNotNull(passExpected);
+    assertEquals(0, passExpected.getStatusCode());
+    assertEquals(1, passExpected.getValidContracts().size());
+    ContractStructureDto writtenContract = passExpected.getValidContracts().get(0);
+    assertEquals(PriorityCode.SEASON_PASS, writtenContract.getContractTariff());
   }
 
   /**

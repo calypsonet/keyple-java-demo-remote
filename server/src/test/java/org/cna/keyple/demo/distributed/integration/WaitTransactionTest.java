@@ -109,7 +109,7 @@ public class WaitTransactionTest {
                   case CARD_INSERTED:
                     // Randomly load tickets or season pass
                     if (new Random().nextInt() % 2 == 0) {
-                      TransactionTest.reset_load_tickets(cardReader);
+                      TransactionTest.issue_card_then_load_tickets(cardReader);
                     } else {
                       TransactionTest.load_season_pass(cardReader);
                     }

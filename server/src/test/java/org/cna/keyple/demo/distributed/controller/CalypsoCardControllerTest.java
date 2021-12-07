@@ -101,6 +101,8 @@ public class CalypsoCardControllerTest {
         PriorityCode.FORBIDDEN, card.getContractByCalypsoIndex(2).getContractTariff());
     Assertions.assertEquals(PriorityCode.FORBIDDEN, card.getEvent().getContractPriorityAt(1));
     Assertions.assertEquals(PriorityCode.FORBIDDEN, card.getEvent().getContractPriorityAt(2));
+
+    //if card contains more than 2 contracts, check them too
     if (contractCount > 2) {
       Assertions.assertEquals(
           PriorityCode.FORBIDDEN, card.getContractByCalypsoIndex(3).getContractTariff());
@@ -169,6 +171,8 @@ public class CalypsoCardControllerTest {
         PriorityCode.SEASON_PASS, updatedCard.getEvent().getContractPriorityAt(1));
     Assertions.assertEquals(
         PriorityCode.FORBIDDEN, updatedCard.getEvent().getContractPriorityAt(2));
+
+    //if card contains more than 2 contracts, check them too
     if (contractCount > 2) {
       Assertions.assertEquals(
           PriorityCode.FORBIDDEN, updatedCard.getContractByCalypsoIndex(3).getContractTariff());
@@ -225,8 +229,9 @@ public class CalypsoCardControllerTest {
         PriorityCode.FORBIDDEN, updatedCard.getContractByCalypsoIndex(2).getContractTariff());
     Assertions.assertEquals(PriorityCode.MULTI_TRIP_TICKET, event.getContractPriorityAt(1));
     Assertions.assertEquals(PriorityCode.FORBIDDEN, event.getContractPriorityAt(2));
-    if (contractCount > 2) {
 
+    //if card contains more than 2 contracts, check them too
+    if (contractCount > 2) {
       Assertions.assertEquals(
           PriorityCode.FORBIDDEN, updatedCard.getContractByCalypsoIndex(3).getContractTariff());
       Assertions.assertEquals(
