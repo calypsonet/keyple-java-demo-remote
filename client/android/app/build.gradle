@@ -18,8 +18,8 @@ android {
         multiDexEnabled true
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 3
-        versionName "2021.11"
+        versionCode 4
+        versionName "2021.12"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         setProperty("archivesBaseName", "keyple-demo-remote-client_v$versionName")
     }
@@ -158,9 +158,9 @@ dependencies {
     implementation("org.calypsonet.terminal:calypsonet-terminal-card-java-api:1.0.+")
     implementation("org.calypsonet.terminal:calypsonet-terminal-calypso-java-api:1.0.+")
 
-    implementation("org.eclipse.keyple:keyple-service-java-lib:2.0.0")
-    implementation("org.eclipse.keyple:keyple-card-calypso-java-lib:2.0.0")
-    implementation("org.eclipse.keyple:keyple-card-generic-java-lib:2.0.0")
+    implementation("org.eclipse.keyple:keyple-service-java-lib:2.0.1")
+    implementation("org.eclipse.keyple:keyple-card-calypso-java-lib:2.0.1")
+    implementation("org.eclipse.keyple:keyple-card-generic-java-lib:2.0.1")
     implementation("org.eclipse.keyple:keyple-util-java-lib:2.+")
     implementation("org.eclipse.keyple:keyple-common-java-api:2.0.+")
 
