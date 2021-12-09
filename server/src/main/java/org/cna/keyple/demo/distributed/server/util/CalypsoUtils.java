@@ -20,13 +20,14 @@ import org.eclipse.keyple.card.calypso.CalypsoExtensionService;
 import org.eclipse.keyple.core.service.Reader;
 import org.eclipse.keyple.core.service.SmartCardService;
 import org.eclipse.keyple.core.service.SmartCardServiceProvider;
+import org.eclipse.keyple.core.util.Assert;
 
 public final class CalypsoUtils {
 
   /**
-   * Operate the PO selection
+   * Operate the Calypso Card selection
    *
-   * @param cardReader the reader where to operate the PO selection
+   * @param cardReader the reader where to operate the Calypso Card selection
    * @return a CalypsoCard object if the selection succeed
    * @throws IllegalStateException if the selection fails
    */
@@ -76,9 +77,9 @@ public final class CalypsoUtils {
   }
 
   /**
-   * Operate the PO selection with the read of the environment file
+   * Operate the Calypso Card selection with the read of the environment file
    *
-   * @param cardReader the reader where to operate the PO selection
+   * @param cardReader the reader where to operate the Calypso Card selection
    * @return a CalypsoCard object if the selection succeed
    * @throws IllegalStateException if the selection fails
    */
@@ -130,7 +131,15 @@ public final class CalypsoUtils {
     return (CalypsoCard) selectionResult.getActiveSmartCard();
   }
 
+  /**
+   * Determine how much contracts contains the card based on the application subtype. It is used to
+   * differentiate calypso prime from calypso light.
+   *
+   * @param calypsoCard not nullable instance of a calypso card
+   * @return 2 or 4 contracts based on the application subtype
+   */
   public static int getContractCount(CalypsoCard calypsoCard) {
+    Assert.getInstance().notNull(calypsoCard, "calypsoCard");
     return calypsoCard.getApplicationSubtype() == 50 ? 2 : 4;
   }
 }

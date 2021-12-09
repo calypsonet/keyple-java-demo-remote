@@ -34,23 +34,26 @@ import org.slf4j.LoggerFactory;
 public class LocalCardIssuanceMain {
 
   private static final Logger logger = LoggerFactory.getLogger(LocalCardIssuanceMain.class);
-  public static String poReaderFilter = ".*(ASK|ACS).*";
+  public static String calypsoCardReaderFilter = ".*(ASK|ACS).*";
   public static String samReaderFilter = ".*(Cherry TC|SCM Microsystems|Identive|HID|Generic).*";
 
   public static void main(String[] args) {
+    /*
+     * Init the sam reader
+     */
     SamResourceConfiguration samResourceConfiguration =
         new SamResourceConfiguration(samReaderFilter);
     samResourceConfiguration.init();
 
     /*
-     * Init readers
+     * Init calypso card reader
      */
-    Reader poReader = LocalConfigurationUtil.initReader(poReaderFilter);
+    Reader calypsoCardReader = LocalConfigurationUtil.initReader(calypsoCardReaderFilter);
 
     /*
      * Select cards
      */
-    CalypsoCard calypsoPo = CalypsoUtils.selectCardWithEnvironment(poReader);
+    CalypsoCard calypsoCard = CalypsoUtils.selectCardWithEnvironment(calypsoCardReader);
 
     CardResource samResource =
         CardResourceServiceProvider.getService().getCardResource(CalypsoConstants.SAM_PROFILE_NAME);
@@ -60,13 +63,13 @@ public class LocalCardIssuanceMain {
      */
     CalypsoCardController calypsoCardController =
         CalypsoCardController.newBuilder()
-            .withCalypsoCard(calypsoPo)
-            .withCardReader(poReader)
+            .withCalypsoCard(calypsoCard)
+            .withCardReader(calypsoCardReader)
             .withSamResource(samResource)
             .build();
     calypsoCardController.initCard();
     logger.info(calypsoCardController.readCard().toString());
-    logger.info("Is card init : {}", verifyEnvironmentFile(poReader));
+    logger.info("Is card init : {}", verifyEnvironmentFile(calypsoCardReader));
     CardResourceServiceProvider.getService().releaseCardResource(samResource);
   }
 

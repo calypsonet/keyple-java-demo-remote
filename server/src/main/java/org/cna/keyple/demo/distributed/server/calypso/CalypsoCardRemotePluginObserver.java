@@ -103,7 +103,7 @@ public class CalypsoCardRemotePluginObserver implements PluginObserverSpi {
   private AnalyzeContractsOutput analyzeContracts(Reader reader) {
     RemoteReaderServer readerExtension = reader.getExtension(RemoteReaderServer.class);
     /*
-     * Retrieves the compatibleContractInput and initial calypsoPO specified by the client when executing the remote service.
+     * Retrieves the compatibleContractInput and initial  specified by the client when executing the remote service.
      */
     CalypsoCard calypsoCard = (CalypsoCard) readerExtension.getInitialCardContent();
     AnalyzeContractsInput input = readerExtension.getInputData(AnalyzeContractsInput.class);
@@ -168,7 +168,7 @@ public class CalypsoCardRemotePluginObserver implements PluginObserverSpi {
     RemoteReaderServer readerExtension = reader.getExtension(RemoteReaderServer.class);
 
     /*
-     * Retrieves the userInputData and initial calypsoPO specified by the client when executing the remote service.
+     * Retrieves the userInputData and initial calypso Card specified by the client when executing the remote service.
      */
     WriteContractInput writeContractInput = readerExtension.getInputData(WriteContractInput.class);
     CalypsoCard calypsoCard = (CalypsoCard) readerExtension.getInitialCardContent();
@@ -271,7 +271,7 @@ public class CalypsoCardRemotePluginObserver implements PluginObserverSpi {
 
     try {
 
-      // Create a Calypso PO controller
+      // Create a Calypso Card controller
       CalypsoCardController calypsoCardController =
           CalypsoCardController.newBuilder()
               .withCalypsoCard(calypsoCard)

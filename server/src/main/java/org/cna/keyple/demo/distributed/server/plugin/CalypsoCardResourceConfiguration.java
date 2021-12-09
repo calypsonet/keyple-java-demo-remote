@@ -32,7 +32,7 @@ import org.slf4j.LoggerFactory;
  * <ul>
  *   <li>CONTRACT_ANALYSIS : returns the list of compatible title with the calypsoCard inserted
  *   <li>WRITE_CONTRACT : write a new contract in the calypsoCard inserted
- *   <li>CARD_ISSUANCE : Clean/Initialize Application of the calypsoPO inserted
+ *   <li>CARD_ISSUANCE : Clean/Initialize Application of the calypso card inserted
  * </ul>
  */
 @ApplicationScoped

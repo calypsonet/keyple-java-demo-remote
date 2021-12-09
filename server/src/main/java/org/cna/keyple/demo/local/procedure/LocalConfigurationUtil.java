@@ -20,16 +20,16 @@ import org.eclipse.keyple.plugin.pcsc.PcscSupportedContactlessProtocol;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/** PCSC Reader Utilities to read properties file and differentiate SAM and PO reader */
+/** PCSC Reader Utilities to read properties file and differentiate SAM and Calypso Card reader */
 public final class LocalConfigurationUtil {
 
   private static final Logger logger = LoggerFactory.getLogger(LocalConfigurationUtil.class);
 
-  public static Reader initReader(String poReaderFilter) {
+  public static Reader initReader(String cardReaderFilter) {
 
-    Reader reader = ConfigurationUtil.getReaderByPattern(poReaderFilter);
+    Reader reader = ConfigurationUtil.getReaderByPattern(cardReaderFilter);
 
-    // Get and configure the PO reader
+    // Get and configure the Calypso Card reader
     reader
         .getExtension(PcscReader.class)
         .setContactless(true)
@@ -40,7 +40,7 @@ public final class LocalConfigurationUtil {
             PcscSupportedContactlessProtocol.ISO_14443_4.name(),
             ContactlessCardCommonProtocol.ISO_14443_4.name());
 
-    logger.info("PO Reader configured : {}", reader.getName());
+    logger.info("Calypso Card Reader configured : {}", reader.getName());
     return reader;
   }
 }

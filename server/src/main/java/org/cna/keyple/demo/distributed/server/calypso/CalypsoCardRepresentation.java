@@ -36,7 +36,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Holds a PO Content and provides method to prepare an update of the card. Use the {@link
+ * Holds a Calypso Card Content and provides method to prepare an update of the card. Use the {@link
  * #parse(CalypsoCard)} method to build this object.
  */
 public class CalypsoCardRepresentation {
@@ -57,7 +57,7 @@ public class CalypsoCardRepresentation {
   }
 
   /**
-   * Parse a Calypso PO SmartCard object to a card content object
+   * Parse a Calypso Card object to a card content object
    *
    * @param calypsoCard not null calypsoCard object
    * @return cardSession not null object

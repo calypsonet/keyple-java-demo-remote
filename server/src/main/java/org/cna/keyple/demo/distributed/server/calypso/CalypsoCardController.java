@@ -42,7 +42,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Perform operations with a calypso PO inserted in a Reader. It requires a {@link CalypsoSam} to
+ * Perform operations with a Calypso Card inserted in a Reader. It requires a {@link CalypsoSam} to
  * perform secured operations
  */
 public class CalypsoCardController {
@@ -62,7 +62,7 @@ public class CalypsoCardController {
   /** static Builder class */
   public static final class Builder {
     private CalypsoCard calypsoCard;
-    private Reader poReader;
+    private Reader calypsoCardReader;
     private CardResource samResource;
     private String pluginType;
 
@@ -79,14 +79,14 @@ public class CalypsoCardController {
     }
 
     /**
-     * Specify the reader where the calypso PO is inserted
+     * Specify the reader where the calypso card is inserted
      *
-     * @param poReader non null instance of a reader
+     * @param calypsoCardReader non null instance of a reader
      * @return next step of configuration
      */
-    public Builder withCardReader(Reader poReader) {
-      Assert.getInstance().notNull(poReader, "poReader");
-      this.poReader = poReader;
+    public Builder withCardReader(Reader calypsoCardReader) {
+      Assert.getInstance().notNull(calypsoCardReader, "calypsoCardReader");
+      this.calypsoCardReader = calypsoCardReader;
       return this;
     }
     /**
@@ -114,7 +114,7 @@ public class CalypsoCardController {
     }
 
     public CalypsoCardController build() {
-      return new CalypsoCardController(calypsoCard, poReader, samResource, pluginType);
+      return new CalypsoCardController(calypsoCard, calypsoCardReader, samResource, pluginType);
     }
   }
 
@@ -133,7 +133,7 @@ public class CalypsoCardController {
   }
 
   /**
-   * (public) Read all files on the calypso PO inserted in the Reader
+   * (public) Read all files on the Calypso Card inserted in the Reader
    *
    * @return card content
    */

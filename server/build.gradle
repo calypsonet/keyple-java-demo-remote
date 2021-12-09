@@ -12,69 +12,65 @@ plugins {
 repositories {
     mavenLocal()
     mavenCentral()
-    maven{
+    maven {
         url "https://repo.eclipse.org/service/local/repositories/maven_central/content"
     }
-     maven{
+    maven {
         url "https://oss.sonatype.org/content/repositories/snapshots"
-     }
-        maven{
-        url  "https://s01.oss.sonatype.org/content/repositories/snapshots"
-        }
+    }
+    maven {
+        url "https://s01.oss.sonatype.org/content/repositories/snapshots"
+    }
 }
+
+
+group 'org.cna.keyple.demo.remote.server'
+project.version '2021.12'
+
 ext {
-    keyple_v = project.hasProperty("keyple_version") ? keyple_version : "+"
     artifactName = project.name + "-v"
 }
 
-group 'org.cna.keyple.demo.remote.server'
-project.version '2021.09'
-
-quarkus{
+quarkus {
     finalName artifactName
 }
 
 
-
 dependencies {
 
-    /* Keyple dependencies */
-    project.logger.lifecycle('Using dependency version: ' + keyple_v)
-    implementation group: 'org.eclipse.keyple', name: 'keyple-card-calypso-java-lib', version: keyple_v,  changing: true
-    implementation group: 'org.eclipse.keyple', name: 'keyple-distributed-network-java-lib', version: keyple_v,  changing: true
-    implementation group: 'org.eclipse.keyple', name: 'keyple-distributed-remote-java-lib', version: keyple_v,  changing: true
-    implementation group: 'org.eclipse.keyple', name: 'keyple-distributed-local-java-lib', version: keyple_v,  changing: true
-    implementation group: 'org.eclipse.keyple', name: 'keyple-common-java-api', version:  keyple_v,  changing: true
-    //implementation group: 'org.eclipse.keyple', name: 'keyple-util-java-lib', version:  keyple_v,  changing: true
-    implementation('org.eclipse.keyple:keyple-util-java-lib') {
-        version {
-            strictly '2.0.0-SNAPSHOT'
-        }
-    }
+    /* Keyple dependencies
+     *  https://keyple.org/components-java/overview/dependency-check/
+     */
 
-    //implementation group: 'org.eclipse.keyple', name: 'keyple-service-java-lib',  version: '2.0.0-SNAPSHOT',  changing: true
-    implementation('org.eclipse.keyple:keyple-service-java-lib') {
-        version {
-            strictly '2.0.0-SNAPSHOT'
-        }
-    }
+    /* Core APIs */
+    implementation group: 'org.eclipse.keyple', name: 'keyple-common-java-api', version: "2.0.+", changing: true
 
-    implementation group: 'org.eclipse.keyple', name: 'keyple-service-resource-java-lib',  version: keyple_v,  changing: true
+    /* Core libraries */
+    implementation group: 'org.eclipse.keyple', name: 'keyple-util-java-lib', version: "2.0.0", changing: true
+    implementation group: 'org.eclipse.keyple', name: 'keyple-service-java-lib', version: "2.0.1", changing: true
+    implementation group: 'org.eclipse.keyple', name: 'keyple-service-resource-java-lib', version: "2.0.1", changing: true
+
+    /* Card extensions libraries */
+    implementation group: 'org.eclipse.keyple', name: 'keyple-card-calypso-java-lib', version: "2.0.1", changing: true
+
+    /* Distributed systems libraries */
+    implementation group: 'org.eclipse.keyple', name: 'keyple-distributed-network-java-lib', version: "2.0.0", changing: true
+    implementation group: 'org.eclipse.keyple', name: 'keyple-distributed-remote-java-lib', version: "2.0.0", changing: true
+    implementation group: 'org.eclipse.keyple', name: 'keyple-distributed-local-java-lib', version: "2.0.0", changing: true
 
     implementation group: 'org.calypsonet.terminal', name: 'calypsonet-terminal-reader-java-api', version: "1.0.+"
     implementation group: 'org.calypsonet.terminal', name: 'calypsonet-terminal-calypso-java-api', version: "1.0.+"
 
 
-    /* Keyple plugin dependencies */
-    implementation group: 'org.eclipse.keyple', name: 'keyple-plugin-stub-java-lib', version: keyple_v
-    implementation group: 'org.eclipse.keyple', name: 'keyple-plugin-pcsc-java-lib', version: keyple_v
+    /* Standard reader plugins libraries */
+    implementation group: 'org.eclipse.keyple', name: 'keyple-plugin-stub-java-lib', version: "2.0.0"
+    implementation group: 'org.eclipse.keyple', name: 'keyple-plugin-pcsc-java-lib', version: "2.0.0"
 
 
     /* Common lib */
     implementation project(":common")
 
     /* Quarkus */
-
     implementation 'io.quarkus:quarkus-resteasy-jsonb'
     implementation 'io.quarkus:quarkus-resteasy'
     implementation 'io.quarkus:quarkus-rest-client'
@@ -116,20 +112,20 @@ spotless {
 }
 
 
-task('runDevServer',  group:'keyple'){
+task('runDevServer', group: 'keyple') {
     dependsOn 'quarkusDev'
 }
 
-task('runPackagedServer',  group:'keyple',type:Exec){
+task('runPackagedServer', group: 'keyple', type: Exec) {
     workingDir 'build'
-    commandLine 'java', '-jar', artifactName + version +".jar"
+    commandLine 'java', '-jar', artifactName + version + ".jar"
 }
 
-task('buildPackagedServer', group:'keyple'){
+task('buildPackagedServer', group: 'keyple') {
     dependsOn 'copyDashboard', 'quarkusBuild'
 }
 
-task buildDashboard(type:Exec){
+task buildDashboard(type: Exec) {
     workingDir 'dashboard-app'
     String npm = 'npm'
     if (Os.isFamily(Os.FAMILY_WINDOWS)) {
@@ -138,7 +134,7 @@ task buildDashboard(type:Exec){
     commandLine npm, 'run', 'build'
 }
 
-task copyDashboard(type:Copy){
+task copyDashboard(type: Copy) {
     from 'dashboard-app/build'
     into 'src/main/resources/META-INF/resources'
     dependsOn 'buildDashboard'

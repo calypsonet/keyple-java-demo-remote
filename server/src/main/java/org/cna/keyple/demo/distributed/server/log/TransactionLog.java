@@ -21,7 +21,7 @@ import java.util.UUID;
 public class TransactionLog {
 
   String id; // id of the transaction
-  String poSn; // PO Serial Number
+  String poSn; // Calypso Card Serial Number
   String plugin; // plugin name
   String startedAt; // when the transaction started
   String type; // type of transaction
