@@ -194,28 +194,28 @@ public class TransactionTest {
 
     // Retrieves the local service.
     LocalServiceClient localService =
-            SmartCardServiceProvider.getService()
-                    .getDistributedLocalService(LOCAL_SERVICE_NAME)
-                    .getExtension(LocalServiceClient.class);
+        SmartCardServiceProvider.getService()
+            .getDistributedLocalService(LOCAL_SERVICE_NAME)
+            .getExtension(LocalServiceClient.class);
 
     /* Execute Remote Service : Reset card */
     CardIssuanceOutput cardIssuanceOutput =
-            localService.executeRemoteService(
-                    "CARD_ISSUANCE", cardReader.getName(), calypsoCard, null, CardIssuanceOutput.class);
+        localService.executeRemoteService(
+            "CARD_ISSUANCE", cardReader.getName(), calypsoCard, null, CardIssuanceOutput.class);
 
     assertEquals(0, cardIssuanceOutput.getStatusCode());
 
     AnalyzeContractsInput compatibleContractInput =
-            new AnalyzeContractsInput().setPluginType("Android NFC");
+        new AnalyzeContractsInput().setPluginType("Android NFC");
 
     /* Execute Remote Service : Get Valid Contracts */
     AnalyzeContractsOutput contractAnalysisOutput =
-            localService.executeRemoteService(
-                    "CONTRACT_ANALYSIS",
-                    cardReader.getName(),
-                    calypsoCard,
-                    compatibleContractInput,
-                    AnalyzeContractsOutput.class);
+        localService.executeRemoteService(
+            "CONTRACT_ANALYSIS",
+            cardReader.getName(),
+            calypsoCard,
+            compatibleContractInput,
+            AnalyzeContractsOutput.class);
 
     assertNotNull(contractAnalysisOutput);
     assertEquals(0, contractAnalysisOutput.getStatusCode());
@@ -229,12 +229,12 @@ public class TransactionTest {
 
     /* Execute Remote Service : Check that SEASON PASS is written in the card */
     AnalyzeContractsOutput passExpected =
-            localService.executeRemoteService(
-                    "CONTRACT_ANALYSIS",
-                    cardReader.getName(),
-                    calypsoCard,
-                    compatibleContractInput,
-                    AnalyzeContractsOutput.class);
+        localService.executeRemoteService(
+            "CONTRACT_ANALYSIS",
+            cardReader.getName(),
+            calypsoCard,
+            compatibleContractInput,
+            AnalyzeContractsOutput.class);
 
     assertNotNull(passExpected);
     assertEquals(0, passExpected.getStatusCode());

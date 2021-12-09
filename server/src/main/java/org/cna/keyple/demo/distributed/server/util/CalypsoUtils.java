@@ -110,7 +110,7 @@ public final class CalypsoUtils {
             .acceptInvalidatedCard()
             .prepareReadRecordFile(SFI_ENVIRONMENT_AND_HOLDER, RECORD_NUMBER_1));
 
-     cardSelectionManager.prepareSelection(
+    cardSelectionManager.prepareSelection(
         cardExtension
             .createCardSelection()
             .filterByDfName(AID_NORMALIZED_IDF)
@@ -132,7 +132,9 @@ public final class CalypsoUtils {
   }
 
   /**
-   * Determine how much contracts contains the card based on the application subtype. It is used to differentiate calypso prime from calypso light.
+   * Determine how much contracts contains the card based on the application subtype. It is used to
+   * differentiate calypso prime from calypso light.
+   *
    * @param calypsoCard not nullable instance of a calypso card
    * @return 2 or 4 contracts based on the application subtype
    */

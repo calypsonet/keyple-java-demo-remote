@@ -11,9 +11,6 @@
  ************************************************************************************** */
 package org.cna.keyple.demo.distributed.server.util;
 
-import java.util.Arrays;
-import java.util.List;
-
 /**
  * Helper class to provide specific elements to handle Calypso cards.
  *
