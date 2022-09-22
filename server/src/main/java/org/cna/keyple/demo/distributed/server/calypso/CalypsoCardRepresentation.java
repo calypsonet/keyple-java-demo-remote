@@ -13,24 +13,23 @@ package org.cna.keyple.demo.distributed.server.calypso;
 
 import static org.cna.keyple.demo.distributed.server.util.CalypsoConstants.*;
 
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
+import org.calypsonet.keyple.demo.common.model.ContractStructure;
+import org.calypsonet.keyple.demo.common.model.EnvironmentHolderStructure;
+import org.calypsonet.keyple.demo.common.model.EventStructure;
+import org.calypsonet.keyple.demo.common.model.type.DateCompact;
+import org.calypsonet.keyple.demo.common.model.type.PriorityCode;
+import org.calypsonet.keyple.demo.common.model.type.VersionNumber;
+import org.calypsonet.keyple.demo.common.parser.ContractStructureParser;
+import org.calypsonet.keyple.demo.common.parser.EnvironmentHolderStructureParser;
+import org.calypsonet.keyple.demo.common.parser.EventStructureParser;
 import org.calypsonet.terminal.calypso.card.CalypsoCard;
 import org.calypsonet.terminal.calypso.card.FileData;
 import org.cna.keyple.demo.distributed.server.util.CalypsoConstants;
 import org.cna.keyple.demo.distributed.server.util.CalypsoUtils;
-import org.cna.keyple.demo.sale.data.model.ContractStructureDto;
-import org.cna.keyple.demo.sale.data.model.CounterStructureDto;
-import org.cna.keyple.demo.sale.data.model.EnvironmentHolderStructureDto;
-import org.cna.keyple.demo.sale.data.model.EventStructureDto;
-import org.cna.keyple.demo.sale.data.model.parser.ContractStructureParser;
-import org.cna.keyple.demo.sale.data.model.parser.EnvironmentHolderStructureParser;
-import org.cna.keyple.demo.sale.data.model.parser.EventStructureParser;
-import org.cna.keyple.demo.sale.data.model.type.DateCompact;
-import org.cna.keyple.demo.sale.data.model.type.PriorityCode;
-import org.cna.keyple.demo.sale.data.model.type.VersionNumber;
 import org.eclipse.keyple.core.util.Assert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,11 +42,11 @@ public class CalypsoCardRepresentation {
 
   private static final Logger logger = LoggerFactory.getLogger(CalypsoCardRepresentation.class);
 
-  private EventStructureDto event;
-  private final List<ContractStructureDto> contracts;
-  private EnvironmentHolderStructureDto environment;
+  private EventStructure event;
+  private final List<ContractStructure> contracts;
+  private EnvironmentHolderStructure environment;
 
-  private final List<ContractStructureDto> updatedContracts; // Updated contracts in this object
+  private final List<ContractStructure> updatedContracts; // Updated contracts in this object
   private Boolean isEventUpdated;
 
   private CalypsoCardRepresentation() {
@@ -68,30 +67,32 @@ public class CalypsoCardRepresentation {
 
     // parse event
     card.event =
-        EventStructureParser.parse(calypsoCard.getFileBySfi(SFI_EVENT_LOG).getData().getContent());
+        new EventStructureParser()
+            .parse(calypsoCard.getFileBySfi(SFI_EVENT_LOG).getData().getContent());
 
     // parse contracts
     FileData fileData = calypsoCard.getFileBySfi(SFI_CONTRACTS).getData();
     if (fileData != null) {
       for (int i = 1; i < contractCount + 1; i++) {
-        ContractStructureDto contract = ContractStructureParser.parse(fileData.getContent(i));
+        ContractStructure contract = new ContractStructureParser().parse(fileData.getContent(i));
         card.contracts.add(contract);
 
         // update counter tied to contract
         int counterValue =
             calypsoCard.getFileBySfi(SFI_COUNTERS).getData().getContentAsCounterValue(i);
 
-        contract.setCounter(CounterStructureDto.newBuilder().setCounterValue(counterValue).build());
+        contract.setCounterValue(counterValue);
       }
     }
 
     // parse environment
     card.environment =
-        EnvironmentHolderStructureParser.parse(
-            calypsoCard
-                .getFileBySfi(CalypsoConstants.SFI_ENVIRONMENT_AND_HOLDER)
-                .getData()
-                .getContent());
+        new EnvironmentHolderStructureParser()
+            .parse(
+                calypsoCard
+                    .getFileBySfi(CalypsoConstants.SFI_ENVIRONMENT_AND_HOLDER)
+                    .getData()
+                    .getContent());
 
     return card;
   }
@@ -103,8 +104,7 @@ public class CalypsoCardRepresentation {
    * @param ticketToLoad number of ticket to load (optional)
    */
   public void insertNewContract(PriorityCode contractTariff, Integer ticketToLoad) {
-    if (contractTariff != PriorityCode.SEASON_PASS
-        && contractTariff != PriorityCode.MULTI_TRIP_TICKET) {
+    if (contractTariff != PriorityCode.SEASON_PASS && contractTariff != PriorityCode.MULTI_TRIP) {
       throw new IllegalArgumentException("Only Season Pass or Multi Trip ticket can be loaded");
     }
 
@@ -112,20 +112,19 @@ public class CalypsoCardRepresentation {
     int existingContractIndex = isReload(contractTariff);
     int newContractIndex;
 
-    EventStructureDto currentEvent = getEvent();
-    ContractStructureDto newContract = null;
+    EventStructure currentEvent = getEvent();
+    ContractStructure newContract = null;
 
     // if is a renew
     if (existingContractIndex > 0) {
       newContractIndex = existingContractIndex;
-      ContractStructureDto currentContract = getContractByCalypsoIndex(existingContractIndex);
+      ContractStructure currentContract = getContractByCalypsoIndex(existingContractIndex);
 
       // build new contract
-      if (PriorityCode.MULTI_TRIP_TICKET == contractTariff) {
+      if (PriorityCode.MULTI_TRIP == contractTariff) {
         newContract =
             buildMultiTripContract(
-                environment.getEnvEndDate(),
-                currentContract.getCounter().getCounterValue() + ticketToLoad);
+                environment.getEnvEndDate(), currentContract.getCounterValue() + ticketToLoad);
       } else if (PriorityCode.SEASON_PASS == contractTariff) {
         newContract = buildSeasonContract(environment.getEnvEndDate());
       }
@@ -141,14 +140,27 @@ public class CalypsoCardRepresentation {
       newContractIndex = newPosition;
 
       // build new contract
-      if (PriorityCode.MULTI_TRIP_TICKET == contractTariff) {
+      if (PriorityCode.MULTI_TRIP == contractTariff) {
         newContract = buildMultiTripContract(environment.getEnvEndDate(), ticketToLoad);
       } else if (PriorityCode.SEASON_PASS == contractTariff) {
         newContract = buildSeasonContract(environment.getEnvEndDate());
       }
     }
 
-    currentEvent.setContractPriorityAt(newContractIndex, newContract.getContractTariff());
+    switch (newContractIndex) {
+      case 1:
+        currentEvent.setContractPriority1(newContract.getContractTariff());
+        break;
+      case 2:
+        currentEvent.setContractPriority2(newContract.getContractTariff());
+        break;
+      case 3:
+        currentEvent.setContractPriority3(newContract.getContractTariff());
+        break;
+      case 4:
+        currentEvent.setContractPriority4(newContract.getContractTariff());
+        break;
+    }
     updateContract(newContractIndex, newContract);
     updateEvent(currentEvent);
   }
@@ -158,12 +170,12 @@ public class CalypsoCardRepresentation {
    *
    * @return list of valid contracts, null if error
    */
-  public List<ContractStructureDto> listValidContracts() {
+  public List<ContractStructure> listValidContracts() {
     // output
-    List<ContractStructureDto> validContracts = new ArrayList<>();
+    List<ContractStructure> validContracts = new ArrayList<>();
 
     // read environment
-    EnvironmentHolderStructureDto environment = getEnvironment();
+    EnvironmentHolderStructure environment = getEnvironment();
 
     if (environment.getEnvVersionNumber() != VersionNumber.CURRENT_VERSION) {
       // reject card
@@ -171,18 +183,16 @@ public class CalypsoCardRepresentation {
       return null;
     }
 
-    if (environment.getEnvEndDate().getDaysSinceReference()
-        < new DateCompact(Instant.now()).getDaysSinceReference()) {
+    if (environment.getEnvEndDate().getValue() < new DateCompact(new Date()).getValue()) {
       // reject card
       logger.warn("EnvEndDate of card is invalid, reject card");
       return null;
     }
 
-    EventStructureDto lastEvent = getEvent();
+    EventStructure lastEvent = getEvent();
 
     if (lastEvent.getEventVersionNumber().getValue() != VersionNumber.CURRENT_VERSION.getValue()
-        && lastEvent.getEventVersionNumber().getValue()
-            != VersionNumber.FORBIDDEN_UNDEFINED.getValue()) {
+        && lastEvent.getEventVersionNumber().getValue() != VersionNumber.UNDEFINED.getValue()) {
       // reject card
       logger.warn("EventVersionNumber of card is invalid, reject card");
       return null;
@@ -190,18 +200,18 @@ public class CalypsoCardRepresentation {
 
     int calypsoIndex = 1;
     /* Iterate through the contracts in the card session */
-    for (ContractStructureDto contract : getContracts()) {
+    for (ContractStructure contract : getContracts()) {
       logger.info(
           "Contract at index {} : {} {}",
           calypsoIndex,
           contract.getContractTariff(),
-          contract.getContactSaleDate());
+          contract.getContractSaleDate().getValue());
 
-      if (contract.getContractVersionNumber() == VersionNumber.FORBIDDEN_UNDEFINED) {
+      if (contract.getContractVersionNumber() == VersionNumber.UNDEFINED) {
         //  If ContractVersionNumber is 0 ensure that the associated ContractPriority field value is
         // 0 and
         //  move on to the next contract.
-        if (contract.getContractTariff().getCode() != PriorityCode.FORBIDDEN.getCode()) {
+        if (contract.getContractTariff() != PriorityCode.FORBIDDEN) {
           logger.warn("Contract tariff is not valid for this contract");
           // todo what to do here?
         }
@@ -211,8 +221,8 @@ public class CalypsoCardRepresentation {
           // PSO Verify Signature command of the SAM.
         }
         // If ContractValidityEndDate points to a date in the past
-        if (contract.getContractValidityEndDate().getDaysSinceReference()
-            < new DateCompact(Instant.now()).getDaysSinceReference()) {
+        if (contract.getContractValidityEndDate().getValue()
+            < new DateCompact(new Date()).getValue()) {
           //  Update the associated ContractPriorty field present
           //  in the persistent object to 31 and set the change flag to true.
           contract.setContractTariff(PriorityCode.EXPIRED);
@@ -228,23 +238,23 @@ public class CalypsoCardRepresentation {
     return validContracts;
   }
 
-  public EventStructureDto getEvent() {
+  public EventStructure getEvent() {
     return event;
   }
 
-  public List<ContractStructureDto> getContracts() {
+  public List<ContractStructure> getContracts() {
     return contracts;
   }
 
-  public EnvironmentHolderStructureDto getEnvironment() {
+  public EnvironmentHolderStructure getEnvironment() {
     return environment;
   }
 
-  public ContractStructureDto getContractByCalypsoIndex(int i) {
+  public ContractStructure getContractByCalypsoIndex(int i) {
     return contracts.get(i - 1);
   }
 
-  public List<ContractStructureDto> getUpdatedContracts() {
+  public List<ContractStructure> getUpdatedContracts() {
     return updatedContracts;
   }
 
@@ -273,7 +283,7 @@ public class CalypsoCardRepresentation {
    *
    * @param event new event
    */
-  private void updateEvent(EventStructureDto event) {
+  private void updateEvent(EventStructure event) {
     this.event = event;
     this.isEventUpdated = true;
   }
@@ -284,7 +294,7 @@ public class CalypsoCardRepresentation {
    * @param contract not nullable contract object
    * @param calypsoIndex calypso index where to update the contract
    */
-  private void updateContract(int calypsoIndex, ContractStructureDto contract) {
+  private void updateContract(int calypsoIndex, ContractStructure contract) {
     Assert.getInstance().notNull(contract, "contract should not be null");
     contracts.set(calypsoIndex - 1, contract);
     updatedContracts.add(contract);
@@ -336,23 +346,25 @@ public class CalypsoCardRepresentation {
    * @param counterValue
    * @return a new contract
    */
-  private ContractStructureDto buildMultiTripContract(
-      DateCompact envEndDate, Integer counterValue) {
-    DateCompact contractSaleDate = new DateCompact(Instant.now());
+  private ContractStructure buildMultiTripContract(DateCompact envEndDate, Integer counterValue) {
+    DateCompact contractSaleDate = new DateCompact(new Date());
     DateCompact contractValidityEndDate;
 
     // calculate ContractValidityEndDate
     contractValidityEndDate = envEndDate;
 
-    ContractStructureDto contract =
-        ContractStructureDto.newBuilder()
-            .setContractVersionNumber(VersionNumber.CURRENT_VERSION)
-            .setContractTariff(PriorityCode.MULTI_TRIP_TICKET)
-            .setContractSaleDate(contractSaleDate)
-            .setContractValidityEndDate(contractValidityEndDate)
-            .build();
+    ContractStructure contract =
+        new ContractStructure(
+            VersionNumber.CURRENT_VERSION,
+            PriorityCode.MULTI_TRIP,
+            contractSaleDate,
+            contractValidityEndDate,
+            null,
+            null,
+            null,
+            null);
 
-    contract.setCounter(CounterStructureDto.newBuilder().setCounterValue(counterValue).build());
+    contract.setCounterValue(counterValue);
 
     return contract;
   }
@@ -364,18 +376,20 @@ public class CalypsoCardRepresentation {
    * @param envEndDate
    * @return a new contract
    */
-  private ContractStructureDto buildSeasonContract(DateCompact envEndDate) {
-    DateCompact contractSaleDate = new DateCompact(Instant.now());
+  private ContractStructure buildSeasonContract(DateCompact envEndDate) {
+    DateCompact contractSaleDate = new DateCompact(new Date());
     DateCompact contractValidityEndDate;
 
-    contractValidityEndDate =
-        new DateCompact((short) (contractSaleDate.getDaysSinceReference() + 30));
+    contractValidityEndDate = new DateCompact((short) (contractSaleDate.getValue() + 30));
 
-    return ContractStructureDto.newBuilder()
-        .setContractVersionNumber(VersionNumber.CURRENT_VERSION)
-        .setContractTariff(PriorityCode.SEASON_PASS)
-        .setContractSaleDate(contractSaleDate)
-        .setContractValidityEndDate(contractValidityEndDate)
-        .build();
+    return new ContractStructure(
+        VersionNumber.CURRENT_VERSION,
+        PriorityCode.SEASON_PASS,
+        contractSaleDate,
+        contractValidityEndDate,
+        null,
+        null,
+        null,
+        null);
   }
 }

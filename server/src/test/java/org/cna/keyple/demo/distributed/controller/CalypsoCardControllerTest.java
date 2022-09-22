@@ -12,7 +12,12 @@
 package org.cna.keyple.demo.distributed.controller;
 
 import io.quarkus.test.junit.QuarkusTest;
-import java.time.Instant;
+import java.util.Date;
+import org.calypsonet.keyple.demo.common.model.ContractStructure;
+import org.calypsonet.keyple.demo.common.model.EventStructure;
+import org.calypsonet.keyple.demo.common.model.type.DateCompact;
+import org.calypsonet.keyple.demo.common.model.type.PriorityCode;
+import org.calypsonet.keyple.demo.common.model.type.VersionNumber;
 import org.calypsonet.terminal.calypso.card.CalypsoCard;
 import org.cna.keyple.demo.distributed.server.calypso.CalypsoCardController;
 import org.cna.keyple.demo.distributed.server.calypso.CalypsoCardRepresentation;
@@ -20,11 +25,6 @@ import org.cna.keyple.demo.distributed.server.plugin.SamResourceConfiguration;
 import org.cna.keyple.demo.distributed.server.util.CalypsoConstants;
 import org.cna.keyple.demo.distributed.server.util.CalypsoUtils;
 import org.cna.keyple.demo.local.procedure.LocalConfigurationUtil;
-import org.cna.keyple.demo.sale.data.model.ContractStructureDto;
-import org.cna.keyple.demo.sale.data.model.EventStructureDto;
-import org.cna.keyple.demo.sale.data.model.type.DateCompact;
-import org.cna.keyple.demo.sale.data.model.type.PriorityCode;
-import org.cna.keyple.demo.sale.data.model.type.VersionNumber;
 import org.eclipse.keyple.core.service.Reader;
 import org.eclipse.keyple.core.service.resource.CardResource;
 import org.eclipse.keyple.core.service.resource.CardResourceServiceProvider;
@@ -99,8 +99,8 @@ public class CalypsoCardControllerTest {
         PriorityCode.FORBIDDEN, card.getContractByCalypsoIndex(1).getContractTariff());
     Assertions.assertEquals(
         PriorityCode.FORBIDDEN, card.getContractByCalypsoIndex(2).getContractTariff());
-    Assertions.assertEquals(PriorityCode.FORBIDDEN, card.getEvent().getContractPriorityAt(1));
-    Assertions.assertEquals(PriorityCode.FORBIDDEN, card.getEvent().getContractPriorityAt(2));
+    Assertions.assertEquals(PriorityCode.FORBIDDEN, card.getEvent().getContractPriority1());
+    Assertions.assertEquals(PriorityCode.FORBIDDEN, card.getEvent().getContractPriority2());
 
     // if card contains more than 2 contracts, check them too
     if (contractCount > 2) {
@@ -108,8 +108,8 @@ public class CalypsoCardControllerTest {
           PriorityCode.FORBIDDEN, card.getContractByCalypsoIndex(3).getContractTariff());
       Assertions.assertEquals(
           PriorityCode.FORBIDDEN, card.getContractByCalypsoIndex(4).getContractTariff());
-      Assertions.assertEquals(PriorityCode.FORBIDDEN, card.getEvent().getContractPriorityAt(3));
-      Assertions.assertEquals(PriorityCode.FORBIDDEN, card.getEvent().getContractPriorityAt(4));
+      Assertions.assertEquals(PriorityCode.FORBIDDEN, card.getEvent().getContractPriority3());
+      Assertions.assertEquals(PriorityCode.FORBIDDEN, card.getEvent().getContractPriority4());
     }
   }
 
@@ -125,20 +125,19 @@ public class CalypsoCardControllerTest {
 
     // check
     CalypsoCardRepresentation updatedCard = calypsoCardController.readCard();
-    ContractStructureDto updatedContract = updatedCard.getContractByCalypsoIndex(1);
+    ContractStructure updatedContract = updatedCard.getContractByCalypsoIndex(1);
     logger.trace("updatedCard : {}", updatedCard);
     Assertions.assertEquals(1, updatedCard.listValidContracts().size());
     Assertions.assertEquals(PriorityCode.SEASON_PASS, updatedContract.getContractTariff());
-    Assertions.assertEquals(0, updatedContract.getCounter().getCounterValue());
+    Assertions.assertEquals(0, updatedContract.getCounterValue());
     Assertions.assertEquals(
         VersionNumber.CURRENT_VERSION, updatedContract.getContractVersionNumber());
-    DateCompact today = new DateCompact(Instant.now());
-    Assertions.assertEquals(today, updatedContract.getContactSaleDate());
+    DateCompact today = new DateCompact(new Date());
+    Assertions.assertEquals(today, updatedContract.getContractSaleDate());
     Assertions.assertEquals(
-        today.getDaysSinceReference() + 30,
-        updatedContract.getContractValidityEndDate().getDaysSinceReference());
+        today.getValue() + 30, updatedContract.getContractValidityEndDate().getValue());
     Assertions.assertEquals(
-        PriorityCode.SEASON_PASS, updatedCard.getEvent().getContractPriorityAt(1));
+        PriorityCode.SEASON_PASS, updatedCard.getEvent().getContractPriority1());
   }
 
   @Test
@@ -153,24 +152,22 @@ public class CalypsoCardControllerTest {
 
     // check
     CalypsoCardRepresentation updatedCard = calypsoCardController.readCard();
-    ContractStructureDto updatedContract = updatedCard.getContractByCalypsoIndex(1);
-    DateCompact today = new DateCompact(Instant.now());
+    ContractStructure updatedContract = updatedCard.getContractByCalypsoIndex(1);
+    DateCompact today = new DateCompact(new Date());
 
     Assertions.assertEquals(1, updatedCard.listValidContracts().size());
     Assertions.assertEquals(PriorityCode.SEASON_PASS, updatedContract.getContractTariff());
-    Assertions.assertEquals(0, updatedContract.getCounter().getCounterValue());
+    Assertions.assertEquals(0, updatedContract.getCounterValue());
     Assertions.assertEquals(
         VersionNumber.CURRENT_VERSION, updatedContract.getContractVersionNumber());
-    Assertions.assertEquals(today, updatedContract.getContactSaleDate());
+    Assertions.assertEquals(today, updatedContract.getContractSaleDate());
     Assertions.assertEquals(
-        today.getDaysSinceReference() + 30,
-        updatedContract.getContractValidityEndDate().getDaysSinceReference());
+        today.getValue() + 30, updatedContract.getContractValidityEndDate().getValue());
     Assertions.assertEquals(
         PriorityCode.FORBIDDEN, updatedCard.getContractByCalypsoIndex(2).getContractTariff());
     Assertions.assertEquals(
-        PriorityCode.SEASON_PASS, updatedCard.getEvent().getContractPriorityAt(1));
-    Assertions.assertEquals(
-        PriorityCode.FORBIDDEN, updatedCard.getEvent().getContractPriorityAt(2));
+        PriorityCode.SEASON_PASS, updatedCard.getEvent().getContractPriority1());
+    Assertions.assertEquals(PriorityCode.FORBIDDEN, updatedCard.getEvent().getContractPriority2());
 
     // if card contains more than 2 contracts, check them too
     if (contractCount > 2) {
@@ -179,9 +176,9 @@ public class CalypsoCardControllerTest {
       Assertions.assertEquals(
           PriorityCode.FORBIDDEN, updatedCard.getContractByCalypsoIndex(4).getContractTariff());
       Assertions.assertEquals(
-          PriorityCode.FORBIDDEN, updatedCard.getEvent().getContractPriorityAt(3));
+          PriorityCode.FORBIDDEN, updatedCard.getEvent().getContractPriority3());
       Assertions.assertEquals(
-          PriorityCode.FORBIDDEN, updatedCard.getEvent().getContractPriorityAt(4));
+          PriorityCode.FORBIDDEN, updatedCard.getEvent().getContractPriority4());
     }
   }
 
@@ -192,19 +189,18 @@ public class CalypsoCardControllerTest {
 
     // test
     CalypsoCardRepresentation card = calypsoCardController.readCard();
-    card.insertNewContract(PriorityCode.MULTI_TRIP_TICKET, 1);
+    card.insertNewContract(PriorityCode.MULTI_TRIP, 1);
     calypsoCardController.writeCard(card);
 
     // check
     CalypsoCardRepresentation updatedCard = calypsoCardController.readCard();
-    ContractStructureDto updatedContract = updatedCard.getContractByCalypsoIndex(1);
+    ContractStructure updatedContract = updatedCard.getContractByCalypsoIndex(1);
 
     // logger.trace("updatedCard : {}", updatedCard);
     Assertions.assertEquals(1, updatedCard.listValidContracts().size());
-    Assertions.assertEquals(PriorityCode.MULTI_TRIP_TICKET, updatedContract.getContractTariff());
-    Assertions.assertEquals(1, updatedContract.getCounter().getCounterValue());
-    Assertions.assertEquals(
-        PriorityCode.MULTI_TRIP_TICKET, updatedCard.getEvent().getContractPriorityAt(1));
+    Assertions.assertEquals(PriorityCode.MULTI_TRIP, updatedContract.getContractTariff());
+    Assertions.assertEquals(1, updatedContract.getCounterValue());
+    Assertions.assertEquals(PriorityCode.MULTI_TRIP, updatedCard.getEvent().getContractPriority1());
   }
 
   @Test
@@ -214,21 +210,21 @@ public class CalypsoCardControllerTest {
 
     // test
     CalypsoCardRepresentation card = calypsoCardController.readCard();
-    card.insertNewContract(PriorityCode.MULTI_TRIP_TICKET, 1);
+    card.insertNewContract(PriorityCode.MULTI_TRIP, 1);
     calypsoCardController.writeCard(card);
 
     // check
     CalypsoCardRepresentation updatedCard = calypsoCardController.readCard();
-    ContractStructureDto updatedContract = updatedCard.getContractByCalypsoIndex(1);
-    EventStructureDto event = updatedCard.getEvent();
+    ContractStructure updatedContract = updatedCard.getContractByCalypsoIndex(1);
+    EventStructure event = updatedCard.getEvent();
 
     Assertions.assertEquals(1, updatedCard.listValidContracts().size());
-    Assertions.assertEquals(PriorityCode.MULTI_TRIP_TICKET, updatedContract.getContractTariff());
-    Assertions.assertEquals(2, updatedContract.getCounter().getCounterValue());
+    Assertions.assertEquals(PriorityCode.MULTI_TRIP, updatedContract.getContractTariff());
+    Assertions.assertEquals(2, updatedContract.getCounterValue());
     Assertions.assertEquals(
         PriorityCode.FORBIDDEN, updatedCard.getContractByCalypsoIndex(2).getContractTariff());
-    Assertions.assertEquals(PriorityCode.MULTI_TRIP_TICKET, event.getContractPriorityAt(1));
-    Assertions.assertEquals(PriorityCode.FORBIDDEN, event.getContractPriorityAt(2));
+    Assertions.assertEquals(PriorityCode.MULTI_TRIP, event.getContractPriority1());
+    Assertions.assertEquals(PriorityCode.FORBIDDEN, event.getContractPriority2());
 
     // if card contains more than 2 contracts, check them too
     if (contractCount > 2) {
@@ -236,8 +232,8 @@ public class CalypsoCardControllerTest {
           PriorityCode.FORBIDDEN, updatedCard.getContractByCalypsoIndex(3).getContractTariff());
       Assertions.assertEquals(
           PriorityCode.FORBIDDEN, updatedCard.getContractByCalypsoIndex(4).getContractTariff());
-      Assertions.assertEquals(PriorityCode.FORBIDDEN, event.getContractPriorityAt(3));
-      Assertions.assertEquals(PriorityCode.FORBIDDEN, event.getContractPriorityAt(4));
+      Assertions.assertEquals(PriorityCode.FORBIDDEN, event.getContractPriority3());
+      Assertions.assertEquals(PriorityCode.FORBIDDEN, event.getContractPriority4());
     }
   }
 
@@ -252,16 +248,15 @@ public class CalypsoCardControllerTest {
 
     // check
     CalypsoCardRepresentation updatedCard = calypsoCardController.readCard();
-    ContractStructureDto updatedContract = updatedCard.getContractByCalypsoIndex(2);
-    EventStructureDto event = updatedCard.getEvent();
+    ContractStructure updatedContract = updatedCard.getContractByCalypsoIndex(2);
+    EventStructure event = updatedCard.getEvent();
 
     Assertions.assertEquals(2, updatedCard.listValidContracts().size());
     Assertions.assertEquals(
-        PriorityCode.MULTI_TRIP_TICKET,
-        updatedCard.getContractByCalypsoIndex(1).getContractTariff());
+        PriorityCode.MULTI_TRIP, updatedCard.getContractByCalypsoIndex(1).getContractTariff());
     Assertions.assertEquals(PriorityCode.SEASON_PASS, updatedContract.getContractTariff());
-    Assertions.assertEquals(PriorityCode.MULTI_TRIP_TICKET, event.getContractPriorityAt(1));
-    Assertions.assertEquals(PriorityCode.SEASON_PASS, event.getContractPriorityAt(2));
+    Assertions.assertEquals(PriorityCode.MULTI_TRIP, event.getContractPriority1());
+    Assertions.assertEquals(PriorityCode.SEASON_PASS, event.getContractPriority2());
   }
 
   @Test
@@ -274,22 +269,21 @@ public class CalypsoCardControllerTest {
 
     // test
     CalypsoCardRepresentation card = calypsoCardController.readCard();
-    card.insertNewContract(PriorityCode.MULTI_TRIP_TICKET, 1);
+    card.insertNewContract(PriorityCode.MULTI_TRIP, 1);
     calypsoCardController.writeCard(card);
 
     // check
     CalypsoCardRepresentation updatedCard = calypsoCardController.readCard();
-    ContractStructureDto updatedContract = updatedCard.getContractByCalypsoIndex(2);
-    EventStructureDto event = updatedCard.getEvent();
+    ContractStructure updatedContract = updatedCard.getContractByCalypsoIndex(2);
+    EventStructure event = updatedCard.getEvent();
 
     Assertions.assertEquals(2, updatedCard.listValidContracts().size());
     Assertions.assertEquals(
         PriorityCode.SEASON_PASS, updatedCard.getContractByCalypsoIndex(1).getContractTariff());
-    Assertions.assertEquals(
-        0, updatedCard.getContractByCalypsoIndex(1).getCounter().getCounterValue());
-    Assertions.assertEquals(PriorityCode.MULTI_TRIP_TICKET, updatedContract.getContractTariff());
-    Assertions.assertEquals(1, updatedContract.getCounter().getCounterValue());
-    Assertions.assertEquals(PriorityCode.SEASON_PASS, event.getContractPriorityAt(1));
-    Assertions.assertEquals(PriorityCode.MULTI_TRIP_TICKET, event.getContractPriorityAt(2));
+    Assertions.assertEquals(0, updatedCard.getContractByCalypsoIndex(1).getCounterValue());
+    Assertions.assertEquals(PriorityCode.MULTI_TRIP, updatedContract.getContractTariff());
+    Assertions.assertEquals(1, updatedContract.getCounterValue());
+    Assertions.assertEquals(PriorityCode.SEASON_PASS, event.getContractPriority1());
+    Assertions.assertEquals(PriorityCode.MULTI_TRIP, event.getContractPriority2());
   }
 }

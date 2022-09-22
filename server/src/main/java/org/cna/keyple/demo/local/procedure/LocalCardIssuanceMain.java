@@ -11,6 +11,8 @@
  ************************************************************************************** */
 package org.cna.keyple.demo.local.procedure;
 
+import org.calypsonet.keyple.demo.common.model.EnvironmentHolderStructure;
+import org.calypsonet.keyple.demo.common.parser.EnvironmentHolderStructureParser;
 import org.calypsonet.terminal.calypso.card.CalypsoCard;
 import org.calypsonet.terminal.calypso.card.ElementaryFile;
 import org.calypsonet.terminal.reader.selection.CardSelectionManager;
@@ -19,8 +21,6 @@ import org.cna.keyple.demo.distributed.server.calypso.CalypsoCardController;
 import org.cna.keyple.demo.distributed.server.plugin.SamResourceConfiguration;
 import org.cna.keyple.demo.distributed.server.util.CalypsoConstants;
 import org.cna.keyple.demo.distributed.server.util.CalypsoUtils;
-import org.cna.keyple.demo.sale.data.model.EnvironmentHolderStructureDto;
-import org.cna.keyple.demo.sale.data.model.parser.EnvironmentHolderStructureParser;
 import org.eclipse.keyple.card.calypso.CalypsoExtensionService;
 import org.eclipse.keyple.core.service.Reader;
 import org.eclipse.keyple.core.service.SmartCardService;
@@ -122,8 +122,8 @@ public class LocalCardIssuanceMain {
         String.format("%02X", CalypsoConstants.SFI_ENVIRONMENT_AND_HOLDER),
         sfiEnv);
 
-    EnvironmentHolderStructureDto environmentAndHolder =
-        EnvironmentHolderStructureParser.parse(sfiEnv.getData().getContent());
+    EnvironmentHolderStructure environmentAndHolder =
+        new EnvironmentHolderStructureParser().parse(sfiEnv.getData().getContent());
 
     // Log the result
     logger.info("EnvironmentAndHolder file data: {}", environmentAndHolder);

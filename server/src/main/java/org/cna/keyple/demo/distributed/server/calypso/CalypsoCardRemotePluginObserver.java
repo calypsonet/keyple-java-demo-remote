@@ -14,12 +14,12 @@ package org.cna.keyple.demo.distributed.server.calypso;
 import java.util.List;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import org.calypsonet.keyple.demo.common.dto.*;
+import org.calypsonet.keyple.demo.common.model.ContractStructure;
 import org.calypsonet.terminal.calypso.card.CalypsoCard;
 import org.cna.keyple.demo.distributed.server.log.TransactionLog;
 import org.cna.keyple.demo.distributed.server.log.TransactionLogStore;
 import org.cna.keyple.demo.distributed.server.util.CalypsoConstants;
-import org.cna.keyple.demo.sale.data.endpoint.*;
-import org.cna.keyple.demo.sale.data.model.ContractStructureDto;
 import org.eclipse.keyple.core.service.ObservablePlugin;
 import org.eclipse.keyple.core.service.PluginEvent;
 import org.eclipse.keyple.core.service.Reader;
@@ -100,13 +100,13 @@ public class CalypsoCardRemotePluginObserver implements PluginObserverSpi {
    * @param reader The remote reader on where to execute the business logic.
    * @return a nullable reference to the user output data to transmit to the client.
    */
-  private AnalyzeContractsOutput analyzeContracts(Reader reader) {
+  private AnalyzeContractsOutputDto analyzeContracts(Reader reader) {
     RemoteReaderServer readerExtension = reader.getExtension(RemoteReaderServer.class);
     /*
      * Retrieves the compatibleContractInput and initial  specified by the client when executing the remote service.
      */
     CalypsoCard calypsoCard = (CalypsoCard) readerExtension.getInitialCardContent();
-    AnalyzeContractsInput input = readerExtension.getInputData(AnalyzeContractsInput.class);
+    AnalyzeContractsInputDto input = readerExtension.getInputData(AnalyzeContractsInputDto.class);
     CardResource samResource =
         CardResourceServiceProvider.getService().getCardResource(CalypsoConstants.SAM_PROFILE_NAME);
     String pluginType = input.getPluginType();
@@ -128,7 +128,7 @@ public class CalypsoCardRemotePluginObserver implements PluginObserverSpi {
 
       logger.info(calypsoCardContent.toString());
 
-      List<ContractStructureDto> validContracts = calypsoCardContent.listValidContracts();
+      List<ContractStructure> validContracts = calypsoCardContent.listValidContracts();
 
       // Log a transaction to the dashboard store
       transactionLogStore.push(
@@ -138,7 +138,7 @@ public class CalypsoCardRemotePluginObserver implements PluginObserverSpi {
               .setType("SECURED READ")
               .setPoSn(ByteArrayUtil.toHex(calypsoCard.getApplicationSerialNumber())));
 
-      return new AnalyzeContractsOutput().setValidContracts(validContracts).setStatusCode(0);
+      return new AnalyzeContractsOutputDto(validContracts, 0);
 
     } catch (RuntimeException e) {
       logger.error("An error occurred while analyzing the contracts : {}", e.getMessage());
@@ -151,7 +151,7 @@ public class CalypsoCardRemotePluginObserver implements PluginObserverSpi {
               .setType("SECURED READ")
               .setPoSn(ByteArrayUtil.toHex(calypsoCard.getApplicationSerialNumber())));
 
-      return new AnalyzeContractsOutput().setStatusCode(1);
+      return new AnalyzeContractsOutputDto(null, 1);
     } finally {
       // deallocate samResource
       CardResourceServiceProvider.getService().releaseCardResource(samResource);
@@ -164,13 +164,14 @@ public class CalypsoCardRemotePluginObserver implements PluginObserverSpi {
    * @param reader The remote reader on where to execute the business logic.
    * @return a nullable reference to the user output data to transmit to the client.
    */
-  private WriteContractOutput writeContract(Reader reader) {
+  private WriteContractOutputDto writeContract(Reader reader) {
     RemoteReaderServer readerExtension = reader.getExtension(RemoteReaderServer.class);
 
     /*
      * Retrieves the userInputData and initial calypso Card specified by the client when executing the remote service.
      */
-    WriteContractInput writeContractInput = readerExtension.getInputData(WriteContractInput.class);
+    WriteContractInputDto writeContractInput =
+        readerExtension.getInputData(WriteContractInputDto.class);
     CalypsoCard calypsoCard = (CalypsoCard) readerExtension.getInitialCardContent();
     CardResource samResource =
         CardResourceServiceProvider.getService().getCardResource(CalypsoConstants.SAM_PROFILE_NAME);
@@ -200,7 +201,7 @@ public class CalypsoCardRemotePluginObserver implements PluginObserverSpi {
 
       if (calypsoCardContent == null) {
         // is card has not been read previously, throw error
-        return new WriteContractOutput().setStatusCode(3);
+        return new WriteContractOutputDto(3);
       }
 
       logger.info(calypsoCardContent.toString());
@@ -231,7 +232,7 @@ public class CalypsoCardRemotePluginObserver implements PluginObserverSpi {
                           ? " : " + writeContractInput.getTicketToLoad()
                           : "")));
 
-      return new WriteContractOutput().setStatusCode(statusCode);
+      return new WriteContractOutputDto(statusCode);
 
     } catch (RuntimeException e) {
       logger.error("An error occurred while writing the contract : {}", e.getMessage());
@@ -248,7 +249,7 @@ public class CalypsoCardRemotePluginObserver implements PluginObserverSpi {
               .setType("RELOAD")
               .setPoSn(ByteArrayUtil.toHex(calypsoCard.getApplicationSerialNumber()))
               .setContractLoaded(""));
-      return new WriteContractOutput().setStatusCode(1);
+      return new WriteContractOutputDto(1);
     } finally {
       // deallocate samResource if needed
       CardResourceServiceProvider.getService().releaseCardResource(samResource);
@@ -261,7 +262,7 @@ public class CalypsoCardRemotePluginObserver implements PluginObserverSpi {
    * @param reader The remote reader on where to execute the business logic.
    * @return a nullable reference to the user output data to transmit to the client.
    */
-  private CardIssuanceOutput initCard(Reader reader) {
+  private CardIssuanceOutputDto initCard(Reader reader) {
     RemoteReaderServer readerExtension = reader.getExtension(RemoteReaderServer.class);
 
     CalypsoCard calypsoCard = (CalypsoCard) readerExtension.getInitialCardContent();
@@ -291,7 +292,7 @@ public class CalypsoCardRemotePluginObserver implements PluginObserverSpi {
               .setType("ISSUANCE")
               .setPoSn(ByteArrayUtil.toHex(calypsoCard.getApplicationSerialNumber())));
 
-      return new CardIssuanceOutput().setStatusCode(0);
+      return new CardIssuanceOutputDto(0);
     } catch (RuntimeException e) {
 
       transactionLogStore.push(
@@ -300,7 +301,7 @@ public class CalypsoCardRemotePluginObserver implements PluginObserverSpi {
               .setStatus("FAIL")
               .setType("ISSUANCE")
               .setPoSn(ByteArrayUtil.toHex(calypsoCard.getApplicationSerialNumber())));
-      return new CardIssuanceOutput().setStatusCode(1);
+      return new CardIssuanceOutputDto(1);
     } finally {
       // deallocate samResource if needed
       CardResourceServiceProvider.getService().releaseCardResource(samResource);

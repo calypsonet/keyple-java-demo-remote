@@ -37,6 +37,9 @@ quarkus {
 
 
 dependencies {
+    // Demo common
+    //implementation "org.calypsonet.keyple:keyple-demo-common-lib:1.0.0-SNAPSHOT"
+    implementation group: 'org.calypsonet.keyple', name: 'keyple-demo-common-lib', version: "1.0.0-SNAPSHOT", changing: true
 
     /* Keyple dependencies
      *  https://keyple.org/components-java/overview/dependency-check/
@@ -65,10 +68,6 @@ dependencies {
     /* Standard reader plugins libraries */
     implementation group: 'org.eclipse.keyple', name: 'keyple-plugin-stub-java-lib', version: "2.0.0"
     implementation group: 'org.eclipse.keyple', name: 'keyple-plugin-pcsc-java-lib', version: "2.0.0"
-
-
-    /* Common lib */
-    implementation project(":common")
 
     /* Quarkus */
     implementation 'io.quarkus:quarkus-resteasy-jsonb'
