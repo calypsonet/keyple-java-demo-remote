@@ -28,7 +28,7 @@
         android:name="org.calypsonet.keyple.demo.reload.remote.Application">
 
         <activity
-            android:name="org.calypsonet.keyple.demo.reload.remote.android.activity.SplashScreenActivity"
+            android:name="org.calypsonet.keyple.demo.reload.remote.ui.activity.MainActivity"
             android:theme="@style/AppTheme.NoActionBar"
             android:screenOrientation="portrait"
             android:launchMode="singleTop"
@@ -41,84 +41,84 @@
         </activity>
 
         <activity
-            android:name="org.calypsonet.keyple.demo.reload.remote.android.activity.HomeActivity"
+            android:name="org.calypsonet.keyple.demo.reload.remote.ui.activity.HomeActivity"
             android:theme="@style/AppTheme.NoActionBar"
             android:screenOrientation="portrait"
             android:launchMode="singleTop"
             android:configChanges="orientation|keyboardHidden">
         </activity>
         <activity
-            android:name="org.calypsonet.keyple.demo.reload.remote.android.activity.SettingsMenuActivity"
+            android:name="org.calypsonet.keyple.demo.reload.remote.ui.activity.SettingsMenuActivity"
             android:theme="@style/AppTheme.NoActionBar"
             android:screenOrientation="portrait"
             android:launchMode="singleTop"
             android:configChanges="orientation|keyboardHidden">
         </activity>
         <activity
-            android:name="org.calypsonet.keyple.demo.reload.remote.android.activity.ServerSettingsActivity"
+            android:name="org.calypsonet.keyple.demo.reload.remote.ui.activity.ServerSettingsActivity"
             android:theme="@style/AppTheme.NoActionBar"
             android:screenOrientation="portrait"
             android:launchMode="singleTop"
             android:configChanges="orientation|keyboardHidden">
         </activity>
         <activity
-            android:name="org.calypsonet.keyple.demo.reload.remote.android.activity.ConfigurationSettingsActivity"
+            android:name="org.calypsonet.keyple.demo.reload.remote.ui.activity.ConfigurationSettingsActivity"
             android:theme="@style/AppTheme.NoActionBar"
             android:screenOrientation="portrait"
             android:launchMode="singleTop"
             android:configChanges="orientation|keyboardHidden">
         </activity>
         <activity
-            android:name="org.calypsonet.keyple.demo.reload.remote.android.activity.CardReaderActivity"
+            android:name="org.calypsonet.keyple.demo.reload.remote.ui.activity.CardReaderActivity"
             android:theme="@style/AppTheme.NoActionBar"
             android:screenOrientation="portrait"
             android:launchMode="singleTop"
             android:configChanges="orientation|keyboardHidden">
         </activity>
         <activity
-            android:name="org.calypsonet.keyple.demo.reload.remote.android.activity.CardSummaryActivity"
+            android:name="org.calypsonet.keyple.demo.reload.remote.ui.activity.CardSummaryActivity"
             android:theme="@style/AppTheme.NoActionBar"
             android:screenOrientation="portrait"
             android:launchMode="singleTop"
             android:configChanges="orientation|keyboardHidden">
         </activity>
         <activity
-            android:name="org.calypsonet.keyple.demo.reload.remote.android.activity.SelectTicketsActivity"
+            android:name="org.calypsonet.keyple.demo.reload.remote.ui.activity.SelectTicketsActivity"
             android:theme="@style/AppTheme.NoActionBar"
             android:screenOrientation="portrait"
             android:launchMode="singleTop"
             android:configChanges="orientation|keyboardHidden">
         </activity>
         <activity
-            android:name="org.calypsonet.keyple.demo.reload.remote.android.activity.CheckoutActivity"
+            android:name="org.calypsonet.keyple.demo.reload.remote.ui.activity.CheckoutActivity"
             android:theme="@style/AppTheme.NoActionBar"
             android:screenOrientation="portrait"
             android:launchMode="singleTop"
             android:configChanges="orientation|keyboardHidden">
         </activity>
         <activity
-            android:name="org.calypsonet.keyple.demo.reload.remote.android.activity.PaymentValidatedActivity"
+            android:name="org.calypsonet.keyple.demo.reload.remote.ui.activity.PaymentValidatedActivity"
             android:theme="@style/AppTheme.NoActionBar"
             android:screenOrientation="portrait"
             android:launchMode="singleTop"
             android:configChanges="orientation|keyboardHidden">
         </activity>
         <activity
-            android:name="org.calypsonet.keyple.demo.reload.remote.android.activity.ChargeActivity"
+            android:name="org.calypsonet.keyple.demo.reload.remote.ui.activity.ChargeActivity"
             android:theme="@style/AppTheme.NoActionBar"
             android:screenOrientation="portrait"
             android:launchMode="singleTop"
             android:configChanges="orientation|keyboardHidden">
         </activity>
         <activity
-            android:name="org.calypsonet.keyple.demo.reload.remote.android.activity.ChargeResultActivity"
+            android:name="org.calypsonet.keyple.demo.reload.remote.ui.activity.ChargeResultActivity"
             android:theme="@style/AppTheme.NoActionBar"
             android:screenOrientation="portrait"
             android:launchMode="singleTop"
             android:configChanges="orientation|keyboardHidden">
         </activity>
         <activity
-            android:name="org.calypsonet.keyple.demo.reload.remote.android.activity.PersonnalizationActivity"
+            android:name="org.calypsonet.keyple.demo.reload.remote.ui.activity.PersonnalizationActivity"
             android:theme="@style/AppTheme.NoActionBar"
             android:screenOrientation="portrait"
             android:launchMode="singleTop"

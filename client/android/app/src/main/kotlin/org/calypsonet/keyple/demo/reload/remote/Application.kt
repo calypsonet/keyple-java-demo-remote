@@ -20,9 +20,9 @@ import androidx.work.WorkManager
 import androidx.work.WorkRequest
 import dagger.android.DaggerApplication
 import java.util.concurrent.TimeUnit
-import org.calypsonet.keyple.demo.reload.remote.android.di.AppComponent
-import org.calypsonet.keyple.demo.reload.remote.android.di.DaggerAppComponent
-import org.calypsonet.keyple.demo.reload.remote.android.network.CheckServerStatusWorker
+import org.calypsonet.keyple.demo.reload.remote.ui.di.AppComponent
+import org.calypsonet.keyple.demo.reload.remote.ui.di.DaggerAppComponent
+import org.calypsonet.keyple.demo.reload.remote.ui.network.CheckServerStatusWorker
 import timber.log.Timber
 import timber.log.Timber.DebugTree
 
