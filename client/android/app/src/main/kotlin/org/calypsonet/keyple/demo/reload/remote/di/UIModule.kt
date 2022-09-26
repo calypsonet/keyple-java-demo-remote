@@ -32,7 +32,7 @@ import org.calypsonet.keyple.demo.reload.remote.ui.cardsummary.CardSummaryActivi
 @Module
 abstract class UIModule {
 
-  @ActivityScoped @ContributesAndroidInjector abstract fun splashScreenActivity(): MainActivity?
+  @ActivityScoped @ContributesAndroidInjector abstract fun mainActivity(): MainActivity?
 
   @ActivityScoped @ContributesAndroidInjector abstract fun homeActivity(): HomeActivity?
 
