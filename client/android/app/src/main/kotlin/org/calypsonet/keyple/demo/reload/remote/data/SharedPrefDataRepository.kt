@@ -15,7 +15,7 @@ import android.annotation.SuppressLint
 import android.content.SharedPreferences
 import java.util.*
 import javax.inject.Inject
-import org.calypsonet.keyple.demo.reload.remote.ui.di.scopes.AppScoped
+import org.calypsonet.keyple.demo.reload.remote.di.scopes.AppScoped
 
 @AppScoped
 class SharedPrefDataRepository @Inject constructor(private var prefs: SharedPreferences) {

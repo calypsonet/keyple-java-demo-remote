@@ -16,7 +16,7 @@ import java.util.*
 import javax.inject.Inject
 import kotlin.jvm.Throws
 import org.calypsonet.keyple.demo.reload.remote.data.ReaderRepository
-import org.calypsonet.keyple.demo.reload.remote.ui.di.scopes.AppScoped
+import org.calypsonet.keyple.demo.reload.remote.di.scopes.AppScoped
 import org.calypsonet.terminal.calypso.card.CalypsoCard
 import org.calypsonet.terminal.calypso.transaction.CardTransactionManager
 import org.calypsonet.terminal.reader.ReaderCommunicationException
