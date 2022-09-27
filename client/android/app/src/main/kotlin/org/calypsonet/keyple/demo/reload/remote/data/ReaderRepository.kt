@@ -13,9 +13,9 @@ package org.calypsonet.keyple.demo.reload.remote.data
 
 import kotlin.jvm.Throws
 import org.calypsonet.terminal.reader.CardReader
+import org.calypsonet.terminal.reader.ObservableCardReader
 import org.calypsonet.terminal.reader.ReaderCommunicationException
 import org.eclipse.keyple.core.common.KeyplePluginExtensionFactory
-import org.eclipse.keyple.core.service.ObservableReader
 import org.eclipse.keyple.core.service.SmartCardServiceProvider
 import timber.log.Timber
 
@@ -53,8 +53,8 @@ object ReaderRepository {
 
   /** Retrieve a registered observable reader. */
   @Throws(Exception::class)
-  fun getObservableReader(readerName: String): ObservableReader {
+  fun getObservableReader(readerName: String): ObservableCardReader {
     val reader = getReader(readerName)
-    return if (reader is ObservableReader) reader else throw Exception("$readerName not found")
+    return if (reader is ObservableCardReader) reader else throw Exception("$readerName not found")
   }
 }

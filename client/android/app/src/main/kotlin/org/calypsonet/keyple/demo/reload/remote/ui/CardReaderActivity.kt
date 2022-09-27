@@ -39,7 +39,6 @@ import org.calypsonet.terminal.reader.CardReaderEvent
 import org.calypsonet.terminal.reader.ReaderCommunicationException
 import org.eclipse.keyple.core.service.KeyplePluginException
 import org.eclipse.keyple.core.util.HexUtil
-import org.eclipse.keyple.core.util.protocol.ContactlessCardCommonProtocol
 import org.joda.time.DateTime
 import org.joda.time.format.DateTimeFormat
 import timber.log.Timber
@@ -116,10 +115,7 @@ class CardReaderActivity : AbstractCardActivity() {
       runOnUiThread { showNowLoadingInformation() }
       GlobalScope.launch {
         remoteServiceExecution(
-            selectedDeviceReaderName,
-            pluginType,
-            AppSettings.aidEnums,
-            ContactlessCardCommonProtocol.ISO_14443_4.name)
+            selectedDeviceReaderName, pluginType, AppSettings.aidEnums, "ISO_14443_4")
       }
     }
   }
@@ -199,11 +195,8 @@ class CardReaderActivity : AbstractCardActivity() {
         CardTitle("Multi trip", description ?: "No counter", valid)
       }
       PriorityCode.SEASON_PASS -> {
-        val saleDate =
-            DateTime.parse("2010-01-01T00:00").plusDays(contractStructure.contractSaleDate.value)
-        val validityEndDate =
-            DateTime.parse("2010-01-01T00:00")
-                .plusDays(contractStructure.contractValidityEndDate.value)
+        val saleDate = DateTime(contractStructure.contractSaleDate.date)
+        val validityEndDate = DateTime(contractStructure.contractValidityEndDate.date)
         val validity = DateTime.now() in saleDate..validityEndDate
         CardTitle(
             "Season pass",
@@ -211,11 +204,8 @@ class CardReaderActivity : AbstractCardActivity() {
             validity)
       }
       PriorityCode.EXPIRED -> {
-        val saleDate =
-            DateTime.parse("2010-01-01T00:00").plusDays(contractStructure.contractSaleDate.value)
-        val validityEndDate =
-            DateTime.parse("2010-01-01T00:00")
-                .plusDays(contractStructure.contractValidityEndDate.value)
+        val saleDate = DateTime(contractStructure.contractSaleDate.date)
+        val validityEndDate = DateTime(contractStructure.contractValidityEndDate.date)
         CardTitle(
             "Season pass - Expired",
             "From ${saleDate.toString(dateTimeFormatter)} to ${validityEndDate.toString(dateTimeFormatter)}",

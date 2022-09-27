@@ -38,7 +38,6 @@ import org.calypsonet.keyple.demo.reload.remote.di.scopes.ActivityScoped
 import org.calypsonet.keyple.demo.reload.remote.domain.TicketingService
 import org.calypsonet.terminal.reader.CardReaderEvent
 import org.eclipse.keyple.core.util.HexUtil
-import org.eclipse.keyple.core.util.protocol.ContactlessCardCommonProtocol
 import timber.log.Timber
 
 @ActivityScoped
@@ -88,10 +87,7 @@ class ChargeActivity : AbstractCardActivity() {
       runOnUiThread { showNowLoadingInformation() }
       GlobalScope.launch {
         remoteServiceExecution(
-            selectedDeviceReaderName,
-            pluginType,
-            AppSettings.aidEnums,
-            ContactlessCardCommonProtocol.ISO_14443_4.name)
+            selectedDeviceReaderName, pluginType, AppSettings.aidEnums, "ISO_14443_4")
       }
     }
   }

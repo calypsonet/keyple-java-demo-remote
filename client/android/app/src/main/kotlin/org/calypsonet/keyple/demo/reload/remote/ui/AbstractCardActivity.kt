@@ -25,11 +25,11 @@ import org.calypsonet.terminal.reader.ObservableCardReader
 import org.calypsonet.terminal.reader.spi.CardReaderObservationExceptionHandlerSpi
 import org.calypsonet.terminal.reader.spi.CardReaderObserverSpi
 import org.eclipse.keyple.core.service.KeyplePluginException
-import org.eclipse.keyple.core.util.protocol.ContactlessCardCommonProtocol
 import org.eclipse.keyple.distributed.LocalServiceClient
 import org.eclipse.keyple.plugin.android.nfc.AndroidNfcPlugin
 import org.eclipse.keyple.plugin.android.nfc.AndroidNfcPluginFactoryProvider
 import org.eclipse.keyple.plugin.android.nfc.AndroidNfcReader
+import org.eclipse.keyple.plugin.android.nfc.AndroidNfcSupportedProtocols
 import org.eclipse.keyple.plugin.android.omapi.AndroidOmapiPlugin
 import org.eclipse.keyple.plugin.android.omapi.AndroidOmapiPluginFactoryProvider
 import org.eclipse.keyple.plugin.android.omapi.AndroidOmapiReader
@@ -53,7 +53,7 @@ abstract class AbstractCardActivity :
             pluginType = "Android NFC"
             AppSettings.aidEnums.clear()
             AppSettings.aidEnums.add(CardConstant.AID_CD_LIGHT_GTML)
-            AppSettings.aidEnums.add(CardConstant.AID_CALYPSO_LIGHT_CL)
+            AppSettings.aidEnums.add(CardConstant.AID_CALYPSO_LIGHT)
             AppSettings.aidEnums.add(CardConstant.AID_NAVIGO_2013)
             AndroidNfcReader.READER_NAME
           }
@@ -102,9 +102,7 @@ abstract class AbstractCardActivity :
     androidNfcReader.setReaderObservationExceptionHandler(this@AbstractCardActivity)
 
     (readerRepository.getReader(selectedDeviceReaderName) as ConfigurableCardReader)
-        .activateProtocol(
-            ContactlessCardCommonProtocol.ISO_14443_4.name,
-            ContactlessCardCommonProtocol.ISO_14443_4.name)
+        .activateProtocol(AndroidNfcSupportedProtocols.ISO_14443_4.name, "ISO_14443_4")
 
     androidNfcReader.startCardDetection(ObservableCardReader.DetectionMode.REPEATING)
   }
@@ -114,7 +112,7 @@ abstract class AbstractCardActivity :
     (readerRepository.getReader(selectedDeviceReaderName) as ObservableCardReader)
         .stopCardDetection()
     (readerRepository.getReader(selectedDeviceReaderName) as ConfigurableCardReader)
-        .deactivateProtocol(ContactlessCardCommonProtocol.ISO_14443_4.name)
+        .deactivateProtocol(AndroidNfcSupportedProtocols.ISO_14443_4.name)
     readerRepository.unregisterPlugin(AndroidNfcPlugin.PLUGIN_NAME)
   }
 
