@@ -160,7 +160,7 @@ public class CardRepository {
   }
 
   @NotNull
-  private static CardTransactionManager initCardTransactionManager(
+  private CardTransactionManager initCardTransactionManager(
       CardResource cardResource,
       CardResource samResource,
       String pluginType,
@@ -182,7 +182,7 @@ public class CardRepository {
     return cardTransactionManager;
   }
 
-  private static EnvironmentHolderStructure buildEnvironmentHolderStructure() {
+  private EnvironmentHolderStructure buildEnvironmentHolderStructure() {
     // calculate issuing date
     Instant now = Instant.now();
     // calculate env end date
@@ -198,7 +198,7 @@ public class CardRepository {
         null);
   }
 
-  private static EventStructure buildEvent(
+  private EventStructure buildEvent(
       EventStructure oldEvent, List<ContractStructure> contracts) {
     int contractCount = contracts.size();
     return new EventStructure(
@@ -213,7 +213,7 @@ public class CardRepository {
         contractCount == 4 ? contracts.get(3).getContractTariff() : PriorityCode.FORBIDDEN);
   }
 
-  private static Card parse(CalypsoCard calypsoCard) {
+  private Card parse(CalypsoCard calypsoCard) {
     // Parse environment
     EnvironmentHolderStructure environment =
         new EnvironmentHolderStructureParser()
@@ -246,7 +246,7 @@ public class CardRepository {
     return new Card(environment, contracts, event);
   }
 
-  private static int getContractCount(CalypsoCard calypsoCard) {
+  private int getContractCount(CalypsoCard calypsoCard) {
     return calypsoCard.getApplicationSubtype() == 50 ? 2 : 4;
   }
 }

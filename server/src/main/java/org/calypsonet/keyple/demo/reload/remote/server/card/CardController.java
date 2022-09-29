@@ -23,7 +23,7 @@ import org.eclipse.keyple.distributed.MessageDto;
 import org.eclipse.keyple.distributed.RemotePluginServer;
 import org.eclipse.keyple.distributed.SyncNodeServer;
 
-@Path("/ticketing")
+@Path("/card")
 public class CardController {
 
   @Inject CardConfigurator cardConfigurator;
