@@ -125,7 +125,7 @@ class ChargeActivity : AbstractCardActivity() {
         val ticketToBeLoaded = intent.getIntExtra(SelectTicketsActivity.TICKETS_NUMBER, 0)
         writeContractInputDto.contractTariff =
             PriorityCode.findEnumByKey(
-                intent.getByteExtra(SelectTicketsActivity.SELECTED_TICKET_PRIORITY_CODE, 0).toInt())
+                intent.getIntExtra(SelectTicketsActivity.SELECTED_TICKET_PRIORITY_CODE, 0))
         writeContractInputDto.ticketToLoad = ticketToBeLoaded
 
         val writeTitleOutput =
