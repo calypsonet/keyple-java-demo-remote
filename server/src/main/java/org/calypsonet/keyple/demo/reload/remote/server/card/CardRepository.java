@@ -64,6 +64,7 @@ public class CardRepository {
         .prepareReadRecordFile(
             CardConstant.SFI_CONTRACTS, 1, contractCount, CardConstant.CONTRACT_RECORD_SIZE_BYTES)
         .prepareReadCounterFile(CardConstant.SFI_COUNTERS, 4)
+        .processCardCommands()
         .processClosing();
     logger.info("Calypso Session Closed.");
 
@@ -198,8 +199,7 @@ public class CardRepository {
         null);
   }
 
-  private EventStructure buildEvent(
-      EventStructure oldEvent, List<ContractStructure> contracts) {
+  private EventStructure buildEvent(EventStructure oldEvent, List<ContractStructure> contracts) {
     int contractCount = contracts.size();
     return new EventStructure(
         VersionNumber.CURRENT_VERSION,

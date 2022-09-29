@@ -18,6 +18,7 @@ import org.calypsonet.keyple.demo.common.dto.AnalyzeContractsInputDto;
 import org.calypsonet.keyple.demo.common.dto.WriteContractInputDto;
 import org.calypsonet.terminal.calypso.card.CalypsoCard;
 import org.calypsonet.terminal.calypso.sam.CalypsoSam;
+import org.calypsonet.terminal.reader.CardReader;
 import org.eclipse.keyple.card.calypso.CalypsoExtensionService;
 import org.eclipse.keyple.core.service.*;
 import org.eclipse.keyple.core.service.resource.*;
@@ -46,10 +47,10 @@ public class CardConfigurator {
 
   @Inject CardService cardService;
 
-  public Reader getSamReader() {
+  public CardReader getSamReader() {
     Pattern p = Pattern.compile(samReaderFilter);
     for (Plugin plugin : SmartCardServiceProvider.getService().getPlugins()) {
-      for (Reader reader : plugin.getReaders()) {
+      for (CardReader reader : plugin.getReaders()) {
         if (p.matcher(reader.getName()).matches()) {
           return reader;
         }
@@ -112,15 +113,19 @@ public class CardConfigurator {
 
   private static class SamReaderConfigurator implements ReaderConfiguratorSpi {
     @Override
-    public void setupReader(Reader reader) {
+    public void setupReader(CardReader cardReader) {
       try {
-        reader
-            .getExtension(PcscReader.class)
+        PcscReader readerExtension =
+            SmartCardServiceProvider.getService()
+                .getPlugin(cardReader)
+                .getReaderExtension(PcscReader.class, cardReader.getName());
+        readerExtension
             .setContactless(false)
-            .setIsoProtocol(PcscReader.IsoProtocol.T0)
+            .setIsoProtocol(PcscReader.IsoProtocol.ANY)
             .setSharingMode(PcscReader.SharingMode.SHARED);
       } catch (Exception e) {
-        logger.error("An error occurred while setting up the SAM reader {}", reader.getName(), e);
+        logger.error(
+            "An error occurred while setting up the SAM reader {}", cardReader.getName(), e);
       }
     }
   }
@@ -173,9 +178,9 @@ public class CardConfigurator {
       String readerName = pluginEvent.getReaderNames().first();
 
       // Retrieves the remote reader from the plugin using the reader name.
-      Reader reader = plugin.getReader(readerName);
-      RemoteReaderServer readerExtension = reader.getExtension(RemoteReaderServer.class);
-
+      CardReader reader = plugin.getReader(readerName);
+      RemoteReaderServer readerExtension =
+          plugin.getReaderExtension(RemoteReaderServer.class, reader.getName());
       // Analyses the Service ID contains in the reader to find which business service to execute.
       // The Service ID was specified by the client when executing the remote service.
       Object outputData;
