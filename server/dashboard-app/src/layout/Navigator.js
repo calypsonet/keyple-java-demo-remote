@@ -59,7 +59,6 @@ const styles = (theme) => ({
     paddingBottom: theme.spacing(2),
   },
   keyple: {
-
     fontSize: 24,
     color: theme.palette.common.white,
   },

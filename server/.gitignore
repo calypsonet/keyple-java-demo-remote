@@ -1,35 +1,48 @@
-# Eclipse
-.project
-.classpath
-.settings/
-bin/
+# Java class files
+*.class
 
-# IntelliJ
-.idea
-*.ipr
-*.iml
-*.iws
-
-# NetBeans
-nb-configuration.xml
-
-# Visual Studio Code
-.vscode
-.factorypath
-
-# OSX
-.DS_Store
-
-# Vim
-*.swp
-*.swo
-
-# patch
-*.orig
-*.rej
+# Generated files
+gen/
+out/
+release/
+local.properties
+package-lock.json
+src/main/resources/META-INF/
+node_modules/
 
 # Gradle
 .gradle/
-build/
-/dashboard-app/yarn.lock
-/dashboard-app/.gitignore
+build*/
+LICENSE_HEADER
+
+# Eclipse
+.classpath
+.project
+.settings/
+bin/
+
+# IntelliJ IDEA
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# Visual Studio Code
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# MacOS
+.DS_Store
+
+# Linux
+*~
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+*.stackdump

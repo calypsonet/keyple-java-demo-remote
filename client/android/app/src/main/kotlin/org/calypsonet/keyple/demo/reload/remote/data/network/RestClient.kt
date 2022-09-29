@@ -24,9 +24,9 @@ import retrofit2.http.POST
  */
 interface RestClient {
 
-  @GET("/sam") fun ping(): Single<String>
+  @GET("/card/sam-status") fun ping(): Single<String>
 
   @Headers("Accept: application/json", "Content-Type: application/json; charset=UTF-8")
-  @POST("/remote-plugin")
+  @POST("/card/remote-plugin")
   fun sendRequest(@Body msg: MessageDto?): Single<MutableList<MessageDto>>
 }

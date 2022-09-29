@@ -9,7 +9,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ************************************************************************************** */
-package org.cna.keyple.demo.distributed.server.log;
+package org.calypsonet.keyple.demo.reload.remote.server.activity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,55 +23,47 @@ import org.slf4j.LoggerFactory;
 
 /** Store transaction logs and allow a (unique) subscriber to receive push notification */
 @ApplicationScoped
-public class TransactionLogStore {
+public class ActivityService {
 
-  private static final Logger logger = LoggerFactory.getLogger(TransactionLogStore.class);
+  private static final Logger logger = LoggerFactory.getLogger(ActivityService.class);
 
-  List<TransactionLog> transactionLogs; // list of all transactions
-  BlockingQueue<TransactionLog> transactionLogQueue; // queue for the subscriber
+  List<Activity> activities; // list of all transactions
+  BlockingQueue<Activity> activityQueue; // queue for the subscriber
 
-  /** (package private) Constructor */
-  TransactionLogStore() {
-    transactionLogs = new ArrayList<>();
-    transactionLogQueue = new ArrayBlockingQueue<>(1);
+  ActivityService() {
+    activities = new ArrayList<>();
+    activityQueue = new ArrayBlockingQueue<>(1);
+  }
+
+  public List<Activity> list() {
+    return (List<Activity>) ((ArrayList<Activity>) activities).clone();
   }
 
   /**
-   * Return all transactionLogs
+   * Pushes a new transaction to a subscriber.
    *
-   * @return not nullable list of transactionLogs
+   * @param t Transaction object to push.
    */
-  public List<TransactionLog> list() {
-    return (List<TransactionLog>) ((ArrayList<TransactionLog>) transactionLogs).clone();
-  }
-
-  /**
-   * Push a new transaction to a subscriber
-   *
-   * @param t transaction object to push
-   */
-  public void push(@NotNull TransactionLog t) {
+  public void push(@NotNull Activity t) {
     // store the new transaction
-    transactionLogs.add(t);
-
+    activities.add(t);
     // make it available in the queue
-    if (!transactionLogQueue.isEmpty()) {
-      transactionLogQueue.clear();
+    if (!activityQueue.isEmpty()) {
+      activityQueue.clear();
     }
-    if (transactionLogQueue.offer(t)) {
+    if (activityQueue.offer(t)) {
       logger.trace("A new transaction is available in the queue");
     }
-    ;
   }
 
   /**
-   * Blocking call, wait for a new transaction to be published. Timeout of 10 seconds
+   * Blocking call, waits for a new transaction to be published. Timeout of 10 seconds.
    *
-   * @return transaction when published, or null if no transaction were published
+   * @return Transaction when published, or null if no transaction were published.
    */
-  public TransactionLog waitForNew() {
+  public Activity waitForNew() {
     try {
-      return transactionLogQueue.poll(10, TimeUnit.SECONDS);
+      return activityQueue.poll(10, TimeUnit.SECONDS);
     } catch (InterruptedException e) {
       return null;
     }

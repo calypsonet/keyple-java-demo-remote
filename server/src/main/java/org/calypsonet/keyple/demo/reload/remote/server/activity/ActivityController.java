@@ -9,7 +9,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ************************************************************************************** */
-package org.cna.keyple.demo.distributed.server.endpoint;
+package org.calypsonet.keyple.demo.reload.remote.server.activity;
 
 import java.util.List;
 import javax.inject.Inject;
@@ -18,37 +18,35 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import org.cna.keyple.demo.distributed.server.log.TransactionLog;
-import org.cna.keyple.demo.distributed.server.log.TransactionLogStore;
 
-@Path("/dashboard")
-public class DashboardEndpoint {
+@Path("/activity")
+public class ActivityController {
 
-  @Inject TransactionLogStore transactionLogStore;
+  @Inject ActivityService activityService;
 
   /**
-   * List all transactions
+   * List all events
    *
-   * @return not nullable set of transactions
+   * @return not nullable set of events
    */
   @GET
-  @Path("/transaction")
+  @Path("/events")
   @Produces(MediaType.APPLICATION_JSON)
-  public List<TransactionLog> getTransactions() {
-    return transactionLogStore.list();
+  public List<Activity> getEvents() {
+    return activityService.list();
   }
 
   /**
-   * Long Polling API to get a new transaction. http code:200 : new transaction is available. http
-   * code:204 : timeout, please renew request
+   * Long Polling API to get a new event. http code:200 : new event is available. HTTP code 204 :
+   * timeout, please renew request
    *
-   * @return a {@link TransactionLog} when a new log is push
+   * @return a {@link Activity} when a new log is push
    */
   @GET
-  @Path("/transaction/wait")
+  @Path("/events/wait")
   @Produces(MediaType.APPLICATION_JSON)
-  public Response waitForTransaction() throws InterruptedException {
-    TransactionLog t = transactionLogStore.waitForNew();
+  public Response waitForEvent() {
+    Activity t = activityService.waitForNew();
     if (t == null) {
       return Response.noContent().build();
     } else {

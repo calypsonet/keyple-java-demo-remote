@@ -30,7 +30,7 @@ function Paperbase(props) {
 
     //activate transaction polling
     function activateTransactionPoll(handleNewTransaction) {
-      fetch("/dashboard/transaction/wait")
+      fetch("/activity/events/wait")
         .then(response => {
           if (response.status === 204) {
             console.log("Received a No-Content response from server: " + response.status);
@@ -87,7 +87,7 @@ function Paperbase(props) {
       };
 
       //request SAM status
-      fetch("/sam", requestOptions)
+      fetch("/card/sam-status", requestOptions)
         .then(response => {
           if(response.status === 200){
             //update server state if required

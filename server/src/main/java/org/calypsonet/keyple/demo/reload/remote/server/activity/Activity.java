@@ -9,7 +9,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ************************************************************************************** */
-package org.cna.keyple.demo.distributed.server.log;
+package org.calypsonet.keyple.demo.reload.remote.server.activity;
 
 import java.time.Instant;
 import java.time.ZoneId;
@@ -18,43 +18,22 @@ import java.time.format.FormatStyle;
 import java.util.UUID;
 
 /** Transaction log object for the dashboard view */
-public class TransactionLog {
+public class Activity {
 
   String id; // id of the transaction
-  String poSn; // Calypso Card Serial Number
+  String cardSerialNumber; // Calypso Card Serial Number
   String plugin; // plugin name
   String startedAt; // when the transaction started
   String type; // type of transaction
   String status; // SUCCESS or FAIL
   String contractLoaded; // (opt) description of the contract loaded
 
-  /** Default constructor */
-  public TransactionLog() {
-    this.id = generateId();
-    this.startedAt = generateTimestamp();
-  }
-
-  /**
-   * Generate a 4 char random UUID
-   *
-   * @return a not nullable id
-   */
-  private String generateId() {
-    return UUID.randomUUID().toString().substring(0, 4);
-  }
-
-  /**
-   * Generate a formatted timestamp
-   *
-   * @return a not nullable timestamp
-   */
-  private String generateTimestamp() {
-    DateTimeFormatter formatter =
+  public Activity() {
+    this.id = UUID.randomUUID().toString().substring(0, 4);
+    this.startedAt =
         DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT)
-            // .withLocale( Locale.UK )
-            .withZone(ZoneId.systemDefault());
-
-    return formatter.format(Instant.now());
+            .withZone(ZoneId.systemDefault())
+            .format(Instant.now());
   }
 
   public String getType() {
@@ -69,8 +48,8 @@ public class TransactionLog {
     return id;
   }
 
-  public String getPoSn() {
-    return poSn;
+  public String getCardSerialNumber() {
+    return cardSerialNumber;
   }
 
   public String getPlugin() {
@@ -85,27 +64,27 @@ public class TransactionLog {
     return contractLoaded;
   }
 
-  public TransactionLog setPoSn(String poSn) {
-    this.poSn = poSn;
+  public Activity setCardSerialNumber(String cardSerialNumber) {
+    this.cardSerialNumber = cardSerialNumber;
     return this;
   }
 
-  public TransactionLog setPlugin(String plugin) {
+  public Activity setPlugin(String plugin) {
     this.plugin = plugin;
     return this;
   }
 
-  public TransactionLog setType(String type) {
+  public Activity setType(String type) {
     this.type = type;
     return this;
   }
 
-  public TransactionLog setStatus(String status) {
+  public Activity setStatus(String status) {
     this.status = status;
     return this;
   }
 
-  public TransactionLog setContractLoaded(String contractLoaded) {
+  public Activity setContractLoaded(String contractLoaded) {
     this.contractLoaded = contractLoaded;
     return this;
   }
