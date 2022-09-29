@@ -2,6 +2,20 @@
 
 This is the repository for the Android Client of the Keyple Remote Reload Demo application.
 
+This demo is an open source project provided by the [Calypso Networks Association](https://calypsonet.org) implementing
+the [Eclipse Keyple SDK](https://keyple.org) in a typical use case that can serve as a basis for building a ticketing
+ecosystem based on contactless cards and/or NFC smartphones.
+
+The source code and APK are available at  [calypsonet/keyple-java-demo-remote/releases](https://github.com/calypsonet/keyple-java-demo-remote/releases)
+
+The code can be easily adapted to other cards, terminals and business logic.
+
+It shows how to load contracts into a Calypso card, the whole ticketing process being managed remotely.
+Following the contract loading the card can pay presented to a validator running the 
+[Keyple Demo Validation](https://github.com/calypsonet/keyple-android-demo-validation) application and then checked with
+the [Keyple Demo Control](https://github.com/calypsonet/keyple-android-demo-control) application.
+
+
 Read the main [README](https://github.com/calypsonet/keyple-java-demo-remote#readme) to understand the purpose of this application.
 
 ## Screens
