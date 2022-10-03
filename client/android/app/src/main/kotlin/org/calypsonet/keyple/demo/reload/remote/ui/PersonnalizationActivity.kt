@@ -21,6 +21,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.calypsonet.keyple.demo.common.constant.RemoteServiceId
 import org.calypsonet.keyple.demo.common.dto.CardIssuanceOutputDto
 import org.calypsonet.keyple.demo.reload.remote.R
 import org.calypsonet.keyple.demo.reload.remote.data.model.AppSettings
@@ -126,7 +127,7 @@ class PersonnalizationActivity : AbstractCardActivity() {
             ticketingService.getTransactionManager(selectedDeviceReaderName, aidEnums, protocol)
         val cardIssuanceOutput =
             localServiceClient.executeRemoteService(
-                "CARD_ISSUANCE",
+                RemoteServiceId.CARD_ISSUANCE.name,
                 selectedDeviceReaderName,
                 transactionManager.calypsoCard,
                 null,

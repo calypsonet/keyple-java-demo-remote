@@ -14,7 +14,9 @@ package org.calypsonet.keyple.demo.reload.remote.server.card;
 import java.util.regex.Pattern;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import org.calypsonet.keyple.demo.common.constant.RemoteServiceId;
 import org.calypsonet.keyple.demo.common.dto.AnalyzeContractsInputDto;
+import org.calypsonet.keyple.demo.common.dto.CardIssuanceInputDto;
 import org.calypsonet.keyple.demo.common.dto.WriteContractInputDto;
 import org.calypsonet.terminal.calypso.card.CalypsoCard;
 import org.calypsonet.terminal.calypso.sam.CalypsoSam;
@@ -41,6 +43,7 @@ public class CardConfigurator {
   private static final Logger logger = LoggerFactory.getLogger(CardConfigurator.class);
 
   static final String REMOTE_PLUGIN_NAME = "REMOTE_PLUGIN_#1";
+  static final String SAM_RESOURCE_PROFILE_NAME = "SAM C1";
 
   @ConfigProperty(name = "sam.pcsc.reader.filter")
   String samReaderFilter;
@@ -78,9 +81,10 @@ public class CardConfigurator {
 
   private void setupCardResourceService(Plugin plugin) {
     logger.info(
-        "Set up CardResourceService for plugin '{}' with readerNameRegex '{}' and samProfileName 'SAM C1'",
+        "Set up CardResourceService for plugin '{}' with readerNameRegex '{}' and samProfileName '{}'",
         plugin.getName(),
-        samReaderFilter);
+        samReaderFilter,
+        SAM_RESOURCE_PROFILE_NAME);
     // Create a card resource extension expecting a SAM "C1".
     CardResourceProfileExtension samResourceProfileExtension =
         CalypsoExtensionService.getInstance()
@@ -95,18 +99,19 @@ public class CardConfigurator {
         .withPlugins(
             PluginsConfigurator.builder().addPlugin(plugin, new SamReaderConfigurator()).build())
         .withCardResourceProfiles(
-            CardResourceProfileConfigurator.builder("SAM C1", samResourceProfileExtension)
+            CardResourceProfileConfigurator.builder(
+                    SAM_RESOURCE_PROFILE_NAME, samResourceProfileExtension)
                 .withReaderNameRegex(samReaderFilter)
                 .build())
         .configure();
     cardResourceService.start();
     // verify the resource availability
-    CardResource cardResource = cardResourceService.getCardResource("SAM C1");
+    CardResource cardResource = cardResourceService.getCardResource(SAM_RESOURCE_PROFILE_NAME);
     if (cardResource == null) {
       throw new IllegalStateException(
           String.format(
-              "Unable to retrieve a SAM card resource for profile 'SAM C1' from reader '%s' in plugin '%s'",
-              samReaderFilter, plugin.getName()));
+              "Unable to retrieve a SAM card resource for profile '%s' from reader '%s' in plugin '%s'",
+              SAM_RESOURCE_PROFILE_NAME, samReaderFilter, plugin.getName()));
     }
     cardResourceService.releaseCardResource(cardResource);
   }
@@ -184,7 +189,7 @@ public class CardConfigurator {
       // Analyses the Service ID contains in the reader to find which business service to execute.
       // The Service ID was specified by the client when executing the remote service.
       Object outputData;
-      if ("CONTRACT_ANALYSIS".equals(readerExtension.getServiceId())) {
+      if (RemoteServiceId.CONTRACT_ANALYSIS.name().equals(readerExtension.getServiceId())) {
 
         // Get input data
         CardResource cardResource =
@@ -195,7 +200,7 @@ public class CardConfigurator {
         // Execute service
         outputData = cardService.analyzeContracts(cardResource, inputData);
 
-      } else if ("WRITE_CONTRACT".equals(readerExtension.getServiceId())) {
+      } else if (RemoteServiceId.WRITE_CONTRACT.name().equals(readerExtension.getServiceId())) {
 
         // Get input data
         CardResource cardResource =
@@ -205,14 +210,15 @@ public class CardConfigurator {
         // Execute service
         outputData = cardService.writeContract(cardResource, inputData);
 
-      } else if ("CARD_ISSUANCE".equals(readerExtension.getServiceId())) {
+      } else if (RemoteServiceId.CARD_ISSUANCE.name().equals(readerExtension.getServiceId())) {
 
         // Get input data
         CardResource cardResource =
             new CardResource(reader, (CalypsoCard) readerExtension.getInitialCardContent());
+        CardIssuanceInputDto inputData = readerExtension.getInputData(CardIssuanceInputDto.class);
 
         // Execute service
-        outputData = cardService.initCard(cardResource);
+        outputData = cardService.initCard(cardResource, inputData);
 
       } else {
         throw new IllegalArgumentException("Service ID not recognized");

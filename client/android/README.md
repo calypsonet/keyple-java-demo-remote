@@ -1,6 +1,6 @@
-# Keyple Remote Reload Demo - Android Client's repository
+# Keyple Reload Demo - Android Client's repository
 
-This is the repository for the Android Client of the Keyple Remote Reload Demo application.
+This is the repository for the Android Client of the Keyple Reload Demo application.
 
 This demo is an open source project provided by the [Calypso Networks Association](https://calypsonet.org) implementing
 the [Eclipse Keyple SDK](https://keyple.org) in a typical use case that can serve as a basis for building a ticketing
@@ -15,8 +15,8 @@ Following the contract loading the card can pay presented to a validator running
 [Keyple Demo Validation](https://github.com/calypsonet/keyple-android-demo-validation) application and then checked with
 the [Keyple Demo Control](https://github.com/calypsonet/keyple-android-demo-control) application.
 
-
-Read the main [README](https://github.com/calypsonet/keyple-java-demo-remote#readme) to understand the purpose of this application.
+Read the main [README](https://github.com/calypsonet/keyple-java-demo-remote#readme) to understand the purpose of this
+application.
 
 ## Screens
 
@@ -44,27 +44,3 @@ Read the main [README](https://github.com/calypsonet/keyple-java-demo-remote#rea
     - Connect to remote server.
     - With remote server connected to a SAM, proceed to a card writing.
 - Charge Result (`ChargeResultActivity`): Displays if loading was successful or failed.
-
-## Sign application
-
-In order to access to SIM card content you must own a specific SIM card and sign the application with related keystore.
-Otherwise you'll encounter a security exception.
-
-Within the release package, 6 APKs are provided:
-* keyple-demo-remote-client-android-X.Y.Z-debug-unsigned.apk: Unsigned debug version.
-* keyple-demo-remote-client-android-X.Y.Z-release-unsigned.apk: Unsigned release version.
-* keyple-demo-remote-client-android-X.Y.Z-debug-CNA.apk: Debug version signed with CNA Keystore. At time no compatible SIM are available.
-* keyple-demo-remote-client-android-X.Y.Z-release-CNA.apk: Release version signed with CNA Keystore. At time no compatible SIM are available.
-* keyple-demo-remote-client-android-X.Y.Z-debug-ORANGE.apk: Debug version signed with Orange Keystore, compatible pre-production SIMs provided by Orange.
-* keyple-demo-remote-client-android-X.Y.Z-release-ORANGE.apk: Release version signed with Orange Keystore, compatible pre-production SIMs provided by Orange.
-
-## Use Wizway Solutions platform
-
-In order to use the eSE, this demo relies on Wizway Platform.
-Wizway Solutions provides an application to install on the device (called the Agent) which will handle operations 
-opening access to the secure element (can also be used with the SIM card) and allowing to exchange data with it.
-To create a connection with this agent, Wizway Solutions provides an android library.
-Once the library and agent are correctly initialized, Wizway Service Instances are provided to Keyple Wizway Plugin and
-the Android application can benefit from Keyple toolkit.
-
-Please refer to [Keyple Android Wizway Plugin](https://github.com/calypsonet/keyple-android-plugin-wizway/) and [Wizway Solutions](https://www.wizwaysolutions.com) for more information.

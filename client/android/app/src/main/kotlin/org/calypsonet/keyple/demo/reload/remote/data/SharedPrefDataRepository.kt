@@ -86,7 +86,7 @@ class SharedPrefDataRepository @Inject constructor(private var prefs: SharedPref
 
   fun loadSimConfigurationVisibility(): Visibility {
     return Visibility.valueOf(
-        prefs.getString(SETTING_SIM_VISIBILITY, Visibility.ENABLE.text)!!.uppercase(Locale.ROOT))
+        prefs.getString(SETTING_SIM_VISIBILITY, Visibility.DISABLE.text)!!.uppercase(Locale.ROOT))
   }
 
   fun saveWearableConfigurationVisibility(visibility: Visibility) {
@@ -97,7 +97,7 @@ class SharedPrefDataRepository @Inject constructor(private var prefs: SharedPref
 
   fun loadWearableConfigurationVisibility(): Visibility {
     return Visibility.valueOf(
-        prefs.getString(SETTING_WEARABLE_VISIBILITY, Visibility.ENABLE.text)!!.uppercase(
+        prefs.getString(SETTING_WEARABLE_VISIBILITY, Visibility.DISABLE.text)!!.uppercase(
             Locale.ROOT))
   }
 
@@ -109,7 +109,7 @@ class SharedPrefDataRepository @Inject constructor(private var prefs: SharedPref
 
   fun loadEmbeddedConfigurationVisibility(): Visibility {
     return Visibility.valueOf(
-        prefs.getString(SETTING_EMBEDDED_VISIBILITY, Visibility.ENABLE.text)!!.uppercase(
+        prefs.getString(SETTING_EMBEDDED_VISIBILITY, Visibility.DISABLE.text)!!.uppercase(
             Locale.ROOT))
   }
 
@@ -128,10 +128,9 @@ class SharedPrefDataRepository @Inject constructor(private var prefs: SharedPref
     private const val SERVER_PORT_KEY = "server_port_key"
     private const val SERVER_PROTOCOL_KEY = "server_protocol_key"
     private const val DEVICE_TYPE = "device_type"
-    private const val DEFAULT_SERVER_IP_KEY = "192.168.11.179"
-    private const val DEFAULT_PORT = 8881
+    private const val DEFAULT_SERVER_IP_KEY = "192.168.0.1"
+    private const val DEFAULT_PORT = 8080
     private const val DEFAULT_PROTOCOL = "http://"
-
     private const val SETTING_CONTACTLESS_VISIBILITY = "setting_contactless_visibility"
     private const val SETTING_SIM_VISIBILITY = "setting_sim_visibility"
     private const val SETTING_WEARABLE_VISIBILITY = "setting_wearable_visibility"

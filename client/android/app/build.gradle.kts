@@ -16,7 +16,6 @@ plugins {
 val kotlinVersion: String by project
 val archivesBaseName: String by project
 val signingPropertiesFile = File("signing.properties")
-var signingOwner = "unsigned"
 android {
     compileSdkVersion(29)
     buildToolsVersion("30.0.3")
@@ -29,7 +28,6 @@ android {
                 val properties = Properties().apply {
                     load(signingPropertiesFile.reader())
                 }
-                signingOwner = properties.getProperty("owner")
                 storeFile = File(properties.getProperty("storeFilePath"))
                 storePassword = properties.getProperty("storePassword")
                 keyPassword = properties.getProperty("keyPassword")
@@ -47,11 +45,6 @@ android {
     }
 
     buildTypes {
-        getByName("debug") {
-            if (signingPropertiesFile.exists()) {
-                signingConfig = signingConfigs.getByName("default")
-            }
-        }
         getByName("release") {
             minifyEnabled(false)
             proguardFiles(
@@ -88,7 +81,7 @@ android {
     applicationVariants.all {
         outputs.forEach { output ->
             if (output is com.android.build.gradle.internal.api.BaseVariantOutputImpl) {
-                output.outputFileName = "${archivesBaseName}-${project.version}-${buildType.name}-${signingOwner}.${output.outputFile.extension}".replace("-SNAPSHOT", "")
+                output.outputFileName = "${archivesBaseName}-${project.version}-${buildType.name}.${output.outputFile.extension}".replace("-SNAPSHOT", "")
             }
         }
     }

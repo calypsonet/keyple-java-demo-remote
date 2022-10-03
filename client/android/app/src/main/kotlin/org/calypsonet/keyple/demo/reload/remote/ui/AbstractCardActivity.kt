@@ -95,8 +95,7 @@ abstract class AbstractCardActivity :
     readerRepository.registerPlugin(
         AndroidNfcPluginFactoryProvider(this@AbstractCardActivity).getFactory())
 
-    val androidNfcReader =
-        readerRepository.getObservableReader(selectedDeviceReaderName) as ObservableCardReader
+    val androidNfcReader = readerRepository.getObservableReader(selectedDeviceReaderName)
     androidNfcReader.setReaderObservationExceptionHandler(this@AbstractCardActivity)
     androidNfcReader.addObserver(this@AbstractCardActivity)
     androidNfcReader.setReaderObservationExceptionHandler(this@AbstractCardActivity)

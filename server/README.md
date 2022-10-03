@@ -1,85 +1,75 @@
-# Keyple Remote Demo - Java Server's repository
+# Keyple Reload Demo - Java Server's repository
 
-This is the repository for the Java Server of the Keyple Java Remote Demo application. 
+This is the repository for the Java Server of the Keyple Reload Demo application.
 
-Read the main [README](https://github.com/calypsonet/keyple-java-demo-remote#readme) to understand the purpose of the Keyple Java Remote Demo application. 
+The server is accessible from the client application and can be monitored via a GUI.
 
-## Running the server from the executable
+Read the main [README](https://github.com/calypsonet/keyple-java-demo-remote#readme) to understand the purpose of this
+demo.
 
-The server is packaged in an executable jar `keyple-demo-remote-server-vYYYY.MM.jar` which can be started with the command: 
+## Running the server from the executable JAR file
+
+The server is packaged as an executable jar `keyple-demo-remote-server-X.Y.Z-full.jar` which can be started with the
+command: 
 
 ```
-java -jar keyple-demo-remote-server-vYYYY.MM.jar
+java -jar keyple-demo-remote-server-X.Y.Z-full.jar
 ```
 
-By default the server starts only if a PCSC reader is connected. The PC/SC reader name should match the default filter (regex format) defined in the application.properties. 
-``sam.pcsc.reader.filter=.*(Cherry TC|SCM Microsystems|Identive|HID|Generic).*``
+A web browser should be launched automatically pointing to the server dashboard application.
+If not started, open the default url: `http://localhost:8080`
 
-If you want to use a different filter, start the server with the parameter ``-Dsam.pcsc.reader.filter=XXX`` where XXX is a matching regex of your PC/SC reader.
+By default, the server starts only if a PC/SC reader is connected.
+The PC/SC reader name should match the default filter (regex format) defined in the `application.properties` file:  
 
-- For Windows Command Prompt
+```
+sam.pcsc.reader.filter=.*(Cherry TC|SCM Microsystems|Identive|HID|Generic).*
+```
 
-The command hereafter starts the server with the PCSC reader "Identive CLOUD 2700 R Smart Card Reader"
+If you want to use a different filter, start the server with the parameter `-Dsam.pcsc.reader.filter=XXX` where XXX is a
+matching regex of your PC/SC reader.
+
+- **For Windows Command Prompt:**
+
+The command hereafter starts the server with the PCSC reader `Identive CLOUD 2700 R Smart Card Reader`
+
 ```
-java "-Dsam.pcsc.reader.filter=Identive CLOUD 2700 R Smart Card Reader.*" -jar keyple-demo-remote-server-v2021.12.jar 
+java "-Dsam.pcsc.reader.filter=Identive CLOUD 2700 R Smart Card Reader.*" -jar keyple-demo-remote-server-X.Y.Z-full.jar 
 ```
-The command below starts the server with any PC/SC reader connected. Be aware that if multiple readers are connected, the server will select one of them randomly.
-```
-java "-Dsam.pcsc.reader.filter=.*" -jar keyple-demo-remote-server-vYYYY.MM.jar
-```
-- For Windows Powershell
+
+- **For Windows Powershell:**
+
 Beware of the syntax on Windows Powershell to pass an argument
-```
-java '-Dsam.pcsc.reader.filter=Identive CLOUD 2700 R Smart Card Reader.*' -jar .\keyple-demo-remote-server-v2021.12.jar
-```
-
-
-
-## Running the server from the source
-
-This example is based on the Quarkus framework. To start the server, you need to install Quarkus dependencies: 
-- JDK 1.8+ installed with JAVA_HOME configured appropriately
-- gradle
-
-You can run the server in dev mode:
 
 ```
-./gradlew runDevServer
+java '-Dsam.pcsc.reader.filter=Identive CLOUD 2700 R Smart Card Reader.*' -jar .\keyple-demo-remote-server-X.Y.Z-full.jar
 ```
 
-Be aware that the server will start correctly if a PC/SC reader is connected whose name matches the default filter defined in the ``application.properties`` file:
-``sam.pcsc.reader.filter=.*(Cherry TC|SCM Microsystems|Identive|HID|Generic).*``
+## Running the server from the sources (for developers)
 
-A web browser should be launched automatically pointing to the server dashboard application. If not started, open the default url: http://localhost:8080
+The server is based on the [Quarkus](https://quarkus.io/) framework and the web app `dashboard-app` is based on the
+[React](https://fr.reactjs.org/) library.
 
-## Packaging and running the application
+To start the server, you need to install first the following components: 
 
-The server depends on an external module located in `../common`.
+- `JDK 1.8+`
+- `gradle`
+- `Node JS`
 
-This project includes a web app `dashboard-app` based on the [create react app](https://github.com/facebook/create-react-app) and [material-ui](https://material-ui.com/) projects.
+Then, you have to configure `npm` for the project:
 
-As such to complete the build, you need to install:
-- npm 5.2+
+- Open a terminal in `dashboard-app` directory and execute these commands:
 
-The application can be packaged using:
+```
+npm cache clear --force
+npm install
+```
 
-```./gradlew buildServerExecutable```
+You can now build and run the server:
 
-It produces the `keyple-demo-remote-server-vYYYY.MM.jar` file in the `build` directory (where YYYY and MM are respectively the year and the month of the release)
-Be aware that it is a _über-jar_ as the dependencies are copied inside the jar along with the dashboard-app.
+```
+./gradlew build
+./gradlew startServer
+```
 
-The application is now runnable using:
-
-```java -jar build/keyple-demo-remote-server-vYYYY.MM.jar```
-(where YYYY and MM are respectively the year and the month of the release)
-
-or using the custom gradle task that runs the previous command: 
-
-```./gradlew runServerExecutable```
-
-
-## About Quarkus
-
-This project uses Quarkus, the Supersonic Subatomic Java Framework.
-
-If you want to learn more about Quarkus, please visit its website: https://quarkus.io/.
+The build command produces the `keyple-demo-remote-server-X.Y.Z-full.jar` JAR file in the `build` directory.

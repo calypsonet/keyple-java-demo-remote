@@ -1,37 +1,29 @@
-# Keyple Remote Demo
+# Keyple Reload Demo
 
-This is the repository for the Keyple Java Remote Demo application. 
+This is the repository for the Keyple Java Reload Demo application. 
 
 This demo is an open source project provided by [Calypso Networks Association](https://calypsonet.org),
 you can adapt the demo for your cards, terminals, projects, etc. 
 
-This demo is a client/server demonstration of [Eclipse Keyple Distributed Solution](https://keyple.org/docs/developer-guide/distributed-application/) feature.
+This is a client/server demonstration of the [Eclipse Keyple Distributed Solution](https://keyple.org/docs/developer-guide/distributed-application/) 
+feature where all ticketing procedures and sessions are fully managed by the server.
 
-This demo shows how to easily reload a contract (Season Pass and/or Multi-trip ticket) on a Calypso card using the
-[Eclipse Keyple](https://keyple.org) components, and also to initialize the Calypso card for use by the Keyple demos. 
-
-It implements simultaneously multiple plugins for handling multiple solutions of the device:
-- [Keyple Plugin Android NFC | Eclipse Keyple](https://keyple.org/components-java/plugins/nfc/) for use with contactless cards
-- (Work in progress) [Keyple Plugin OMAPI | Eclipse Keyple](https://keyple.org/components-java/plugins/omapi/) for use with Contact cards.
-- (Work in progress) [Wizway plugin](https://github.com/calypsonet/keyple-android-plugin-wizway/) for use with eSE powered by Wizway Solutions.
-
-The source code and APK for several solutions are available at [calypsonet/keyple-java-demo-remote/releases](https://github.com/calypsonet/keyple-java-demo-remote/releases)
+The [Eclipse Keyple](https://keyple.org) SDK is used to remotely initialize a card and reload a contract (Season Pass 
+and/or Multi-trip ticket) on a Calypso contactless card using the [Keyple Plugin Android NFC | Eclipse Keyple](https://keyple.org/components-java/plugins/nfc/) 
+plugin.
 
 ## Keyple Demos
 
 This demo is part of a set of three demos:
-* [Keyple Remote Demo](https://github.com/calypsonet/keyple-java-demo-remote)
+* [Keyple Reload Demo](https://github.com/calypsonet/keyple-java-demo-remote)
 * [Keyple Validation Demo](https://github.com/calypsonet/keyple-android-demo-validation)
 * [Keyple Control Demo](https://github.com/calypsonet/keyple-android-demo-control)
 
-## Calypso Card Applications
+These demos are all based on a common library that defines elements such as constants and data structures implemented
+for the logic of the ticketing application: [Keyple Demo Common Library](https://github.com/calypsonet/keyple-demo-common-lib).
 
-The demo works with the cards provided in the [Test kit](https://calypsonet.org/technical-support-documentation/)
-
-This demo can be used with Calypso cards with the following configurations:
-* AID 315449432E49434131h - File Structure 05h (CD Light/GTML Compatibility)
-* (Work in progress) AID 315449432E49434133h - File Structure 32h (Calypso Light Classic)
-* (Work in progress) AID A0000004040125090101h - File Structure 05h (CD Light/GTML Compatibility)
+Please refer to the [README](https://github.com/calypsonet/keyple-demo-common-lib/blob/main/README.md)
+file of this library to discover these data structures.
 
 ## Code organization
 
@@ -43,10 +35,6 @@ This repository is organized in 2 source code folders:
 ## Project's details
 
 Each application's code source contains a README file, please refer to this document for more information.
-
-## Data Structures
-
-The data structures are defined in the library common to all the demo applications [Keyple Demo Common Library](https://github.com/calypsonet/keyple-demo-common-lib).
 
 ## Card Issuance / Personalization and Distribution / Loading Procedures
 
@@ -80,7 +68,7 @@ This procedure's main steps are as follows:
   - Fill the environment structure, pack it into a byte array and update the environment record:
     - `EnvVersionNumber` = 1
     - `EnvApplicationNumber` = GlobalNumber++
-    - `EnvIssuingDate` = Current Date converted to DateCompact
+    - `EnvIssuingDate` = Current Date converted to `DateCompact`
     - `EnvEndDate` = (1st day of the month of Current Date + 6 years) converted to DateCompact
     - `HolderCompany`, `HolderIdNumber` and `EnvPadding` all filled to 0.
   - Clear the first event (update with a byte array filled with 0s).
@@ -134,7 +122,7 @@ This procedure's main steps are as follows:
 - Contract Analysis:
   - For each contract:
     - Read and unpack the contract record for the index being iterated.
-      - If `ContractVersionNumber` is 0 ensure that the associated ContractPriority field value is 0 and move on to the next contract.
+      - If `ContractVersionNumber` is 0 ensure that the associated `ContractPriority` field value is 0 and move on to the next contract.
       - If `ContractValidityEndDate` points to a date in the past update the associated `ContractPriorty` field present in the persistent object to 31 and set the change flag to true.
     - Add contract to the list of possible contracts to be reloaded.
     - Return the list with the contract information. <Exit process>
@@ -169,19 +157,11 @@ This procedure's main steps are as follows:
    - `EventTimeStamp` = value read from previous event.
    - `EventLocation` = value read from previous event.
    - `EventContractUsed` = value read from previous event.
-   - `ContractPriority1` = Value of index 0 of ContractPriority persistent object.
-   - `ContractPriority2` = Value of index 1 of ContractPriority persistent object.
-   - `ContractPriority3` = Value of index 2 of ContractPriority persistent object.
-   - `ContractPriority4` = Value of index 3 of ContractPriority persistent object.
+   - `ContractPriority1` = Value of index 0 of `ContractPriority` persistent object.
+   - `ContractPriority2` = Value of index 1 of `ContractPriority` persistent object.
+   - `ContractPriority3` = Value of index 2 of `ContractPriority` persistent object.
+   - `ContractPriority4` = Value of index 3 of `ContractPriority` persistent object.
    - `EventPadding` = 0.
   - Pack the Event structure and update the last event with that binary data.
   - Close the session.
   - Return the status of the operation to the upper layer. <Exit process>
-
-## Ticketing implementation
-
-Ticketing procedures and session's management are handled by server.
-
-The client provides remote card readers to the server.
-
-All Ticketing process is server side executed (reading/loading/personalization).

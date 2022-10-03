@@ -19,12 +19,24 @@ jobs:
         with:
           java-version: '11'
           distribution: 'adopt'
+      - name: Set up Node JS
+        uses: actions/setup-node@v3
       - name: Update permissions
         working-directory: .
         run: chmod +x ./client/android/gradlew ./server/gradlew ./.github/scripts/*.sh
       - name: Check version client Android
         working-directory: ./client/android/
         run: ../../.github/scripts/check_version.sh
+      - name: Check version server
+        working-directory: ./server/
+        run: ../.github/scripts/check_version.sh
       - name: Build and Test client Android
         working-directory: ./client/android/
         run: ./gradlew build test --info --stacktrace
+      - name: Build and Test server
+        working-directory: ./server/
+        run: |
+          cd ./dashboard-app
+          npm install
+          cd ..
+          ./gradlew build test --info --stacktrace

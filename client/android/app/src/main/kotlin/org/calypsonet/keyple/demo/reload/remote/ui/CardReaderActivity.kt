@@ -26,6 +26,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.calypsonet.keyple.demo.common.constant.RemoteServiceId
 import org.calypsonet.keyple.demo.common.dto.AnalyzeContractsInputDto
 import org.calypsonet.keyple.demo.common.dto.AnalyzeContractsOutputDto
 import org.calypsonet.keyple.demo.common.model.ContractStructure
@@ -134,7 +135,7 @@ class CardReaderActivity : AbstractCardActivity() {
         // un-mock for run
         val compatibleContractOutput =
             localServiceClient.executeRemoteService(
-                "CONTRACT_ANALYSIS",
+                RemoteServiceId.CONTRACT_ANALYSIS.name,
                 selectedDeviceReaderName,
                 transactionManager.calypsoCard,
                 analyseContractsInput,
@@ -144,9 +145,7 @@ class CardReaderActivity : AbstractCardActivity() {
           0 -> {
             runOnUiThread {
               val contracts = compatibleContractOutput.validContracts
-              val status =
-                  if (contracts?.size != null && contracts.isNotEmpty()) Status.TICKETS_FOUND
-                  else Status.EMPTY_CARD
+              val status = if (contracts.isNotEmpty()) Status.TICKETS_FOUND else Status.EMPTY_CARD
               val finishActivity =
                   device !=
                       DeviceEnum
@@ -155,12 +154,7 @@ class CardReaderActivity : AbstractCardActivity() {
 
               changeDisplay(
                   CardReaderResponse(
-                      status,
-                      "",
-                      contracts?.size ?: 0,
-                      buildCardTitles(contracts),
-                      arrayListOf(),
-                      ""),
+                      status, "", contracts.size, buildCardTitles(contracts), arrayListOf(), ""),
                   HexUtil.toHex(transactionManager.calypsoCard.applicationSerialNumber),
                   finishActivity)
             }

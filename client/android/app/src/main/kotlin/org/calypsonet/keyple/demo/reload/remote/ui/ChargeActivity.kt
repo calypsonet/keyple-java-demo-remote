@@ -24,6 +24,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.calypsonet.keyple.demo.common.constant.RemoteServiceId
 import org.calypsonet.keyple.demo.common.dto.AnalyzeContractsInputDto
 import org.calypsonet.keyple.demo.common.dto.AnalyzeContractsOutputDto
 import org.calypsonet.keyple.demo.common.dto.WriteContractInputDto
@@ -114,23 +115,23 @@ class ChargeActivity : AbstractCardActivity() {
         val analyseContractsInput = AnalyzeContractsInputDto(pluginType)
         // un-mock for run
         localServiceClient.executeRemoteService(
-            "CONTRACT_ANALYSIS",
+            RemoteServiceId.CONTRACT_ANALYSIS.name,
             selectedDeviceReaderName,
             transactionManager.calypsoCard,
             analyseContractsInput,
             AnalyzeContractsOutputDto::class.java)
 
-        val writeContractInputDto = WriteContractInputDto(null, null, pluginType)
-
-        val ticketToBeLoaded = intent.getIntExtra(SelectTicketsActivity.TICKETS_NUMBER, 0)
-        writeContractInputDto.contractTariff =
+        val contractTariff =
             PriorityCode.findEnumByKey(
                 intent.getIntExtra(SelectTicketsActivity.SELECTED_TICKET_PRIORITY_CODE, 0))
-        writeContractInputDto.ticketToLoad = ticketToBeLoaded
+        val ticketToBeLoaded = intent.getIntExtra(SelectTicketsActivity.TICKETS_NUMBER, 0)
+
+        val writeContractInputDto =
+            WriteContractInputDto(contractTariff, ticketToBeLoaded, pluginType)
 
         val writeTitleOutput =
             localServiceClient.executeRemoteService(
-                "WRITE_CONTRACT",
+                RemoteServiceId.WRITE_CONTRACT.name,
                 selectedDeviceReaderName,
                 transactionManager.calypsoCard,
                 writeContractInputDto,

@@ -1,4 +1,4 @@
-# Notices for Keyple Remote Demo
+# Notices for Keyple Reload Demo
 
 This content is produced and maintained by Calypso Networks Association.
 
