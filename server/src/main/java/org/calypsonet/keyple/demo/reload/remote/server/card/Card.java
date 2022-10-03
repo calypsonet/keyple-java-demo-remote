@@ -68,6 +68,6 @@ class Card {
 
   @Override
   public String toString() {
-    return "CARD=" + JsonUtil.toJson(this);
+    return "CARD = " + JsonUtil.toJson(this);
   }
 }
