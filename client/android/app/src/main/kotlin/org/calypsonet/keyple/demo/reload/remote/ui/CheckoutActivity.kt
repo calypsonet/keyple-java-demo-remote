@@ -30,11 +30,8 @@ class CheckoutActivity : AbstractDemoActivity() {
 
     val selectedTicketPriorityCode =
         PriorityCode.findEnumByKey(
-            intent
-                .getIntExtra(
-                    SelectTicketsActivity.SELECTED_TICKET_PRIORITY_CODE,
-                    PriorityCode.MULTI_TRIP.key)
-                .toInt())
+            intent.getIntExtra(
+                SelectTicketsActivity.SELECTED_TICKET_PRIORITY_CODE, PriorityCode.MULTI_TRIP.key))
     val ticketNumberCount: Int = intent.getIntExtra(SelectTicketsActivity.TICKETS_NUMBER, 0)
 
     if (selectedTicketPriorityCode == PriorityCode.SEASON_PASS) {

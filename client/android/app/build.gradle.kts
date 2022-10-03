@@ -103,12 +103,12 @@ dependencies {
     implementation("org.calypsonet.terminal:calypsonet-terminal-calypso-java-api:1.2.+") { isChanging = true }
     implementation("org.eclipse.keyple:keyple-common-java-api:2.0.+") { isChanging = true }
     implementation("org.eclipse.keyple:keyple-util-java-lib:2.+") { isChanging = true }
-    implementation("org.eclipse.keyple:keyple-service-java-lib:2.1.1-SNAPSHOT") { isChanging = true }
+    implementation("org.eclipse.keyple:keyple-service-java-lib:2.1.0")
     implementation("org.eclipse.keyple:keyple-card-calypso-java-lib:2.2.1")
 
     // Keyple reader plugins
     implementation("org.eclipse.keyple:keyple-plugin-android-nfc-java-lib:2.0.1")
-    implementation("org.eclipse.keyple:keyple-plugin-android-omapi-java-lib:2.0.0")
+    implementation("org.eclipse.keyple:keyple-plugin-android-omapi-java-lib:2.0.1")
 
     // Keyple distributed
     implementation("org.eclipse.keyple:keyple-distributed-network-java-lib:2.0.0")
