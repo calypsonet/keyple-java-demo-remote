@@ -46,3 +46,5 @@ Thumbs.db:encryptable
 ehthumbs.db
 ehthumbs_vista.db
 *.stackdump
+
+/LICENSE_HEADER
