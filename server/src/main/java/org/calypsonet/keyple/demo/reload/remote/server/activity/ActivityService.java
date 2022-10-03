@@ -65,6 +65,8 @@ public class ActivityService {
     try {
       return activityQueue.poll(10, TimeUnit.SECONDS);
     } catch (InterruptedException e) {
+      // Restore interrupted state...
+      Thread.currentThread().interrupt();
       return null;
     }
   }

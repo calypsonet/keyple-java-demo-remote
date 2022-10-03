@@ -47,6 +47,7 @@ public class CardRepository {
   private static final Logger logger = LoggerFactory.getLogger(CardRepository.class);
 
   private static final String PLUGIN_TYPE_ANDROID_OMAPI = "Android OMAPI";
+  private static final String CALYPSO_SESSION_CLOSED = "Calypso Session Closed.";
 
   public Card readCard(CardResource cardResource, CardResource samResource, String pluginType) {
 
@@ -59,14 +60,14 @@ public class CardRepository {
     logger.info("Open Calypso Session (LOAD)...");
     cardTransactionManager
         .processOpening(WriteAccessLevel.LOAD)
-        .prepareReadRecordFile(CardConstant.SFI_ENVIRONMENT_AND_HOLDER, 1)
-        .prepareReadRecordFile(CardConstant.SFI_EVENTS_LOG, 1)
-        .prepareReadRecordFile(
+        .prepareReadRecord(CardConstant.SFI_ENVIRONMENT_AND_HOLDER, 1)
+        .prepareReadRecord(CardConstant.SFI_EVENTS_LOG, 1)
+        .prepareReadRecords(
             CardConstant.SFI_CONTRACTS, 1, contractCount, CardConstant.CONTRACT_RECORD_SIZE_BYTES)
-        .prepareReadCounterFile(CardConstant.SFI_COUNTERS, 4)
-        .processCardCommands()
+        .prepareReadCounter(CardConstant.SFI_COUNTERS, 4)
+        .processCommands()
         .processClosing();
-    logger.info("Calypso Session Closed.");
+    logger.info(CALYPSO_SESSION_CLOSED);
 
     return parse(calypsoCard);
   }
@@ -103,7 +104,7 @@ public class CardRepository {
       }
     }
     /* Update event */
-    if (card.isEventUpdated()) {
+    if (Boolean.TRUE.equals(card.isEventUpdated())) {
       cardTransactionManager.prepareUpdateRecord(
           CardConstant.SFI_EVENTS_LOG,
           1,
@@ -111,7 +112,7 @@ public class CardRepository {
     }
 
     cardTransactionManager.processClosing();
-    logger.info("Calypso Session Closed.");
+    logger.info(CALYPSO_SESSION_CLOSED);
 
     return 0;
   }
@@ -157,7 +158,7 @@ public class CardRepository {
         CardConstant.SFI_COUNTERS, 1, new byte[CardConstant.EVENT_RECORD_SIZE_BYTES]);
 
     cardTransactionManager.processClosing();
-    logger.info("Calypso Session Closed.");
+    logger.info(CALYPSO_SESSION_CLOSED);
   }
 
   @NotNull
@@ -170,7 +171,8 @@ public class CardRepository {
     CardSecuritySetting cardSecuritySetting =
         CalypsoExtensionService.getInstance()
             .createCardSecuritySetting()
-            .setSamResource(samResource.getReader(), (CalypsoSam) samResource.getSmartCard());
+            .setControlSamResource(
+                samResource.getReader(), (CalypsoSam) samResource.getSmartCard());
 
     CardTransactionManager cardTransactionManager =
         CalypsoExtensionService.getInstance()

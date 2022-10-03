@@ -37,6 +37,9 @@ import org.slf4j.LoggerFactory;
 public class CardService {
 
   private static final Logger logger = LoggerFactory.getLogger(CardService.class);
+  public static final String SAM_C1 = "SAM C1";
+  public static final String ANDROID_NFC_PLUGIN_NAME = "Android NFC";
+  public static final String SUCCESS = "SUCCESS";
 
   @Inject CardRepository cardRepository;
   @Inject ActivityService activityService;
@@ -48,15 +51,15 @@ public class CardService {
     String asnHex =
         HexUtil.toHex(((CalypsoCard) cardResource.getSmartCard()).getApplicationSerialNumber());
 
-    CardResource samResource = CardResourceServiceProvider.getService().getCardResource("SAM C1");
+    CardResource samResource = CardResourceServiceProvider.getService().getCardResource(SAM_C1);
     try {
       Card card = cardRepository.readCard(cardResource, samResource, pluginType);
-      logger.info(card.toString());
+      logger.info("{}", card);
       List<ContractStructure> validContracts = findValidContracts(card);
       activityService.push(
           new Activity()
-              .setPlugin(pluginType == null ? "Android NFC" : pluginType)
-              .setStatus("SUCCESS")
+              .setPlugin(pluginType == null ? ANDROID_NFC_PLUGIN_NAME : pluginType)
+              .setStatus(SUCCESS)
               .setType("SECURED READ")
               .setCardSerialNumber(asnHex));
       return new AnalyzeContractsOutputDto(validContracts, 0);
@@ -64,7 +67,7 @@ public class CardService {
       logger.error("An error occurred while analyzing the contracts: {}", e.getMessage());
       activityService.push(
           new Activity()
-              .setPlugin(pluginType == null ? "Android NFC" : pluginType)
+              .setPlugin(pluginType == null ? ANDROID_NFC_PLUGIN_NAME : pluginType)
               .setStatus("FAIL")
               .setType("SECURED READ")
               .setCardSerialNumber(asnHex));
@@ -82,21 +85,21 @@ public class CardService {
 
     logger.info("Inserted card application serial number: {}", asnHex);
 
-    CardResource samResource = CardResourceServiceProvider.getService().getCardResource("SAM C1");
+    CardResource samResource = CardResourceServiceProvider.getService().getCardResource(SAM_C1);
     try {
       Card card = cardRepository.readCard(cardResource, samResource, pluginType);
       if (card == null) {
         // If card has not been read previously, throw error
         return new WriteContractOutputDto(3);
       }
-      logger.info(card.toString());
+      logger.info("{}", card);
       insertNewContract(inputData.getContractTariff(), inputData.getTicketToLoad(), card);
       int statusCode = cardRepository.writeCard(cardResource, samResource, pluginType, card);
       activityService.push(
           new Activity()
               // TODO change default name
-              .setPlugin(pluginType == null ? "Android NFC" : pluginType)
-              .setStatus("SUCCESS")
+              .setPlugin(pluginType == null ? ANDROID_NFC_PLUGIN_NAME : pluginType)
+              .setStatus(SUCCESS)
               .setType("RELOAD")
               .setCardSerialNumber(asnHex)
               .setContractLoaded(
@@ -110,7 +113,7 @@ public class CardService {
       activityService.push(
           new Activity()
               // TODO change default name
-              .setPlugin(pluginType == null ? "Android NFC" : pluginType)
+              .setPlugin(pluginType == null ? ANDROID_NFC_PLUGIN_NAME : pluginType)
               .setStatus("FAIL")
               .setType("RELOAD")
               .setCardSerialNumber(asnHex)
@@ -126,20 +129,20 @@ public class CardService {
     String asnHex =
         HexUtil.toHex(((CalypsoCard) cardResource.getSmartCard()).getApplicationSerialNumber());
 
-    CardResource samResource = CardResourceServiceProvider.getService().getCardResource("SAM C1");
+    CardResource samResource = CardResourceServiceProvider.getService().getCardResource(SAM_C1);
     try {
-      cardRepository.initCard(cardResource, samResource, "Android NFC");
+      cardRepository.initCard(cardResource, samResource, ANDROID_NFC_PLUGIN_NAME);
       activityService.push(
           new Activity()
-              .setPlugin("Android NFC")
-              .setStatus("SUCCESS")
+              .setPlugin(ANDROID_NFC_PLUGIN_NAME)
+              .setStatus(SUCCESS)
               .setType("ISSUANCE")
               .setCardSerialNumber(asnHex));
       return new CardIssuanceOutputDto(0);
     } catch (RuntimeException e) {
       activityService.push(
           new Activity()
-              .setPlugin("Android NFC")
+              .setPlugin(ANDROID_NFC_PLUGIN_NAME)
               .setStatus("FAIL")
               .setType("ISSUANCE")
               .setCardSerialNumber(asnHex));
@@ -224,7 +227,7 @@ public class CardService {
         newContract =
             buildMultiTripContract(
                 environment.getEnvEndDate(), currentContract.getCounterValue() + ticketToLoad);
-      } else if (PriorityCode.SEASON_PASS == contractTariff) {
+      } else {
         newContract = buildSeasonContract();
       }
     } else {
@@ -237,7 +240,7 @@ public class CardService {
       // build new contract
       if (PriorityCode.MULTI_TRIP == contractTariff) {
         newContract = buildMultiTripContract(environment.getEnvEndDate(), ticketToLoad);
-      } else if (PriorityCode.SEASON_PASS == contractTariff) {
+      } else {
         newContract = buildSeasonContract();
       }
     }
@@ -254,6 +257,8 @@ public class CardService {
       case 4:
         currentEvent.setContractPriority4(newContract.getContractTariff());
         break;
+      default:
+        throw new IllegalStateException("Unexpected contract number: " + newContractNumber);
     }
     // Update contract & Event
     card.setContract(newContractNumber - 1, newContract);
