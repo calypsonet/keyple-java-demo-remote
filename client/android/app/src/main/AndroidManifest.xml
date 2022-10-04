@@ -7,9 +7,6 @@
     <!-- Required for nfc plugin-->
     <uses-permission android:name="android.permission.NFC" />
 
-    <!-- Required for wizway agent -->
-    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
-
     <!-- Required for Open Mobile API -->
     <uses-permission android:name="org.simalliance.openmobileapi.SMARTCARD" />
 

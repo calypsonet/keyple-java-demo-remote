@@ -95,9 +95,6 @@ dependencies {
     // Demo common
     implementation("org.calypsonet.keyple:keyple-demo-common-lib:1.0.0-SNAPSHOT") { isChanging = true }
 
-    // Keyple reader plugins proprietary libs
-    implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.aar"))))
-
     // Keyple core
     implementation("org.calypsonet.terminal:calypsonet-terminal-reader-java-api:1.0.+") { isChanging = true }
     implementation("org.calypsonet.terminal:calypsonet-terminal-calypso-java-api:1.2.+") { isChanging = true }
