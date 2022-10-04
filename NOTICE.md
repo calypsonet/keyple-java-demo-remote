@@ -1,4 +1,4 @@
-# Notices for Keyple Remote Demo
+# Notices for Keyple Reload Demo
 
 This content is produced and maintained by Calypso Networks Association.
 
@@ -22,16 +22,65 @@ of the Eclipse Public License v. 2.0 which is available at
 http://www.eclipse.org/legal/epl-2.0.
 
 SPDX-License-Identifier: EPL-2.0
- 
-## Contributors
-   *   Olivier Delcroix
-   *   Meddy Menzikoff
-   *   Cedric Tang
-   *   Ludovic Teixeira Costa
    
 ## Third-party Content
 
-### Android Open Source Project
+Google Gson (2.8.9)
+
+ * License: Apache License, 2.0
+
+SLF4J API (1.7.32)
+
+ * License: MIT License
+
+Junit (4.13.2)
+
+ * License: Eclipse Public License, 2.0
+
+RxJava: Reactive Extensions for Java (2.1.13):
+
+ * Licence: Apache Software License, 2.0
+
+####Specific for Android plugins
+
+Android Open Source Project
 
  * License: Apache Software License, 2.0
+
+Timber (4.7.1):
+
+ * Licence: Apache Software License, 2.0
+
+slf4j Timber (3.1):
+
+ * Licence: Apache Software License, 2.0
+
+Kotlin Standard Library (1.7.0):
+
+  * Licence: Apache Software License, 2.0
+
+Kotlinx Coroutines core (1.3.3):
+
+ * Licence: Apache Software License, 2.0
+
+Lottie for Android (3.4.4):
+
+ * Licence: Apache Software License, 2.0
+
+RxAndroid: Reactive Extensions for Android (2.0.2):
+
+ * Licence: Apache Software License, 2.0
+
+Joda Time Library (2.8.1):
+
+ * Licence: Apache Software License, 2.0
+
+Bit-lib4j (1.4.5):
+
+ * Licence: Apache Software License, 2.0
+
+Dagger (2.19):
+
+ * Licence: Apache Software License, 2.0
+
  

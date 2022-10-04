@@ -1,4 +1,4 @@
-# Contributing to Keyple Remote Demo
+# Contributing to Keyple Reload Demo
 
 Thanks for your interest in this project.
 

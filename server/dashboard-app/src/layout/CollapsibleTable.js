@@ -33,7 +33,7 @@ function Row(props) {
         <TableCell align="center">{row.startedAt}</TableCell>
         <TableCell align="center">{row.plugin}</TableCell>
         <TableCell align="center">{row.type}</TableCell>
-        <TableCell align="center">{row.poSn}</TableCell>
+        <TableCell align="center">{row.cardSerialNumber}</TableCell>
         <TableCell align="center">{row.status}</TableCell>
         <TableCell align="center">{row.contractLoaded}</TableCell>
       </TableRow>
@@ -91,7 +91,7 @@ Row.propTypes = {
     ),*/
     plugin: PropTypes.string.isRequired,
     type: PropTypes.string.isRequired,
-    poSn: PropTypes.string.isRequired,
+    cardSerialNumber: PropTypes.string.isRequired,
     status: PropTypes.string.isRequired,
   }).isRequired,
 };
