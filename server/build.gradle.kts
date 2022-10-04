@@ -60,9 +60,6 @@ dependencies {
     implementation(enforcedPlatform("io.quarkus:quarkus-universe-bom:1.8.1.Final"))
     implementation("io.quarkus:quarkus-resteasy-jsonb")
     implementation("io.quarkus:quarkus-resteasy")
-    implementation("io.quarkus:quarkus-rest-client")
-    testImplementation("io.quarkus:quarkus-junit5")
-    testImplementation("io.rest-assured:rest-assured")
     // Google GSON
     implementation("com.google.code.gson:gson:2.8.9")
     // Logging
