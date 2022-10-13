@@ -194,9 +194,8 @@ public class CardRepository {
     return new EnvironmentHolderStructure(
         VersionNumber.CURRENT_VERSION,
         1,
-        new DateCompact(new Date(now.toEpochMilli())),
-        new DateCompact(
-            new Date(envEndDate.atStartOfDay().toInstant(ZoneOffset.UTC).toEpochMilli())),
+        new DateCompact(LocalDate.now()),
+        new DateCompact(envEndDate),
         null,
         null);
   }

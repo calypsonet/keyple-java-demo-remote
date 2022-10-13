@@ -38,7 +38,7 @@ android {
 
     defaultConfig {
         applicationId("org.calypsonet.keyple.demo.remote")
-        minSdkVersion(24)
+        minSdk = 26
         targetSdkVersion(29)
         versionCode(6)
         versionName(project.version.toString())
@@ -101,7 +101,7 @@ dependencies {
     implementation("org.eclipse.keyple:keyple-common-java-api:2.0.+") { isChanging = true }
     implementation("org.eclipse.keyple:keyple-util-java-lib:2.+") { isChanging = true }
     implementation("org.eclipse.keyple:keyple-service-java-lib:2.1.0")
-    implementation("org.eclipse.keyple:keyple-card-calypso-java-lib:2.2.1")
+    implementation("org.eclipse.keyple:keyple-card-calypso-java-lib:2.2.2")
 
     // Keyple reader plugins
     implementation("org.eclipse.keyple:keyple-plugin-android-nfc-java-lib:2.0.1")
@@ -153,7 +153,7 @@ dependencies {
     implementation("io.reactivex.rxjava2:rxandroid:2.0.2")
 
     // Joda Time
-    implementation("joda-time:joda-time:2.8.1")
+    //implementation("joda-time:joda-time:2.8.1")
 
     // Google GSON
     implementation("com.google.code.gson:gson:2.8.9")

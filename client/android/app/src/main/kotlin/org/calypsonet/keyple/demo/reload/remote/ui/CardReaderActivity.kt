@@ -16,6 +16,8 @@ import android.nfc.NfcManager
 import android.os.Bundle
 import android.view.View
 import java.lang.IllegalStateException
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import java.util.Locale
 import javax.inject.Inject
 import kotlin.Exception
@@ -30,6 +32,7 @@ import org.calypsonet.keyple.demo.common.constant.RemoteServiceId
 import org.calypsonet.keyple.demo.common.dto.AnalyzeContractsInputDto
 import org.calypsonet.keyple.demo.common.dto.AnalyzeContractsOutputDto
 import org.calypsonet.keyple.demo.common.model.ContractStructure
+import org.calypsonet.keyple.demo.common.model.type.DateCompact
 import org.calypsonet.keyple.demo.common.model.type.PriorityCode
 import org.calypsonet.keyple.demo.reload.remote.R
 import org.calypsonet.keyple.demo.reload.remote.data.model.*
@@ -40,8 +43,6 @@ import org.calypsonet.terminal.reader.CardReaderEvent
 import org.calypsonet.terminal.reader.ReaderCommunicationException
 import org.eclipse.keyple.core.service.KeyplePluginException
 import org.eclipse.keyple.core.util.HexUtil
-import org.joda.time.DateTime
-import org.joda.time.format.DateTimeFormat
 import timber.log.Timber
 
 @ActivityScoped
@@ -50,7 +51,7 @@ class CardReaderActivity : AbstractCardActivity() {
   @Inject lateinit var ticketingService: TicketingService
 
   private val dateTimeFormatter =
-      DateTimeFormat.forPattern("d MMMM yyyy").withLocale(Locale.ENGLISH)
+      DateTimeFormatter.ofPattern("d MMMM yyyy").withLocale(Locale.ENGLISH)
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -189,20 +190,24 @@ class CardReaderActivity : AbstractCardActivity() {
         CardTitle("Multi trip", description ?: "No counter", valid)
       }
       PriorityCode.SEASON_PASS -> {
-        val saleDate = DateTime(contractStructure.contractSaleDate.date)
-        val validityEndDate = DateTime(contractStructure.contractValidityEndDate.date)
-        val validity = DateTime.now() in saleDate..validityEndDate
+        val now = LocalDate.now()
+        val validity =
+            contractStructure.contractSaleDate.date <= now &&
+                contractStructure.contractValidityEndDate.date >= now
+        // TODO check why date is not deserialized properly
+        val contractSaleDate = DateCompact(contractStructure.contractSaleDate.value)
+        val contractValidityEndDate = DateCompact(contractStructure.contractValidityEndDate.value)
         CardTitle(
             "Season pass",
-            "From ${saleDate.toString(dateTimeFormatter)} to ${validityEndDate.toString(dateTimeFormatter)}",
+            "From ${contractSaleDate.date.format(dateTimeFormatter)} to ${contractValidityEndDate.date.format(dateTimeFormatter)}",
             validity)
       }
       PriorityCode.EXPIRED -> {
-        val saleDate = DateTime(contractStructure.contractSaleDate.date)
-        val validityEndDate = DateTime(contractStructure.contractValidityEndDate.date)
+        val contractSaleDate = DateCompact(contractStructure.contractSaleDate.value)
+        val contractValidityEndDate = DateCompact(contractStructure.contractValidityEndDate.value)
         CardTitle(
             "Season pass - Expired",
-            "From ${saleDate.toString(dateTimeFormatter)} to ${validityEndDate.toString(dateTimeFormatter)}",
+            "From ${contractSaleDate.date.format(dateTimeFormatter)} to ${contractValidityEndDate.date.format(dateTimeFormatter)}",
             false)
       }
       PriorityCode.FORBIDDEN -> {
