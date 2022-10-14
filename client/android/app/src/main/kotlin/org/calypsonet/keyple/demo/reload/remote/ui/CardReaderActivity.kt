@@ -16,6 +16,8 @@ import android.nfc.NfcManager
 import android.os.Bundle
 import android.view.View
 import java.lang.IllegalStateException
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import java.util.Locale
 import javax.inject.Inject
 import kotlin.Exception
@@ -40,8 +42,6 @@ import org.calypsonet.terminal.reader.CardReaderEvent
 import org.calypsonet.terminal.reader.ReaderCommunicationException
 import org.eclipse.keyple.core.service.KeyplePluginException
 import org.eclipse.keyple.core.util.HexUtil
-import org.joda.time.DateTime
-import org.joda.time.format.DateTimeFormat
 import timber.log.Timber
 
 @ActivityScoped
@@ -49,8 +49,7 @@ class CardReaderActivity : AbstractCardActivity() {
 
   @Inject lateinit var ticketingService: TicketingService
 
-  private val dateTimeFormatter =
-      DateTimeFormat.forPattern("d MMMM yyyy").withLocale(Locale.ENGLISH)
+  private val dateTimeFormatter = DateTimeFormatter.ofPattern("d MMMM yyyy", Locale.ENGLISH)
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -180,29 +179,30 @@ class CardReaderActivity : AbstractCardActivity() {
   private fun buildCardTitle(contractStructure: ContractStructure): CardTitle {
     return when (contractStructure.contractTariff) {
       PriorityCode.MULTI_TRIP -> {
-        var valid = false
+        var isValid = false
         val description =
             contractStructure.counterValue?.let {
-              valid = (it >= 1)
+              isValid = (it >= 1)
               if (it > 1) "$it trips left" else "$it trip left"
             }
-        CardTitle("Multi trip", description ?: "No counter", valid)
+        CardTitle("Multi trip", description ?: "No counter", isValid)
       }
       PriorityCode.SEASON_PASS -> {
-        val saleDate = DateTime(contractStructure.contractSaleDate.date)
-        val validityEndDate = DateTime(contractStructure.contractValidityEndDate.date)
-        val validity = DateTime.now() in saleDate..validityEndDate
+        val now = LocalDate.now()
+        val isValid =
+            (contractStructure.contractSaleDate.getDate().isBefore(now) ||
+                contractStructure.contractSaleDate.getDate().isEqual(now)) &&
+                (contractStructure.contractValidityEndDate.getDate().isAfter(now) ||
+                    contractStructure.contractValidityEndDate.getDate().isEqual(now))
         CardTitle(
             "Season pass",
-            "From ${saleDate.toString(dateTimeFormatter)} to ${validityEndDate.toString(dateTimeFormatter)}",
-            validity)
+            "From ${contractStructure.contractSaleDate.getDate().format(dateTimeFormatter)} to ${contractStructure.contractValidityEndDate.getDate().format(dateTimeFormatter)}",
+            isValid)
       }
       PriorityCode.EXPIRED -> {
-        val saleDate = DateTime(contractStructure.contractSaleDate.date)
-        val validityEndDate = DateTime(contractStructure.contractValidityEndDate.date)
         CardTitle(
             "Season pass - Expired",
-            "From ${saleDate.toString(dateTimeFormatter)} to ${validityEndDate.toString(dateTimeFormatter)}",
+            "From ${contractStructure.contractSaleDate.getDate().format(dateTimeFormatter)} to ${contractStructure.contractValidityEndDate.getDate().format(dateTimeFormatter)}",
             false)
       }
       PriorityCode.FORBIDDEN -> {

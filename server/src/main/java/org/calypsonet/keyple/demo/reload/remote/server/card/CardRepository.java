@@ -14,9 +14,7 @@ package org.calypsonet.keyple.demo.reload.remote.server.card;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.time.ZoneOffset;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import javax.enterprise.context.ApplicationScoped;
 import org.calypsonet.keyple.demo.common.constant.CardConstant;
@@ -194,9 +192,8 @@ public class CardRepository {
     return new EnvironmentHolderStructure(
         VersionNumber.CURRENT_VERSION,
         1,
-        new DateCompact(new Date(now.toEpochMilli())),
-        new DateCompact(
-            new Date(envEndDate.atStartOfDay().toInstant(ZoneOffset.UTC).toEpochMilli())),
+        new DateCompact(LocalDate.now()),
+        new DateCompact(envEndDate),
         null,
         null);
   }

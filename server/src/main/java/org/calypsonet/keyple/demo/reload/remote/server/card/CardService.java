@@ -11,6 +11,7 @@
  ************************************************************************************** */
 package org.calypsonet.keyple.demo.reload.remote.server.card;
 
+import java.time.LocalDate;
 import java.util.*;
 import java.util.Collections;
 import javax.enterprise.context.ApplicationScoped;
@@ -164,7 +165,7 @@ public class CardService {
       logger.warn("Version Number of card is invalid, reject card");
       return Collections.emptyList();
     }
-    if (environment.getEnvEndDate().getValue() < new DateCompact(new Date()).getValue()) {
+    if (environment.getEnvEndDate().getDate().isBefore(LocalDate.now())) {
       logger.warn("EnvEndDate of card is invalid, reject card");
       return Collections.emptyList();
     }
@@ -193,8 +194,7 @@ public class CardService {
         }
       } else {
         // If ContractValidityEndDate points to a date in the past
-        if (contract.getContractValidityEndDate().getValue()
-            < new DateCompact(new Date()).getValue()) {
+        if (contract.getContractValidityEndDate().getDate().isBefore(LocalDate.now())) {
           // Update the associated ContractPriority field present in the persistent object to 31 and
           // set the change flag to true.
           contract.setContractTariff(PriorityCode.EXPIRED);
@@ -280,7 +280,7 @@ public class CardService {
   }
 
   private ContractStructure buildMultiTripContract(DateCompact envEndDate, Integer counterValue) {
-    DateCompact contractSaleDate = new DateCompact(new Date());
+    DateCompact contractSaleDate = new DateCompact(LocalDate.now());
     ContractStructure contract =
         new ContractStructure(
             VersionNumber.CURRENT_VERSION,
@@ -296,9 +296,8 @@ public class CardService {
   }
 
   private ContractStructure buildSeasonContract() {
-    DateCompact contractSaleDate = new DateCompact(new Date());
-    DateCompact contractValidityEndDate =
-        new DateCompact((short) (contractSaleDate.getValue() + 30));
+    DateCompact contractSaleDate = new DateCompact(LocalDate.now());
+    DateCompact contractValidityEndDate = new DateCompact(contractSaleDate.getValue() + 30);
     return new ContractStructure(
         VersionNumber.CURRENT_VERSION,
         PriorityCode.SEASON_PASS,
