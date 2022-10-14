@@ -179,23 +179,25 @@ class CardReaderActivity : AbstractCardActivity() {
   private fun buildCardTitle(contractStructure: ContractStructure): CardTitle {
     return when (contractStructure.contractTariff) {
       PriorityCode.MULTI_TRIP -> {
-        var valid = false
+        var isValid = false
         val description =
             contractStructure.counterValue?.let {
-              valid = (it >= 1)
+              isValid = (it >= 1)
               if (it > 1) "$it trips left" else "$it trip left"
             }
-        CardTitle("Multi trip", description ?: "No counter", valid)
+        CardTitle("Multi trip", description ?: "No counter", isValid)
       }
       PriorityCode.SEASON_PASS -> {
         val now = LocalDate.now()
-        val validity =
-            contractStructure.contractSaleDate.getDate() <= now &&
-                contractStructure.contractValidityEndDate.getDate() >= now
+        val isValid =
+            (contractStructure.contractSaleDate.getDate().isBefore(now) ||
+                contractStructure.contractSaleDate.getDate().isEqual(now)) &&
+                (contractStructure.contractValidityEndDate.getDate().isAfter(now) ||
+                    contractStructure.contractValidityEndDate.getDate().isEqual(now))
         CardTitle(
             "Season pass",
             "From ${contractStructure.contractSaleDate.getDate().format(dateTimeFormatter)} to ${contractStructure.contractValidityEndDate.getDate().format(dateTimeFormatter)}",
-            validity)
+            isValid)
       }
       PriorityCode.EXPIRED -> {
         CardTitle(
