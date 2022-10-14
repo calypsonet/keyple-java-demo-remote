@@ -14,7 +14,6 @@ package org.calypsonet.keyple.demo.reload.remote
 import android.content.Context
 import androidx.multidex.MultiDex
 import androidx.work.Constraints
-import androidx.work.NetworkType
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.WorkRequest
@@ -40,10 +39,9 @@ class Application : DaggerApplication() {
   }
 
   private fun initServerStatusCkecker() {
-    val constraint = Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build()
     val pingWorkRequest: WorkRequest =
         PeriodicWorkRequestBuilder<CheckServerStatusWorker>(1, TimeUnit.SECONDS)
-            .setConstraints(constraint)
+            .setConstraints(Constraints.NONE)
             .build()
     WorkManager.getInstance(applicationContext).enqueue(pingWorkRequest)
   }

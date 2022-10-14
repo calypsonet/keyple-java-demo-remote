@@ -48,15 +48,11 @@ class CheckServerStatusWorker(appContext: Context, workerParams: WorkerParameter
     return try {
       client.ping().blockingGet()
       prefData.saveLastStatus(true)
-      with(EventBus.getDefault()) {
-        if (this.isRegistered(ServerStatusEvent::class.java)) this.post(ServerStatusEvent(true))
-      }
-      Result.success()
+      EventBus.getDefault().post(ServerStatusEvent(true))
+      Result.retry()
     } catch (e: Exception) {
       prefData.saveLastStatus(false)
-      with(EventBus.getDefault()) {
-        if (this.isRegistered(ServerStatusEvent::class.java)) this.post(ServerStatusEvent(false))
-      }
+      EventBus.getDefault().post(ServerStatusEvent(false))
       Result.retry()
     }
   }

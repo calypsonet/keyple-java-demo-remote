@@ -21,6 +21,7 @@ import org.calypsonet.keyple.demo.common.dto.WriteContractInputDto;
 import org.calypsonet.terminal.calypso.card.CalypsoCard;
 import org.calypsonet.terminal.calypso.sam.CalypsoSam;
 import org.calypsonet.terminal.reader.CardReader;
+import org.calypsonet.terminal.reader.spi.CardReaderObservationExceptionHandlerSpi;
 import org.eclipse.keyple.card.calypso.CalypsoExtensionService;
 import org.eclipse.keyple.core.service.*;
 import org.eclipse.keyple.core.service.resource.*;
@@ -97,7 +98,13 @@ public class CardConfigurator {
     cardResourceService
         .getConfigurator()
         .withPlugins(
-            PluginsConfigurator.builder().addPlugin(plugin, new SamReaderConfigurator()).build())
+            PluginsConfigurator.builder()
+                .addPluginWithMonitoring(
+                    plugin,
+                    new SamReaderConfigurator(),
+                    new MonitoringExceptionHandler(),
+                    new MonitoringExceptionHandler())
+                .build())
         .withCardResourceProfiles(
             CardResourceProfileConfigurator.builder(
                     SAM_RESOURCE_PROFILE_NAME, samResourceProfileExtension)
@@ -226,6 +233,19 @@ public class CardConfigurator {
 
       // Terminates the business service by providing the reader name and the optional output data.
       pluginExtension.endRemoteService(readerName, outputData);
+    }
+  }
+
+  private static class MonitoringExceptionHandler
+      implements PluginObservationExceptionHandlerSpi, CardReaderObservationExceptionHandlerSpi {
+    @Override
+    public void onPluginObservationError(String pluginName, Throwable e) {
+      logger.error("Error while monitoring the SAM plugin: {}", pluginName, e);
+    }
+
+    @Override
+    public void onReaderObservationError(String contextInfo, String readerName, Throwable e) {
+      logger.error("Error while monitoring the SAM reader: {}/{}", contextInfo, readerName, e);
     }
   }
 }

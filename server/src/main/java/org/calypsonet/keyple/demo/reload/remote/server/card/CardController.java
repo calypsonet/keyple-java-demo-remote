@@ -17,6 +17,7 @@ import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import org.calypsonet.terminal.reader.CardReader;
 import org.calypsonet.terminal.reader.ReaderCommunicationException;
 import org.eclipse.keyple.core.service.SmartCardServiceProvider;
 import org.eclipse.keyple.distributed.MessageDto;
@@ -62,7 +63,8 @@ public class CardController {
   public Response getSamStatus() {
     boolean isSamReady;
     try {
-      isSamReady = cardConfigurator.getSamReader().isCardPresent(); // ping sam
+      CardReader samReader = cardConfigurator.getSamReader();
+      isSamReady = samReader != null && samReader.isCardPresent(); // ping sam
     } catch (ReaderCommunicationException e) {
       // reader is disconnected
       isSamReady = false;
