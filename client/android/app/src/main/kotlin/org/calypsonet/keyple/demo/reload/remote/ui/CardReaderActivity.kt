@@ -32,7 +32,6 @@ import org.calypsonet.keyple.demo.common.constant.RemoteServiceId
 import org.calypsonet.keyple.demo.common.dto.AnalyzeContractsInputDto
 import org.calypsonet.keyple.demo.common.dto.AnalyzeContractsOutputDto
 import org.calypsonet.keyple.demo.common.model.ContractStructure
-import org.calypsonet.keyple.demo.common.model.type.DateCompact
 import org.calypsonet.keyple.demo.common.model.type.PriorityCode
 import org.calypsonet.keyple.demo.reload.remote.R
 import org.calypsonet.keyple.demo.reload.remote.data.model.*
@@ -192,22 +191,17 @@ class CardReaderActivity : AbstractCardActivity() {
       PriorityCode.SEASON_PASS -> {
         val now = LocalDate.now()
         val validity =
-            contractStructure.contractSaleDate.date <= now &&
-                contractStructure.contractValidityEndDate.date >= now
-        // TODO check why date is not deserialized properly
-        val contractSaleDate = DateCompact(contractStructure.contractSaleDate.value)
-        val contractValidityEndDate = DateCompact(contractStructure.contractValidityEndDate.value)
+            contractStructure.contractSaleDate.getDate() <= now &&
+                contractStructure.contractValidityEndDate.getDate() >= now
         CardTitle(
             "Season pass",
-            "From ${contractSaleDate.date.format(dateTimeFormatter)} to ${contractValidityEndDate.date.format(dateTimeFormatter)}",
+            "From ${contractStructure.contractSaleDate.getDate().format(dateTimeFormatter)} to ${contractStructure.contractValidityEndDate.getDate().format(dateTimeFormatter)}",
             validity)
       }
       PriorityCode.EXPIRED -> {
-        val contractSaleDate = DateCompact(contractStructure.contractSaleDate.value)
-        val contractValidityEndDate = DateCompact(contractStructure.contractValidityEndDate.value)
         CardTitle(
             "Season pass - Expired",
-            "From ${contractSaleDate.date.format(dateTimeFormatter)} to ${contractValidityEndDate.date.format(dateTimeFormatter)}",
+            "From ${contractStructure.contractSaleDate.getDate().format(dateTimeFormatter)} to ${contractStructure.contractValidityEndDate.getDate().format(dateTimeFormatter)}",
             false)
       }
       PriorityCode.FORBIDDEN -> {
