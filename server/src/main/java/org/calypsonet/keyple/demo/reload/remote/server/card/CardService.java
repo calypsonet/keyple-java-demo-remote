@@ -165,7 +165,7 @@ public class CardService {
       logger.warn("Version Number of card is invalid, reject card");
       return Collections.emptyList();
     }
-    if (environment.getEnvEndDate().getValue() < new DateCompact(LocalDate.now()).getValue()) {
+    if (environment.getEnvEndDate().getDate().isBefore(LocalDate.now())) {
       logger.warn("EnvEndDate of card is invalid, reject card");
       return Collections.emptyList();
     }
@@ -194,8 +194,7 @@ public class CardService {
         }
       } else {
         // If ContractValidityEndDate points to a date in the past
-        if (contract.getContractValidityEndDate().getValue()
-            < new DateCompact(LocalDate.now()).getValue()) {
+        if (contract.getContractValidityEndDate().getDate().isBefore(LocalDate.now())) {
           // Update the associated ContractPriority field present in the persistent object to 31 and
           // set the change flag to true.
           contract.setContractTariff(PriorityCode.EXPIRED);
@@ -298,8 +297,7 @@ public class CardService {
 
   private ContractStructure buildSeasonContract() {
     DateCompact contractSaleDate = new DateCompact(LocalDate.now());
-    DateCompact contractValidityEndDate =
-        new DateCompact((short) (contractSaleDate.getValue() + 30));
+    DateCompact contractValidityEndDate = new DateCompact(contractSaleDate.getValue() + 30);
     return new ContractStructure(
         VersionNumber.CURRENT_VERSION,
         PriorityCode.SEASON_PASS,

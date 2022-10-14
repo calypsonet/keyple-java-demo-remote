@@ -49,8 +49,7 @@ class CardReaderActivity : AbstractCardActivity() {
 
   @Inject lateinit var ticketingService: TicketingService
 
-  private val dateTimeFormatter =
-      DateTimeFormatter.ofPattern("d MMMM yyyy").withLocale(Locale.ENGLISH)
+  private val dateTimeFormatter = DateTimeFormatter.ofPattern("d MMMM yyyy", Locale.ENGLISH)
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
