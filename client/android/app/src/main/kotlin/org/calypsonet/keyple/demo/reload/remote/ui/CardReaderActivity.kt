@@ -168,6 +168,9 @@ class CardReaderActivity : AbstractCardActivity() {
                     HexUtil.toHex(transactionManager.calypsoCard.applicationSubtype)))
           } // card rejected
         }
+      } catch (e: IllegalStateException) {
+        Timber.e(e)
+        launchInvalidCardResponse(e.message!!)
       } catch (e: Exception) {
         Timber.e(e)
         val finishActivity =

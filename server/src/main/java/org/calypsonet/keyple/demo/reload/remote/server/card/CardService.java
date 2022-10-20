@@ -121,7 +121,7 @@ public class CardService {
                   inputData.getContractTariff().toString().replace("_", " ")
                       + ((inputData.getTicketToLoad() != 0)
                           ? ": " + inputData.getTicketToLoad()
-                          : "")));
+                         : "")));
       return new WriteContractOutputDto(statusCode);
     } catch (RuntimeException e) {
       logger.error("An error occurred while writing the contract: {}", e.getMessage());
@@ -196,7 +196,7 @@ public class CardService {
     List<ContractStructure> contracts = card.getContracts();
     List<ContractStructure> validContracts = new ArrayList<>();
     int calypsoIndex = 1;
-    for (ContractStructure contract : contracts) {
+    for (ContractStructure contract: contracts) {
       logger.info(
           "Contract at index {}: {} {}",
           calypsoIndex,

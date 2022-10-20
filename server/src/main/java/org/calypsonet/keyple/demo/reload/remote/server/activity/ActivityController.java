@@ -37,7 +37,7 @@ public class ActivityController {
   }
 
   /**
-   * Long Polling API to get a new event. http code:200 : new event is available. HTTP code 204 :
+   * Long Polling API to get a new event. http code:200: new event is available. HTTP code 204:
    * timeout, please renew request
    *
    * @return a {@link Activity} when a new log is push

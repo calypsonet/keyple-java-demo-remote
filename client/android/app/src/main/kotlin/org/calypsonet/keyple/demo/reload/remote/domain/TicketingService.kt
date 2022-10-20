@@ -15,11 +15,11 @@ import java.lang.IllegalStateException
 import java.util.*
 import javax.inject.Inject
 import kotlin.jvm.Throws
+import org.calypsonet.keyple.demo.common.constant.CardConstant
 import org.calypsonet.keyple.demo.reload.remote.data.ReaderRepository
 import org.calypsonet.keyple.demo.reload.remote.di.scopes.AppScoped
 import org.calypsonet.terminal.calypso.card.CalypsoCard
 import org.calypsonet.terminal.calypso.transaction.CardTransactionManager
-import org.calypsonet.terminal.reader.ReaderCommunicationException
 import org.eclipse.keyple.card.calypso.CalypsoExtensionService
 import org.eclipse.keyple.core.service.SmartCardServiceProvider
 
@@ -61,16 +61,21 @@ class TicketingService @Inject constructor(private var readerRepository: ReaderR
               } else {
                 calypsoExtension.createCardSelection().filterByDfName(it)
               }
-
           cardSelectionManager.prepareSelection(cardSelection)
         }
 
         val selectionResult = cardSelectionManager.processCardSelectionScenario(reader)
         if (selectionResult.activeSmartCard != null) {
+          val calypsoCard = selectionResult.activeSmartCard as CalypsoCard
+          // check is the DF name is the expected one (Req. TL-SEL-AIDMATCH.1)
+          if (!CardConstant.aidMatch(
+              aidEnums[selectionResult.activeSelectionIndex], calypsoCard.dfName)) {
+            throw IllegalStateException("Unexpected DF name")
+          }
           return calypsoExtension.createCardTransactionWithoutSecurity(
               reader, selectionResult.activeSmartCard as CalypsoCard)
         } else {
-          throw ReaderCommunicationException("Card app not found")
+          throw IllegalStateException("Selection error: AID not found")
         }
       } else {
         throw Exception("Card is not present")

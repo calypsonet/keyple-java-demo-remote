@@ -15,6 +15,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import java.lang.Exception
+import java.lang.IllegalStateException
 import javax.inject.Inject
 import kotlinx.android.synthetic.main.activity_card_reader.*
 import kotlinx.coroutines.Dispatchers
@@ -155,6 +156,9 @@ class PersonalizationActivity : AbstractCardActivity() {
                     HexUtil.toHex(transactionManager.calypsoCard.applicationSubtype)))
           } // card rejected
         }
+      } catch (e: IllegalStateException) {
+        Timber.e(e)
+        launchInvalidCardResponse(e.message!!)
       } catch (e: Exception) {
         Timber.e(e)
         launchExceptionResponse(e)

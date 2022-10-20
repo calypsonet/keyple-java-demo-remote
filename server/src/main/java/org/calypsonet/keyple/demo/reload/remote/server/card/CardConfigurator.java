@@ -53,8 +53,8 @@ public class CardConfigurator {
 
   public CardReader getSamReader() {
     Pattern p = Pattern.compile(samReaderFilter);
-    for (Plugin plugin : SmartCardServiceProvider.getService().getPlugins()) {
-      for (CardReader reader : plugin.getReaders()) {
+    for (Plugin plugin: SmartCardServiceProvider.getService().getPlugins()) {
+      for (CardReader reader: plugin.getReaders()) {
         if (p.matcher(reader.getName()).matches()) {
           return reader;
         }
