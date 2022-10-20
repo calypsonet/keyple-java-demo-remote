@@ -114,28 +114,12 @@ xmlns:app="http://schemas.android.com/apk/res-auto"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/last_validation_title"
-            style="@style/smallBoldBlue"
-            android:layout_marginTop="@dimen/content_last_validation_vertical_margin"
-            android:layout_marginBottom="@dimen/content_last_validation_vertical_margin" />
-
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:background="@color/blue"
             android:layout_marginStart="@dimen/card_validation_horizontal_margin"
             android:layout_marginEnd="@dimen/card_validation_horizontal_margin" />
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/lastValidationList"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/card_validation_horizontal_margin"
-            android:layout_marginEnd="@dimen/card_validation_horizontal_margin"
-            android:layout_marginBottom="@dimen/content_last_validation_vertical_margin" />
 
         <Button
             android:id="@+id/buyBtn"

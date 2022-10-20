@@ -123,7 +123,7 @@ class CardReaderActivity : AbstractCardActivity() {
   private suspend fun remoteServiceExecution(
       selectedDeviceReaderName: String,
       pluginType: String,
-      aidEnums: ArrayList<String>,
+      aidEnums: ArrayList<ByteArray>,
       protocol: String?
   ) {
     withContext(Dispatchers.IO) {
@@ -162,7 +162,10 @@ class CardReaderActivity : AbstractCardActivity() {
             launchServerErrorResponse()
           } // server not ready,
           2 -> {
-            launchInvalidCardResponse()
+            launchInvalidCardResponse(
+                String.format(
+                    getString(R.string.card_invalid_structure),
+                    HexUtil.toHex(transactionManager.calypsoCard.applicationSubtype)))
           } // card rejected
         }
       } catch (e: Exception) {

@@ -169,6 +169,10 @@ public class CardRepository {
     CardSecuritySetting cardSecuritySetting =
         CalypsoExtensionService.getInstance()
             .createCardSecuritySetting()
+            .assignDefaultKif(
+                WriteAccessLevel.PERSONALIZATION, CardConstant.DEFAULT_KIF_PERSONALIZATION)
+            .assignDefaultKif(WriteAccessLevel.LOAD, CardConstant.DEFAULT_KIF_LOAD)
+            .assignDefaultKif(WriteAccessLevel.DEBIT, CardConstant.DEFAULT_KIF_DEBIT)
             .setControlSamResource(
                 samResource.getReader(), (CalypsoSam) samResource.getSmartCard());
 

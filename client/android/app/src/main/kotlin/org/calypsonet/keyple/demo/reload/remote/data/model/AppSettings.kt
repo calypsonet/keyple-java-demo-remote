@@ -12,5 +12,5 @@
 package org.calypsonet.keyple.demo.reload.remote.data.model
 
 object AppSettings {
-  var aidEnums = arrayListOf<String>()
+  var aidEnums = arrayListOf<ByteArray>()
 }

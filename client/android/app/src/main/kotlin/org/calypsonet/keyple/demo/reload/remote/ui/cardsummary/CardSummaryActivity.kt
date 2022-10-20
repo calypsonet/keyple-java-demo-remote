@@ -21,22 +21,18 @@ import kotlinx.android.synthetic.main.activity_card_summary.bigText
 import kotlinx.android.synthetic.main.activity_card_summary.buyBtn
 import kotlinx.android.synthetic.main.activity_card_summary.contentTitle
 import kotlinx.android.synthetic.main.activity_card_summary.lastValidationContent
-import kotlinx.android.synthetic.main.activity_card_summary.lastValidationList
 import kotlinx.android.synthetic.main.activity_card_summary.smallDesc
 import kotlinx.android.synthetic.main.activity_card_summary.titlesList
 import org.calypsonet.keyple.demo.reload.remote.R
 import org.calypsonet.keyple.demo.reload.remote.data.model.CardReaderResponse
 import org.calypsonet.keyple.demo.reload.remote.data.model.Status
-import org.calypsonet.keyple.demo.reload.remote.setDivider
 import org.calypsonet.keyple.demo.reload.remote.ui.AbstractCardActivity
 import org.calypsonet.keyple.demo.reload.remote.ui.AbstractDemoActivity
 import org.calypsonet.keyple.demo.reload.remote.ui.SelectTicketsActivity
 
 class CardSummaryActivity : AbstractDemoActivity() {
 
-  private lateinit var validationLinearLayoutManager: LinearLayoutManager
   private lateinit var titleLinearLayoutManager: LinearLayoutManager
-  private lateinit var validationsAdapter: ValidationsRecyclerAdapter
   private lateinit var titlesAdapter: TitlesRecyclerAdapter
 
   override fun onCreate(savedInstanceState: Bundle?) {
@@ -46,15 +42,8 @@ class CardSummaryActivity : AbstractDemoActivity() {
     val cardContent: CardReaderResponse =
         intent.getParcelableExtra(AbstractCardActivity.CARD_CONTENT)!!
 
-    validationLinearLayoutManager = LinearLayoutManager(this)
-    lastValidationList.layoutManager = validationLinearLayoutManager
-
     titleLinearLayoutManager = LinearLayoutManager(this)
     titlesList.layoutManager = titleLinearLayoutManager
-
-    validationsAdapter = ValidationsRecyclerAdapter(cardContent.lastValidationsList)
-    lastValidationList.adapter = validationsAdapter
-    lastValidationList.setDivider(R.drawable.recycler_view_divider)
 
     titlesAdapter = TitlesRecyclerAdapter(cardContent.titlesList)
     titlesList.adapter = titlesAdapter
@@ -65,7 +54,7 @@ class CardSummaryActivity : AbstractDemoActivity() {
         animation.playAnimation()
         bigText.setText(R.string.card_invalid_label)
         bigText.setTextColor(resources.getColor(R.color.orange))
-        smallDesc.text = String.format(getString(R.string.card_invalid_desc), cardContent.cardType)
+        smallDesc.text = cardContent.errorMessage
         smallDesc.setTextColor(resources.getColor(R.color.orange))
         buyBtn.visibility = View.INVISIBLE
         titlesList.visibility = View.GONE

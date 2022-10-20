@@ -28,7 +28,7 @@ import kotlinx.android.synthetic.main.toolbar.toolbarLogo
 import org.calypsonet.keyple.demo.reload.remote.R
 import org.calypsonet.keyple.demo.reload.remote.data.model.Status
 
-class ChargeResultActivity : AbstractDemoActivity() {
+class ReloadResultActivity : AbstractDemoActivity() {
 
   private val timer = Timer()
 
@@ -61,7 +61,7 @@ class ChargeResultActivity : AbstractDemoActivity() {
         bigText.visibility = View.VISIBLE
         btnLayout.visibility = View.INVISIBLE
 
-        if (intent.getBooleanExtra(IS_PERSONNALIZATION_RESULT, false)) {
+        if (intent.getBooleanExtra(IS_PERSONALIZATION_RESULT, false)) {
           bigText.setText(R.string.perso_success_label)
         } else {
           bigText.setText(R.string.charging_success_label)
@@ -71,7 +71,7 @@ class ChargeResultActivity : AbstractDemoActivity() {
         timer.schedule(
             object : TimerTask() {
               override fun run() {
-                runOnUiThread { this@ChargeResultActivity.finish() }
+                runOnUiThread { this@ReloadResultActivity.finish() }
               }
             },
             RETURN_DELAY_MS.toLong())
@@ -82,10 +82,15 @@ class ChargeResultActivity : AbstractDemoActivity() {
         animation.repeatCount = 0
         animation.playAnimation()
 
-        if (intent.getBooleanExtra(IS_PERSONNALIZATION_RESULT, false)) {
+        val message = intent.getStringExtra(MESSAGE)
+        if (intent.getBooleanExtra(IS_PERSONALIZATION_RESULT, false)) {
           bigText.setText(R.string.perso_failed_label)
+          bigText.append(":\n")
+          bigText.append(message)
         } else {
           bigText.setText(R.string.transaction_cancelled_label)
+          bigText.append(":\n")
+          bigText.append(message)
         }
         bigText.visibility = View.VISIBLE
         btnLayout.visibility = View.VISIBLE
@@ -106,6 +111,7 @@ class ChargeResultActivity : AbstractDemoActivity() {
     private const val RETURN_DELAY_MS = 5000
     const val TICKETS_NUMBER = "ticketsNumber"
     const val STATUS = "status"
-    const val IS_PERSONNALIZATION_RESULT = "isPersonnalizationResult"
+    const val MESSAGE = "message"
+    const val IS_PERSONALIZATION_RESULT = "isPersonalizationResult"
   }
 }

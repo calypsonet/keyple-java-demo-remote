@@ -101,21 +101,21 @@
             android:configChanges="orientation|keyboardHidden">
         </activity>
         <activity
-            android:name="org.calypsonet.keyple.demo.reload.remote.ui.ChargeActivity"
+            android:name="org.calypsonet.keyple.demo.reload.remote.ui.ReloadActivity"
             android:theme="@style/AppTheme.NoActionBar"
             android:screenOrientation="portrait"
             android:launchMode="singleTop"
             android:configChanges="orientation|keyboardHidden">
         </activity>
         <activity
-            android:name="org.calypsonet.keyple.demo.reload.remote.ui.ChargeResultActivity"
+            android:name="org.calypsonet.keyple.demo.reload.remote.ui.ReloadResultActivity"
             android:theme="@style/AppTheme.NoActionBar"
             android:screenOrientation="portrait"
             android:launchMode="singleTop"
             android:configChanges="orientation|keyboardHidden">
         </activity>
         <activity
-            android:name="org.calypsonet.keyple.demo.reload.remote.ui.PersonnalizationActivity"
+            android:name="org.calypsonet.keyple.demo.reload.remote.ui.PersonalizationActivity"
             android:theme="@style/AppTheme.NoActionBar"
             android:screenOrientation="portrait"
             android:launchMode="singleTop"

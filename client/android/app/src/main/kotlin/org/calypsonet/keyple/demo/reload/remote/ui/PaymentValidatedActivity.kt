@@ -24,7 +24,7 @@ class PaymentValidatedActivity : AbstractDemoActivity() {
     setContentView(R.layout.activity_payment_validated)
     chargeBtn.text = getString(R.string.load_card)
     chargeBtn.setOnClickListener {
-      val intent = Intent(this, ChargeActivity::class.java)
+      val intent = Intent(this, ReloadActivity::class.java)
       intent.putExtras(getIntent())
       startActivity(intent)
       this@PaymentValidatedActivity.finish()

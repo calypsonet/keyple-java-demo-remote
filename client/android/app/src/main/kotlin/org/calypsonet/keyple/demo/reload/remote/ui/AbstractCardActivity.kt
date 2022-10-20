@@ -54,14 +54,14 @@ abstract class AbstractCardActivity :
             AppSettings.aidEnums.clear()
             AppSettings.aidEnums.add(CardConstant.AID_CD_LIGHT_GTML)
             AppSettings.aidEnums.add(CardConstant.AID_CALYPSO_LIGHT)
-            AppSettings.aidEnums.add(CardConstant.AID_NAVIGO_2013)
+            AppSettings.aidEnums.add(CardConstant.AID_NORMALIZED_IDF)
             AndroidNfcReader.READER_NAME
           }
           DeviceEnum.SIM -> {
             pluginType = "Android OMAPI"
             AppSettings.aidEnums.clear()
             AppSettings.aidEnums.add(CardConstant.AID_CD_LIGHT_GTML)
-            AppSettings.aidEnums.add(CardConstant.AID_NAVIGO_2013)
+            AppSettings.aidEnums.add(CardConstant.AID_NORMALIZED_IDF)
             AndroidOmapiReader.READER_NAME_SIM_1
           }
           DeviceEnum.WEARABLE -> {
@@ -137,11 +137,10 @@ abstract class AbstractCardActivity :
     readerRepository.unregisterPlugin(AndroidOmapiPlugin.PLUGIN_NAME)
   }
 
-  fun launchInvalidCardResponse() {
+  fun launchInvalidCardResponse(message: String) {
     runOnUiThread {
       changeDisplay(
-          CardReaderResponse(
-              Status.INVALID_CARD, "", 0, arrayListOf(), arrayListOf(), "", "invalid card"),
+          CardReaderResponse(Status.INVALID_CARD, "", 0, arrayListOf(), arrayListOf(), "", message),
           finishActivity =
               device !=
                   DeviceEnum.CONTACTLESS_CARD // /Only with NFC we can come back to 'wait for device

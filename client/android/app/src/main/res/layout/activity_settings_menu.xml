@@ -146,7 +146,7 @@
         app:layout_constraintTop_toBottomOf="@id/configurationBtn" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/personnalizationBtn"
+        android:id="@+id/personalizationBtn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintTop_toBottomOf="@id/middleLine2"
@@ -154,7 +154,7 @@
         android:paddingVertical="@dimen/settings_btn_padding_vertical">
 
         <ImageView
-            android:id="@+id/personnalizationIcon"
+            android:id="@+id/personalizationIcon"
             android:layout_width="@dimen/settings_icon_size"
             android:layout_height="@dimen/settings_icon_size"
             android:scaleType="fitXY"
@@ -167,12 +167,12 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/personnalization_setting"
+            android:text="@string/personalization_setting"
             style="@style/bigBoldDarkBlue"
             android:layout_marginStart="@dimen/settings_btn_text_margin_left"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toEndOf="@id/personnalizationIcon" />
+            app:layout_constraintStart_toEndOf="@id/personalizationIcon" />
 
         <ImageView
             android:layout_width="@dimen/settings_arrow_width"

@@ -16,6 +16,7 @@ import java.util.*;
 import java.util.Collections;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import org.calypsonet.keyple.demo.common.constant.CardConstant;
 import org.calypsonet.keyple.demo.common.dto.*;
 import org.calypsonet.keyple.demo.common.model.ContractStructure;
 import org.calypsonet.keyple.demo.common.model.EnvironmentHolderStructure;
@@ -49,8 +50,13 @@ public class CardService {
       CardResource cardResource, AnalyzeContractsInputDto inputData) {
 
     String pluginType = inputData.getPluginType();
-    String appSerialNumber =
-        HexUtil.toHex(((CalypsoCard) cardResource.getSmartCard()).getApplicationSerialNumber());
+    CalypsoCard calypsoCard = (CalypsoCard) cardResource.getSmartCard();
+    String appSerialNumber = HexUtil.toHex(calypsoCard.getApplicationSerialNumber());
+
+    if (!CardConstant.Companion.getALLOWED_FILE_STRUCTURES()
+        .contains(calypsoCard.getApplicationSubtype())) {
+      return new AnalyzeContractsOutputDto(Collections.emptyList(), 2);
+    }
 
     CardResource samResource =
         CardResourceServiceProvider.getService()
@@ -83,8 +89,13 @@ public class CardService {
   WriteContractOutputDto writeContract(CardResource cardResource, WriteContractInputDto inputData) {
 
     String pluginType = inputData.getPluginType();
-    String appSerialNumber =
-        HexUtil.toHex(((CalypsoCard) cardResource.getSmartCard()).getApplicationSerialNumber());
+    CalypsoCard calypsoCard = (CalypsoCard) cardResource.getSmartCard();
+    String appSerialNumber = HexUtil.toHex(calypsoCard.getApplicationSerialNumber());
+
+    if (!CardConstant.Companion.getALLOWED_FILE_STRUCTURES()
+        .contains(calypsoCard.getApplicationSubtype())) {
+      return new WriteContractOutputDto(2);
+    }
 
     logger.info("Inserted card application serial number: {}", appSerialNumber);
 
@@ -130,8 +141,13 @@ public class CardService {
   CardIssuanceOutputDto initCard(CardResource cardResource, CardIssuanceInputDto inputData) {
 
     String pluginType = inputData.getPluginType();
-    String appSerialNumber =
-        HexUtil.toHex(((CalypsoCard) cardResource.getSmartCard()).getApplicationSerialNumber());
+    CalypsoCard calypsoCard = (CalypsoCard) cardResource.getSmartCard();
+    String appSerialNumber = HexUtil.toHex(calypsoCard.getApplicationSerialNumber());
+
+    if (!CardConstant.Companion.getALLOWED_FILE_STRUCTURES()
+        .contains(calypsoCard.getApplicationSubtype())) {
+      return new CardIssuanceOutputDto(2);
+    }
 
     CardResource samResource =
         CardResourceServiceProvider.getService()

@@ -30,7 +30,7 @@ class TicketingService @Inject constructor(private var readerRepository: ReaderR
   @Throws(IllegalStateException::class, Exception::class)
   fun getTransactionManager(
       readerName: String,
-      aidEnums: ArrayList<String>,
+      aidEnums: ArrayList<ByteArray>,
       protocol: String?
   ): CardTransactionManager {
     with(ReaderRepository.getReader(readerName)) {

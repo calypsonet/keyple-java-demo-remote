@@ -15,14 +15,14 @@ import dagger.Module
 import dagger.android.ContributesAndroidInjector
 import org.calypsonet.keyple.demo.reload.remote.di.scopes.ActivityScoped
 import org.calypsonet.keyple.demo.reload.remote.ui.CardReaderActivity
-import org.calypsonet.keyple.demo.reload.remote.ui.ChargeActivity
-import org.calypsonet.keyple.demo.reload.remote.ui.ChargeResultActivity
 import org.calypsonet.keyple.demo.reload.remote.ui.CheckoutActivity
 import org.calypsonet.keyple.demo.reload.remote.ui.ConfigurationSettingsActivity
 import org.calypsonet.keyple.demo.reload.remote.ui.HomeActivity
 import org.calypsonet.keyple.demo.reload.remote.ui.MainActivity
 import org.calypsonet.keyple.demo.reload.remote.ui.PaymentValidatedActivity
-import org.calypsonet.keyple.demo.reload.remote.ui.PersonnalizationActivity
+import org.calypsonet.keyple.demo.reload.remote.ui.PersonalizationActivity
+import org.calypsonet.keyple.demo.reload.remote.ui.ReloadActivity
+import org.calypsonet.keyple.demo.reload.remote.ui.ReloadResultActivity
 import org.calypsonet.keyple.demo.reload.remote.ui.SelectTicketsActivity
 import org.calypsonet.keyple.demo.reload.remote.ui.ServerSettingsActivity
 import org.calypsonet.keyple.demo.reload.remote.ui.SettingsMenuActivity
@@ -64,13 +64,13 @@ abstract class UIModule {
   @ContributesAndroidInjector
   abstract fun paymentValidatedActivity(): PaymentValidatedActivity?
 
-  @ActivityScoped @ContributesAndroidInjector abstract fun chargeCardActivity(): ChargeActivity?
+  @ActivityScoped @ContributesAndroidInjector abstract fun chargeCardActivity(): ReloadActivity?
 
   @ActivityScoped
   @ContributesAndroidInjector
-  abstract fun chargeResultActivity(): ChargeResultActivity?
+  abstract fun chargeResultActivity(): ReloadResultActivity?
 
   @ActivityScoped
   @ContributesAndroidInjector
-  abstract fun personnalizationActivity(): PersonnalizationActivity?
+  abstract fun personalizationActivity(): PersonalizationActivity?
 }

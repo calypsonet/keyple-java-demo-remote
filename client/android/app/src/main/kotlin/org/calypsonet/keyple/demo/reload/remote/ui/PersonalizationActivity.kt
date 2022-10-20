@@ -36,13 +36,13 @@ import org.eclipse.keyple.core.util.HexUtil
 import timber.log.Timber
 
 @ActivityScoped
-class PersonnalizationActivity : AbstractCardActivity() {
+class PersonalizationActivity : AbstractCardActivity() {
 
   @Inject lateinit var ticketingService: TicketingService
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
-    setContentView(R.layout.activity_personnalization)
+    setContentView(R.layout.activity_personalization)
   }
 
   override fun initReaders() {
@@ -51,7 +51,7 @@ class PersonnalizationActivity : AbstractCardActivity() {
         showPresentNfcCardInstructions()
         initAndActivateAndroidKeypleNfcReader()
       } else {
-        showNowPersonnalizingInformation()
+        showNowPersonalizingInformation()
         initOmapiReader {
           GlobalScope.launch {
             remoteServiceExecution(selectedDeviceReaderName, AppSettings.aidEnums, null)
@@ -79,14 +79,14 @@ class PersonnalizationActivity : AbstractCardActivity() {
   }
 
   private fun showPresentNfcCardInstructions() {
-    presentTxt.text = getString(R.string.present_card_personnalisation)
+    presentTxt.text = getString(R.string.present_card_personalization)
     cardAnimation.visibility = View.VISIBLE
     cardAnimation.playAnimation()
     loadingAnimation.cancelAnimation()
     loadingAnimation.visibility = View.INVISIBLE
   }
 
-  private fun showNowPersonnalizingInformation() {
+  private fun showNowPersonalizingInformation() {
     presentTxt.text = getString(R.string.personalization_in_progress)
     loadingAnimation.visibility = View.VISIBLE
     loadingAnimation.playAnimation()
@@ -99,9 +99,10 @@ class PersonnalizationActivity : AbstractCardActivity() {
       applicationSerialNumber: String?,
       finishActivity: Boolean?
   ) {
-    val intent = Intent(this, ChargeResultActivity::class.java)
-    intent.putExtra(ChargeResultActivity.IS_PERSONNALIZATION_RESULT, true)
-    intent.putExtra(ChargeResultActivity.STATUS, cardReaderResponse.status.name)
+    val intent = Intent(this, ReloadResultActivity::class.java)
+    intent.putExtra(ReloadResultActivity.IS_PERSONALIZATION_RESULT, true)
+    intent.putExtra(ReloadResultActivity.STATUS, cardReaderResponse.status.name)
+    intent.putExtra(ReloadResultActivity.MESSAGE, cardReaderResponse.errorMessage)
     startActivity(intent)
     if (finishActivity == true) {
       finish()
@@ -110,7 +111,7 @@ class PersonnalizationActivity : AbstractCardActivity() {
 
   override fun onReaderEvent(event: CardReaderEvent?) {
     if (event?.type == CardReaderEvent.Type.CARD_INSERTED) {
-      runOnUiThread { showNowPersonnalizingInformation() }
+      runOnUiThread { showNowPersonalizingInformation() }
       GlobalScope.launch {
         remoteServiceExecution(selectedDeviceReaderName, AppSettings.aidEnums, "ISO_14443_4")
       }
@@ -119,7 +120,7 @@ class PersonnalizationActivity : AbstractCardActivity() {
 
   private suspend fun remoteServiceExecution(
       selectedDeviceReaderName: String,
-      aidEnums: ArrayList<String>,
+      aidEnums: ArrayList<ByteArray>,
       protocol: String?
   ) {
     withContext(Dispatchers.IO) {
@@ -148,7 +149,10 @@ class PersonnalizationActivity : AbstractCardActivity() {
             launchServerErrorResponse()
           } // server not ready,
           2 -> {
-            launchInvalidCardResponse()
+            launchInvalidCardResponse(
+                String.format(
+                    getString(R.string.card_invalid_structure),
+                    HexUtil.toHex(transactionManager.calypsoCard.applicationSubtype)))
           } // card rejected
         }
       } catch (e: Exception) {

@@ -7,7 +7,7 @@
     <string name="read_in_progress">Read in progress</string>
     <string name="loading_in_progress">Loading in progress</string>
     <string name="card_invalid_label">Not valid on this network</string>
-    <string name="card_invalid_desc">This is a \"%s\".</string>
+    <string name="card_invalid_structure">Invalid card\nFile structure %sh not supported</string>
     <string name="transaction_cancelled_label">Title not loaded</string>
 
     <string name="validation_confirmation_label">Payment validated</string>
@@ -30,6 +30,7 @@
     <string name="fail">Fail</string>
 
     <string name="device_selection">Choose a device</string>
+    <string name="to_be_personalized">to be personalized</string>
     <string name="choose_trips">Choose a type of title</string>
     <string name="try_again">Retry</string>
     <string name="cancel">Cancel</string>
@@ -46,10 +47,10 @@
     <string name="prefill_expiry">06/19</string>
     <string name="prefill_cvv">123</string>
 
-    <string name="present_card">Please present the contactless support to load</string>
+    <string name="present_card">Please present the contactless support to be loaded</string>
 
-    <string name="present_card_personnalisation">Please present a contactless support to personnalize</string>
-    <string name="perso_in_progress">Personnalizing in progress</string>
+    <string name="present_card_personalization">Please present the contactless support to be personalized</string>
+    <string name="perso_in_progress">Personalization in progress</string>
 
     <string name="season_pass_title">Monthly Season Pass</string>
     <string name="ticket_price">%d,00 €</string>
@@ -58,7 +59,7 @@
         <item quantity="other">%d trips</item>
     </plurals>
 
-    <!-- Personnalization -->
+    <!-- Personalization -->
     <string name="personalization_in_progress">Personalization in progress</string>
 
     <!-- Settings -->
@@ -66,7 +67,7 @@
     <string name="action_settings">Settings</string>
     <string name="server_setting">Server</string>
     <string name="configuration_setting">Configuration</string>
-    <string name="personnalization_setting">Personalization</string>
+    <string name="personalization_setting">Personalization</string>
 
     <string name="server_ip">Server IP</string>
     <string name="server_port">Server Port</string>

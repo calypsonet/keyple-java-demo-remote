@@ -84,7 +84,7 @@
         android:id="@+id/presentTxt"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="@string/present_card_personnalisation"
+        android:text="@string/present_card_personalization"
         android:gravity="center"
         style="@style/bigBoldBlue"
         app:layout_constraintTop_toBottomOf="@id/loadingAnimation"

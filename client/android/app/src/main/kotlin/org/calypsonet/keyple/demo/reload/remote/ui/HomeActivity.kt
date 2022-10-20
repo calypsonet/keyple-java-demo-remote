@@ -15,10 +15,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.core.content.ContextCompat
-import kotlinx.android.synthetic.main.activity_home.contactlessCardBtn
-import kotlinx.android.synthetic.main.activity_home.embeddedElemBtn
-import kotlinx.android.synthetic.main.activity_home.simCardBtn
-import kotlinx.android.synthetic.main.activity_home.wearableBtn
+import kotlinx.android.synthetic.main.activity_home.*
 import kotlinx.android.synthetic.main.toolbar.*
 import org.calypsonet.keyple.demo.reload.remote.R
 import org.calypsonet.keyple.demo.reload.remote.data.SharedPrefDataRepository
@@ -29,6 +26,10 @@ class HomeActivity : AbstractDemoActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     setContentView(R.layout.activity_home)
+    if (intent.getBooleanExtra(CHOOSE_DEVICE_FOR_PERSO, false)) {
+      chooseDeviceTv.append(" ")
+      chooseDeviceTv.append(getString(R.string.to_be_personalized))
+    }
     menuBtn.visibility = View.VISIBLE
     menuBtn.setOnClickListener { startActivity(Intent(this, SettingsMenuActivity::class.java)) }
   }
@@ -53,7 +54,7 @@ class HomeActivity : AbstractDemoActivity() {
       prefData.saveDeviceType(type.toString())
       if (intent.getBooleanExtra(CHOOSE_DEVICE_FOR_PERSO, false)) {
         intent.putExtras(intent)
-        startActivity(Intent(this, PersonnalizationActivity::class.java))
+        startActivity(Intent(this, PersonalizationActivity::class.java))
         this.finish()
       } else startActivity(Intent(this, CardReaderActivity::class.java))
     }

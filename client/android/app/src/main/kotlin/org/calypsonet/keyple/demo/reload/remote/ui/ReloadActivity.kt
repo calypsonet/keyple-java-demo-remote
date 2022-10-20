@@ -42,7 +42,7 @@ import org.eclipse.keyple.core.util.HexUtil
 import timber.log.Timber
 
 @ActivityScoped
-class ChargeActivity : AbstractCardActivity() {
+class ReloadActivity : AbstractCardActivity() {
 
   @Inject lateinit var ticketingService: TicketingService
 
@@ -96,7 +96,7 @@ class ChargeActivity : AbstractCardActivity() {
   private suspend fun remoteServiceExecution(
       selectedDeviceReaderName: String,
       pluginType: String,
-      aidEnums: ArrayList<String>,
+      aidEnums: ArrayList<ByteArray>,
       protocol: String?
   ) {
     withContext(Dispatchers.IO) {
@@ -150,7 +150,10 @@ class ChargeActivity : AbstractCardActivity() {
             launchServerErrorResponse()
           } // server not ready,
           2 -> {
-            launchInvalidCardResponse()
+            launchInvalidCardResponse(
+                String.format(
+                    getString(R.string.card_invalid_structure),
+                    HexUtil.toHex(transactionManager.calypsoCard.applicationSubtype)))
           } // card rejected
         }
       } catch (e: Exception) {
@@ -167,9 +170,10 @@ class ChargeActivity : AbstractCardActivity() {
   ) {
     loadingAnimation.cancelAnimation()
     cardAnimation.cancelAnimation()
-    val intent = Intent(this, ChargeResultActivity::class.java)
-    intent.putExtra(ChargeResultActivity.TICKETS_NUMBER, 0)
-    intent.putExtra(ChargeResultActivity.STATUS, cardReaderResponse.status.toString())
+    val intent = Intent(this, ReloadResultActivity::class.java)
+    intent.putExtra(ReloadResultActivity.TICKETS_NUMBER, 0)
+    intent.putExtra(ReloadResultActivity.STATUS, cardReaderResponse.status.toString())
+    intent.putExtra(ReloadResultActivity.MESSAGE, cardReaderResponse.errorMessage)
     startActivity(intent)
     if (finishActivity == true) {
       finish()

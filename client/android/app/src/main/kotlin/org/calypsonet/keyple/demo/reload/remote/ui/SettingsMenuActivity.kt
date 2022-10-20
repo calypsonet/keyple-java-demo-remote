@@ -33,7 +33,7 @@ class SettingsMenuActivity : AbstractDemoActivity() {
       startActivity(intent)
     }
 
-    personnalizationBtn.setOnClickListener {
+    personalizationBtn.setOnClickListener {
       val intent = Intent(this, HomeActivity::class.java)
       intent.putExtra(HomeActivity.CHOOSE_DEVICE_FOR_PERSO, true)
       startActivity(intent)
