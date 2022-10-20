@@ -98,11 +98,11 @@ dependencies {
     implementation("org.calypsonet.keyple:keyple-demo-common-lib:1.0.0-SNAPSHOT") { isChanging = true }
 
     // Keyple core
-    implementation("org.calypsonet.terminal:calypsonet-terminal-reader-java-api:1.0.+") { isChanging = true }
+    implementation("org.calypsonet.terminal:calypsonet-terminal-reader-java-api:1.1.0-SNAPSHOT") { isChanging = true }
     implementation("org.calypsonet.terminal:calypsonet-terminal-calypso-java-api:1.4.+") { isChanging = true }
     implementation("org.eclipse.keyple:keyple-common-java-api:2.0.+") { isChanging = true }
-    implementation("org.eclipse.keyple:keyple-util-java-lib:2.+") { isChanging = true }
-    implementation("org.eclipse.keyple:keyple-service-java-lib:2.1.0")
+    implementation("org.eclipse.keyple:keyple-util-java-lib:2.2.0")
+    implementation("org.eclipse.keyple:keyple-service-java-lib:2.1.1-SNAPSHOT") { isChanging = true }
     implementation("org.eclipse.keyple:keyple-card-calypso-java-lib:2.2.3-SNAPSHOT") { isChanging = true }
 
     // Keyple reader plugins
