@@ -212,8 +212,8 @@ public class CardRepository {
         oldEvent.getEventContractUsed(),
         contracts.get(0).getContractTariff(),
         contracts.get(1).getContractTariff(),
-        contractCount == 4 ? contracts.get(2).getContractTariff(): PriorityCode.FORBIDDEN,
-        contractCount == 4 ? contracts.get(3).getContractTariff(): PriorityCode.FORBIDDEN);
+        contractCount == 4 ? contracts.get(2).getContractTariff() : PriorityCode.FORBIDDEN,
+        contractCount == 4 ? contracts.get(3).getContractTariff() : PriorityCode.FORBIDDEN);
   }
 
   private Card parse(CalypsoCard calypsoCard) {
@@ -250,6 +250,6 @@ public class CardRepository {
   }
 
   private int getContractCount(CalypsoCard calypsoCard) {
-    return calypsoCard.getApplicationSubtype() == 50 ? 2: 4;
+    return calypsoCard.getApplicationSubtype() == 50 ? 2 : 4;
   }
 }
