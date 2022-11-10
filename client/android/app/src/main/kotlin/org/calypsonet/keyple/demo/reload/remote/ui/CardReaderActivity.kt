@@ -167,6 +167,12 @@ class CardReaderActivity : AbstractCardActivity() {
                     getString(R.string.card_invalid_structure),
                     HexUtil.toHex(transactionManager.calypsoCard.applicationSubtype)))
           } // card rejected
+          3 -> {
+            launchInvalidCardResponse(getString(R.string.card_not_personalized))
+          } // card not personalized
+          4 -> {
+            launchInvalidCardResponse(getString(R.string.expired_environment))
+          } // expired environment
         }
       } catch (e: IllegalStateException) {
         Timber.e(e)

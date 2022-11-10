@@ -7,7 +7,9 @@
     <string name="read_in_progress">Read in progress</string>
     <string name="loading_in_progress">Loading in progress</string>
     <string name="card_invalid_label">Not valid on this network</string>
-    <string name="card_invalid_structure">Invalid card\nFile structure %sh not supported</string>
+    <string name="card_invalid_structure">Invalid card\nFile structure %sh not support ed</string>
+    <string name="card_not_personalized">Environment error: wrong version number</string>
+    <string name="expired_environment">Environment error: end date expired</string>
     <string name="transaction_cancelled_label">Title not loaded</string>
 
     <string name="validation_confirmation_label">Payment validated</string>

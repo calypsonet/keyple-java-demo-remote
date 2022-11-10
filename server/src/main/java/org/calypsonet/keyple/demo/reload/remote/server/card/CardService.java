@@ -72,6 +72,24 @@ public class CardService {
               .setType(SECURED_READ)
               .setCardSerialNumber(appSerialNumber));
       return new AnalyzeContractsOutputDto(validContracts, 0);
+    } catch (CardNotPersonalizedException e) {
+      logger.error("An error occurred while analyzing the contracts: {}", e.getMessage());
+      activityService.push(
+          new Activity()
+              .setPlugin(pluginType)
+              .setStatus(FAIL)
+              .setType(SECURED_READ)
+              .setCardSerialNumber(appSerialNumber));
+      return new AnalyzeContractsOutputDto(Collections.emptyList(), 3);
+    } catch (ExpiredEnvironmentException e) {
+      logger.error("An error occurred while analyzing the contracts: {}", e.getMessage());
+      activityService.push(
+          new Activity()
+              .setPlugin(pluginType)
+              .setStatus(FAIL)
+              .setType(SECURED_READ)
+              .setCardSerialNumber(appSerialNumber));
+      return new AnalyzeContractsOutputDto(Collections.emptyList(), 4);
     } catch (RuntimeException e) {
       logger.error("An error occurred while analyzing the contracts: {}", e.getMessage());
       activityService.push(
@@ -179,11 +197,11 @@ public class CardService {
     EnvironmentHolderStructure environment = card.getEnvironment();
     if (environment.getEnvVersionNumber() != VersionNumber.CURRENT_VERSION) {
       logger.warn("Version Number of card is invalid, reject card");
-      return Collections.emptyList();
+      throw new CardNotPersonalizedException();
     }
     if (environment.getEnvEndDate().getDate().isBefore(LocalDate.now())) {
       logger.warn("EnvEndDate of card is invalid, reject card");
-      return Collections.emptyList();
+      throw new ExpiredEnvironmentException();
     }
     // Check last event
     EventStructure lastEvent = card.getEvent();
@@ -338,5 +356,17 @@ public class CardService {
       }
     }
     return 0;
+  }
+
+  private static class CardNotPersonalizedException extends RuntimeException {
+    CardNotPersonalizedException() {
+      super("The card is not personalized");
+    }
+  }
+
+  private static class ExpiredEnvironmentException extends RuntimeException {
+    ExpiredEnvironmentException() {
+      super("The environment has expired");
+    }
   }
 }
