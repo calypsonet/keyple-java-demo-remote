@@ -133,7 +133,7 @@ public class CardConfigurator {
                 .getReaderExtension(PcscReader.class, cardReader.getName());
         readerExtension
             .setContactless(false)
-            .setIsoProtocol(PcscReader.IsoProtocol.ANY)
+            .setIsoProtocol(PcscReader.IsoProtocol.T0)
             .setSharingMode(PcscReader.SharingMode.SHARED);
       } catch (Exception e) {
         logger.error(

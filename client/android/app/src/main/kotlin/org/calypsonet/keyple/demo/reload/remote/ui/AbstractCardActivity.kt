@@ -81,6 +81,9 @@ abstract class AbstractCardActivity :
 
   override fun onResume() {
     super.onResume()
+  }
+
+  override fun onSamCheckComplete() {
     if (!prefData.loadLastStatus()) {
       launchExceptionResponse(IllegalStateException("Server not available"), true)
       return
