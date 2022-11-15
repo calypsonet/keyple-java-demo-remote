@@ -183,7 +183,8 @@ class CardReaderActivity : AbstractCardActivity() {
             device !=
                 DeviceEnum
                     .CONTACTLESS_CARD // Only with NFC we can come back to 'wait for device screen'
-        launchExceptionResponse(e, finishActivity)
+        launchExceptionResponse(
+            IllegalStateException("Server error:\n" + e.message), finishActivity)
       }
     }
   }

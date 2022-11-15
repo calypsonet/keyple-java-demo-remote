@@ -70,15 +70,12 @@ abstract class AbstractDemoActivity : DaggerAppCompatActivity() {
   fun onServerStatusEvent(serverStatusEvent: ServerStatusEvent) {
     prefData.saveLastStatus(serverStatusEvent.isUp)
     updateServerStatusIndicator()
-    onSamCheckComplete()
   }
 
   private fun updateServerStatusIndicator() {
     if (prefData.loadLastStatus()) serverStatus.setImageResource(R.drawable.ic_connection_success)
     else serverStatus.setImageResource(R.drawable.ic_connection_wait)
   }
-
-  open fun onSamCheckComplete() {}
 
   private fun checkServerStatus() {
     PingAsyncTask().execute(client)

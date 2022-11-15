@@ -81,15 +81,7 @@ abstract class AbstractCardActivity :
 
   override fun onResume() {
     super.onResume()
-  }
-
-  override fun onSamCheckComplete() {
-    if (!prefData.loadLastStatus()) {
-      launchExceptionResponse(IllegalStateException("Server not available"), true)
-      return
-    } else {
-      initReaders()
-    }
+    initReaders()
   }
 
   /** Android Nfc Reader is strongly dependent and Android Activity component. */
