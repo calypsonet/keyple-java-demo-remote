@@ -46,14 +46,14 @@ dependencies {
     implementation("org.calypsonet.keyple:keyple-demo-common-lib:1.0.0-SNAPSHOT") { isChanging = true }
 
     // Keyple dependencies
-    implementation("org.calypsonet.terminal:calypsonet-terminal-reader-java-api:1.1.0")
-    implementation("org.calypsonet.terminal:calypsonet-terminal-calypso-java-api:1.4.1")
+    implementation("org.calypsonet.terminal:calypsonet-terminal-reader-java-api:1.2.0")
+    implementation("org.calypsonet.terminal:calypsonet-terminal-calypso-java-api:1.6.0")
     implementation("org.eclipse.keyple:keyple-common-java-api:2.0.0")
-    implementation("org.eclipse.keyple:keyple-service-java-lib:2.1.1")
+    implementation("org.eclipse.keyple:keyple-service-java-lib:2.1.3")
     implementation("org.eclipse.keyple:keyple-service-resource-java-lib:2.0.2")
     implementation("org.eclipse.keyple:keyple-distributed-network-java-lib:2.0.0")
-    implementation("org.eclipse.keyple:keyple-distributed-remote-java-lib:2.0.0")
-    implementation("org.eclipse.keyple:keyple-card-calypso-java-lib:2.2.5")
+    implementation("org.eclipse.keyple:keyple-distributed-remote-java-lib:2.1.0")
+    implementation("org.eclipse.keyple:keyple-card-calypso-java-lib:2.3.2")
     implementation("org.eclipse.keyple:keyple-plugin-pcsc-java-lib:2.1.0")
     implementation("org.eclipse.keyple:keyple-util-java-lib:2.3.0")
     // Quarkus
@@ -61,7 +61,7 @@ dependencies {
     implementation("io.quarkus:quarkus-resteasy-jsonb")
     implementation("io.quarkus:quarkus-resteasy")
     // Google GSON
-    implementation("com.google.code.gson:gson:2.8.9")
+    implementation("com.google.code.gson:gson:2.10.1")
     // Logging
     implementation("org.slf4j:slf4j-api:1.7.32")
     implementation("org.slf4j:slf4j-simple:1.7.32")

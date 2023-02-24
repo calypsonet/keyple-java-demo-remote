@@ -21,6 +21,8 @@ jobs:
           distribution: 'adopt'
       - name: Set up Node JS
         uses: actions/setup-node@v3
+        with:
+          node-version: 16
       - name: Update permissions
         working-directory: .
         run: chmod +x ./client/android/gradlew ./server/gradlew ./.github/scripts/*.sh

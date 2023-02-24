@@ -62,7 +62,7 @@ public class CardService {
         CardResourceServiceProvider.getService()
             .getCardResource(CardConfigurator.SAM_RESOURCE_PROFILE_NAME);
     try {
-      Card card = cardRepository.readCard(cardResource, samResource, pluginType);
+      Card card = cardRepository.readCard(cardResource, samResource);
       logger.info("{}", card);
       List<ContractStructure> validContracts = findValidContracts(card);
       activityService.push(
@@ -121,14 +121,14 @@ public class CardService {
         CardResourceServiceProvider.getService()
             .getCardResource(CardConfigurator.SAM_RESOURCE_PROFILE_NAME);
     try {
-      Card card = cardRepository.readCard(cardResource, samResource, pluginType);
+      Card card = cardRepository.readCard(cardResource, samResource);
       if (card == null) {
         // If card has not been read previously, throw error
         return new WriteContractOutputDto(3);
       }
       logger.info("{}", card);
       insertNewContract(inputData.getContractTariff(), inputData.getTicketToLoad(), card);
-      int statusCode = cardRepository.writeCard(cardResource, samResource, pluginType, card);
+      int statusCode = cardRepository.writeCard(cardResource, samResource, card);
       activityService.push(
           new Activity()
               .setPlugin(pluginType)
@@ -171,7 +171,7 @@ public class CardService {
         CardResourceServiceProvider.getService()
             .getCardResource(CardConfigurator.SAM_RESOURCE_PROFILE_NAME);
     try {
-      cardRepository.initCard(cardResource, samResource, pluginType);
+      cardRepository.initCard(cardResource, samResource);
       activityService.push(
           new Activity()
               .setPlugin(pluginType)
