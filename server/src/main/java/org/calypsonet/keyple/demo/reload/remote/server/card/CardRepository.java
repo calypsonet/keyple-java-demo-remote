@@ -44,43 +44,41 @@ public class CardRepository {
 
   private static final Logger logger = LoggerFactory.getLogger(CardRepository.class);
 
-  private static final String PLUGIN_TYPE_ANDROID_OMAPI = "Android OMAPI";
   private static final String CALYPSO_SESSION_CLOSED = "Calypso Session Closed.";
 
-  public Card readCard(CardResource cardResource, CardResource samResource, String pluginType) {
+  public Card readCard(CardResource cardResource, CardResource samResource) {
 
     CalypsoCard calypsoCard = (CalypsoCard) cardResource.getSmartCard();
     int contractCount = getContractCount(calypsoCard);
 
     CardTransactionManager cardTransactionManager =
-        initCardTransactionManager(cardResource, samResource, pluginType, calypsoCard);
+        initCardTransactionManager(cardResource, samResource, calypsoCard);
 
     logger.info("Open Calypso Session (LOAD)...");
     cardTransactionManager
-        .processOpening(WriteAccessLevel.LOAD)
+        .prepareOpenSecureSession(WriteAccessLevel.LOAD)
         .prepareReadRecord(CardConstant.SFI_ENVIRONMENT_AND_HOLDER, 1)
         .prepareReadRecord(CardConstant.SFI_EVENTS_LOG, 1)
         .prepareReadRecords(
             CardConstant.SFI_CONTRACTS, 1, contractCount, CardConstant.CONTRACT_RECORD_SIZE_BYTES)
         .prepareReadCounter(CardConstant.SFI_COUNTERS, 4)
-        .processCommands()
-        .processClosing();
+        .prepareCloseSecureSession()
+        .processCommands(true);
     logger.info(CALYPSO_SESSION_CLOSED);
 
     return parse(calypsoCard);
   }
 
-  public int writeCard(
-      CardResource cardResource, CardResource samResource, String pluginType, Card card) {
+  public int writeCard(CardResource cardResource, CardResource samResource, Card card) {
 
     CalypsoCard calypsoCard = (CalypsoCard) cardResource.getSmartCard();
     int contractCount = card.getContracts().size();
 
     CardTransactionManager cardTransactionManager =
-        initCardTransactionManager(cardResource, samResource, pluginType, calypsoCard);
+        initCardTransactionManager(cardResource, samResource, calypsoCard);
 
     logger.info("Open Calypso Session (LOAD)...");
-    cardTransactionManager.processOpening(WriteAccessLevel.LOAD);
+    cardTransactionManager.prepareOpenSecureSession(WriteAccessLevel.LOAD);
 
     /* Update contract records */
     if (!card.getUpdatedContracts().isEmpty()) {
@@ -109,22 +107,22 @@ public class CardRepository {
           new EventStructureParser().generate(buildEvent(card.getEvent(), card.getContracts())));
     }
 
-    cardTransactionManager.processClosing();
+    cardTransactionManager.prepareCloseSecureSession().processCommands(true);
     logger.info(CALYPSO_SESSION_CLOSED);
 
     return 0;
   }
 
-  public void initCard(CardResource cardResource, CardResource samResource, String pluginType) {
+  public void initCard(CardResource cardResource, CardResource samResource) {
 
     CalypsoCard calypsoCard = (CalypsoCard) cardResource.getSmartCard();
     int contractCount = getContractCount(calypsoCard);
 
     CardTransactionManager cardTransactionManager =
-        initCardTransactionManager(cardResource, samResource, pluginType, calypsoCard);
+        initCardTransactionManager(cardResource, samResource, calypsoCard);
 
     logger.info("Open Calypso Session (PERSONALIZATION)...");
-    cardTransactionManager.processOpening(WriteAccessLevel.PERSONALIZATION);
+    cardTransactionManager.prepareOpenSecureSession(WriteAccessLevel.PERSONALIZATION);
 
     // Fill the environment structure with predefined values
     cardTransactionManager.prepareUpdateRecord(
@@ -155,16 +153,13 @@ public class CardRepository {
     cardTransactionManager.prepareUpdateRecord(
         CardConstant.SFI_COUNTERS, 1, new byte[CardConstant.EVENT_RECORD_SIZE_BYTES]);
 
-    cardTransactionManager.processClosing();
+    cardTransactionManager.prepareCloseSecureSession().processCommands(true);
     logger.info(CALYPSO_SESSION_CLOSED);
   }
 
   @NotNull
   private CardTransactionManager initCardTransactionManager(
-      CardResource cardResource,
-      CardResource samResource,
-      String pluginType,
-      CalypsoCard calypsoCard) {
+      CardResource cardResource, CardResource samResource, CalypsoCard calypsoCard) {
 
     CardSecuritySetting cardSecuritySetting =
         CalypsoExtensionService.getInstance()
@@ -176,15 +171,8 @@ public class CardRepository {
             .setControlSamResource(
                 samResource.getReader(), (CalypsoSam) samResource.getSmartCard());
 
-    CardTransactionManager cardTransactionManager =
-        CalypsoExtensionService.getInstance()
-            .createCardTransaction(cardResource.getReader(), calypsoCard, cardSecuritySetting);
-
-    if (PLUGIN_TYPE_ANDROID_OMAPI.equals(pluginType)) {
-      // For OMAPI Reader we release the channel after reading
-      cardTransactionManager.prepareReleaseCardChannel();
-    }
-    return cardTransactionManager;
+    return CalypsoExtensionService.getInstance()
+        .createCardTransaction(cardResource.getReader(), calypsoCard, cardSecuritySetting);
   }
 
   private EnvironmentHolderStructure buildEnvironmentHolderStructure() {

@@ -5,6 +5,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+## [2023.02.24]
+### Upgraded
+- `calypsonet-terminal-reader-java-api:1.2.0`
+- `calypsonet-terminal-calypso-java-api:1.6.0`
+- `keyple-service-java-lib:2.1.3`
+- `keyple-card-calypso-java-lib:2.3.2`
+- `keyple-distributed-remote-java-lib:2.1.0`
+- `com.google.code.gson:gson:2.10.1`
+
 ## [2022.11.18]
 ### Fixed
 - Various erroneous behaviors and displays.
@@ -22,6 +31,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - `keyple-plugin-android-nfc-java-lib:2.0.1`
 - `keyple-plugin-android-omapi-java-lib:2.0.1`
 - `keyple-util-java-lib:2.3.0`
-    
-[Unreleased]: https://github.com/calypsonet/keyple-java-demo-remote/compare/2022.11.18...HEAD
+  
+[Unreleased]: https://github.com/calypsonet/keyple-java-demo-remote/compare/2023.02.24...HEAD
+[2023.02.24]: https://github.com/calypsonet/keyple-java-demo-remote/compare/2022.11.18...2023.02.24
 [2022.11.18]: https://github.com/calypsonet/keyple-java-demo-remote/compare/v2021.11...2022.11.18
