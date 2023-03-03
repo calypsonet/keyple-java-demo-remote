@@ -63,7 +63,7 @@ public class CardRepository {
             CardConstant.SFI_CONTRACTS, 1, contractCount, CardConstant.CONTRACT_RECORD_SIZE_BYTES)
         .prepareReadCounter(CardConstant.SFI_COUNTERS, 4)
         .prepareCloseSecureSession()
-        .processCommands(true);
+        .processCommands(false);
     logger.info(CALYPSO_SESSION_CLOSED);
 
     return parse(calypsoCard);
@@ -107,7 +107,7 @@ public class CardRepository {
           new EventStructureParser().generate(buildEvent(card.getEvent(), card.getContracts())));
     }
 
-    cardTransactionManager.prepareCloseSecureSession().processCommands(true);
+    cardTransactionManager.prepareCloseSecureSession().processCommands(false);
     logger.info(CALYPSO_SESSION_CLOSED);
 
     return 0;
@@ -153,7 +153,7 @@ public class CardRepository {
     cardTransactionManager.prepareUpdateRecord(
         CardConstant.SFI_COUNTERS, 1, new byte[CardConstant.EVENT_RECORD_SIZE_BYTES]);
 
-    cardTransactionManager.prepareCloseSecureSession().processCommands(true);
+    cardTransactionManager.prepareCloseSecureSession().processCommands(false);
     logger.info(CALYPSO_SESSION_CLOSED);
   }
 

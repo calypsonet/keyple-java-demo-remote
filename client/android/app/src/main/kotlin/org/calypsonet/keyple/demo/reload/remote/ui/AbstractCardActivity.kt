@@ -52,6 +52,7 @@ abstract class AbstractCardActivity :
           DeviceEnum.CONTACTLESS_CARD -> {
             pluginType = "Android NFC"
             AppSettings.aidEnums.clear()
+            AppSettings.aidEnums.add(CardConstant.AID_KEYPLE_GENERIC)
             AppSettings.aidEnums.add(CardConstant.AID_CD_LIGHT_GTML)
             AppSettings.aidEnums.add(CardConstant.AID_CALYPSO_LIGHT)
             AppSettings.aidEnums.add(CardConstant.AID_NORMALIZED_IDF)
