@@ -61,7 +61,7 @@ public class CardRepository {
         .prepareReadRecord(CardConstant.SFI_EVENTS_LOG, 1)
         .prepareReadRecords(
             CardConstant.SFI_CONTRACTS, 1, contractCount, CardConstant.CONTRACT_RECORD_SIZE_BYTES)
-        .prepareReadCounter(CardConstant.SFI_COUNTERS, 4)
+        .prepareReadCounter(CardConstant.SFI_COUNTERS, contractCount)
         .prepareCloseSecureSession()
         .processCommands(false);
     logger.info(CALYPSO_SESSION_CLOSED);
@@ -72,7 +72,6 @@ public class CardRepository {
   public int writeCard(CardResource cardResource, CardResource samResource, Card card) {
 
     CalypsoCard calypsoCard = (CalypsoCard) cardResource.getSmartCard();
-    int contractCount = card.getContracts().size();
 
     CardTransactionManager cardTransactionManager =
         initCardTransactionManager(cardResource, samResource, calypsoCard);
@@ -82,19 +81,20 @@ public class CardRepository {
 
     /* Update contract records */
     if (!card.getUpdatedContracts().isEmpty()) {
+      int contractCount = card.getContracts().size();
       for (int i = 0; i < contractCount; i++) {
-        int contractIndex = i + 1;
+        int contractNumber = i + 1;
         ContractStructure contract = card.getContracts().get(i);
         if (card.getUpdatedContracts().contains(contract)) {
           // update contract
           cardTransactionManager.prepareUpdateRecord(
               CardConstant.SFI_CONTRACTS,
-              contractIndex,
+              contractNumber,
               new ContractStructureParser().generate(contract));
           // update counter
           if (contract.getCounterValue() != null) {
             cardTransactionManager.prepareSetCounter(
-                CardConstant.SFI_COUNTERS, contractIndex, contract.getCounterValue());
+                CardConstant.SFI_COUNTERS, contractNumber, contract.getCounterValue());
           }
         }
       }
@@ -116,7 +116,6 @@ public class CardRepository {
   public void initCard(CardResource cardResource, CardResource samResource) {
 
     CalypsoCard calypsoCard = (CalypsoCard) cardResource.getSmartCard();
-    int contractCount = getContractCount(calypsoCard);
 
     CardTransactionManager cardTransactionManager =
         initCardTransactionManager(cardResource, samResource, calypsoCard);
@@ -132,26 +131,18 @@ public class CardRepository {
 
     // Clear the first event (update with a byte array filled with 0s).
     cardTransactionManager.prepareUpdateRecord(
-        CardConstant.SFI_EVENTS_LOG,
-        1,
-        new byte[CardConstant.ENVIRONMENT_HOLDER_RECORD_SIZE_BYTES]);
+        CardConstant.SFI_EVENTS_LOG, 1, new byte[CardConstant.EVENT_RECORD_SIZE_BYTES]);
 
     // Clear all contracts (update with a byte array filled with 0s).
-    cardTransactionManager.prepareUpdateRecord(
-        CardConstant.SFI_CONTRACTS, 1, new byte[CardConstant.CONTRACT_RECORD_SIZE_BYTES]);
-    cardTransactionManager.prepareUpdateRecord(
-        CardConstant.SFI_CONTRACTS, 2, new byte[CardConstant.CONTRACT_RECORD_SIZE_BYTES]);
-
-    if (contractCount > 2) {
+    int contractCount = getContractCount(calypsoCard);
+    for (int i = 1; i <= contractCount; i++) {
       cardTransactionManager.prepareUpdateRecord(
-          CardConstant.SFI_CONTRACTS, 3, new byte[CardConstant.CONTRACT_RECORD_SIZE_BYTES]);
-      cardTransactionManager.prepareUpdateRecord(
-          CardConstant.SFI_CONTRACTS, 4, new byte[CardConstant.CONTRACT_RECORD_SIZE_BYTES]);
+          CardConstant.SFI_CONTRACTS, i, new byte[CardConstant.CONTRACT_RECORD_SIZE_BYTES]);
     }
 
     // Clear the counter file (update with a byte array filled with 0s).
     cardTransactionManager.prepareUpdateRecord(
-        CardConstant.SFI_COUNTERS, 1, new byte[CardConstant.EVENT_RECORD_SIZE_BYTES]);
+        CardConstant.SFI_COUNTERS, 1, new byte[contractCount * 3]);
 
     cardTransactionManager.prepareCloseSecureSession().processCommands(false);
     logger.info(CALYPSO_SESSION_CLOSED);
@@ -164,6 +155,7 @@ public class CardRepository {
     CardSecuritySetting cardSecuritySetting =
         CalypsoExtensionService.getInstance()
             .createCardSecuritySetting()
+            .enableMultipleSession()
             .assignDefaultKif(
                 WriteAccessLevel.PERSONALIZATION, CardConstant.DEFAULT_KIF_PERSONALIZATION)
             .assignDefaultKif(WriteAccessLevel.LOAD, CardConstant.DEFAULT_KIF_LOAD)
@@ -199,9 +191,9 @@ public class CardRepository {
         oldEvent.getEventLocation(),
         oldEvent.getEventContractUsed(),
         contracts.get(0).getContractTariff(),
-        contracts.get(1).getContractTariff(),
-        contractCount == 4 ? contracts.get(2).getContractTariff() : PriorityCode.FORBIDDEN,
-        contractCount == 4 ? contracts.get(3).getContractTariff() : PriorityCode.FORBIDDEN);
+        contractCount >= 2 ? contracts.get(1).getContractTariff() : PriorityCode.FORBIDDEN,
+        contractCount >= 3 ? contracts.get(2).getContractTariff() : PriorityCode.FORBIDDEN,
+        contractCount >= 4 ? contracts.get(3).getContractTariff() : PriorityCode.FORBIDDEN);
   }
 
   private Card parse(CalypsoCard calypsoCard) {
@@ -238,6 +230,11 @@ public class CardRepository {
   }
 
   private int getContractCount(CalypsoCard calypsoCard) {
-    return calypsoCard.getApplicationSubtype() == 50 ? 2 : 4;
+    if (calypsoCard.getProductType() == CalypsoCard.ProductType.BASIC) {
+      return 1;
+    } else if (calypsoCard.getProductType() == CalypsoCard.ProductType.LIGHT) {
+      return 2;
+    }
+    return 4;
   }
 }

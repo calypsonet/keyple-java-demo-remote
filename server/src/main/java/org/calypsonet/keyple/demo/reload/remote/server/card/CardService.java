@@ -91,7 +91,7 @@ public class CardService {
               .setCardSerialNumber(appSerialNumber));
       return new AnalyzeContractsOutputDto(Collections.emptyList(), 4);
     } catch (RuntimeException e) {
-      logger.error("An error occurred while analyzing the contracts: {}", e.getMessage());
+      logger.error("An error occurred while analyzing the contracts: {}", e.getMessage(), e);
       activityService.push(
           new Activity()
               .setPlugin(pluginType)
@@ -142,7 +142,7 @@ public class CardService {
                           : "")));
       return new WriteContractOutputDto(statusCode);
     } catch (RuntimeException e) {
-      logger.error("An error occurred while writing the contract: {}", e.getMessage());
+      logger.error("An error occurred while writing the contract: {}", e.getMessage(), e);
       activityService.push(
           new Activity()
               .setPlugin(pluginType)
@@ -180,6 +180,7 @@ public class CardService {
               .setCardSerialNumber(appSerialNumber));
       return new CardIssuanceOutputDto(0);
     } catch (RuntimeException e) {
+      logger.error("An error occurred while initializing the card: {}", e.getMessage(), e);
       activityService.push(
           new Activity()
               .setPlugin(pluginType)

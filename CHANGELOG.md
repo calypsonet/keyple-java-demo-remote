@@ -9,6 +9,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Fixed
 - Physical channel management.
 - Missing Keyple generic AID.
+- Calypso Basic products management.
 
 ## [2023.02.24]
 ### Upgraded
