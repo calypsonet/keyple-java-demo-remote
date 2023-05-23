@@ -64,7 +64,7 @@ namespace App.domain.utils {
     /// </summary>
     public class HexStringSetToIntHashSetConverter : JsonConverter {
         /// <summary>
-        /// Checks if the provided type can be converted. In this case, it checks if the type is HashSet<int>.
+        /// Checks if the provided type can be converted. In this case, it checks if the type is HashSetlt;int&gt;.
         /// </summary>
         /// <param name="objectType">Type of the object to check.</param>
         /// <returns>True if the type can be converted; otherwise, false.</returns>

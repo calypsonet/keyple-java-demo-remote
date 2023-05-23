@@ -89,7 +89,7 @@ class InputDataRead : InputData {
 /// </summary>
 class InputDataWrite : InputData {
     [JsonProperty ( "counterIncrement" )]
-    public string CounterIncrement { get; set; }
+    public required string CounterIncrement { get; set; }
 }
 
 /// <summary>
@@ -100,7 +100,7 @@ class OutputData {
     /// Gets or sets the contracts.
     /// </summary>
     [JsonProperty ( "items" )]
-    public List<string> Items { get; set; }
+    public List<string>? Items { get; set; }
 
     /// <summary>
     /// Gets or sets the status code.
@@ -114,7 +114,7 @@ class OutputDto {
     /// Gets or sets the OutputData.
     /// </summary>
     [JsonProperty ( "outputData" )]
-    public OutputData OutputData { get; set; }
+    public required OutputData OutputData { get; set; }
 }
 
 
@@ -123,8 +123,8 @@ class OutputDto {
 /// </summary>
 class ExecuteRemoteServiceBodyContent {
     [JsonProperty ( "serviceId" )]
-    public string ServiceId { get; set; }
+    public required string ServiceId { get; set; }
 
     [JsonProperty ( "inputData" )]
-    public InputData InputData { get; set; }
+    public InputData? InputData { get; set; }
 }

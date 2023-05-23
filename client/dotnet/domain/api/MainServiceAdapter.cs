@@ -233,7 +233,6 @@ namespace App.domain.api
 
         private MessageDto ProcessTransaction ( MessageDto message )
         {
-            bool isServiceEnded = false;
             while (message.Action != "END_REMOTE_SERVICE")
             {
                 _logger.Information ( $"Processing action {message.Action}" );

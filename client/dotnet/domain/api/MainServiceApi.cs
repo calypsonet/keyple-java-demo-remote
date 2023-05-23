@@ -1,9 +1,9 @@
-﻿/// <summary>
-/// Defines the operations that the main service API must support. 
-/// These operations primarily involve interacting with a card, where the card transaction
-/// is driven by the server provided to the implementation of this interface.
-/// </summary>
-namespace App.domain.api {
+﻿namespace App.domain.api {
+    /// <summary>
+    /// Defines the operations that the main service API must support. 
+    /// These operations primarily involve interacting with a card, where the card transaction
+    /// is driven by the server provided to the implementation of this interface.
+    /// </summary>
     public interface MainServiceApi {
 
         /// <summary>

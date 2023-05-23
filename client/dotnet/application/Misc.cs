@@ -1,12 +1,11 @@
-﻿using Newtonsoft.Json.Linq;
-using Newtonsoft.Json;
-using Serilog;
+﻿using Serilog;
 using Serilog.Events;
-/// <summary>
-/// The Misc class provides utility methods that are used across the application.
-/// </summary>
+
 namespace App.application
 {
+    /// <summary>
+    /// The Misc class provides utility methods that are used across the application.
+    /// </summary>
     public class Misc
     {
         /// <summary>

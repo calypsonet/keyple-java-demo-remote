@@ -1,8 +1,8 @@
-﻿/// <summary>
-/// The ServerSpi interface represents the server service provider interface (SPI).
-/// It provides a method for transmitting requests to the server.
-/// </summary>
-namespace App.domain.spi {
+﻿namespace App.domain.spi {
+    /// <summary>
+    /// The ServerSpi interface represents the server service provider interface (SPI).
+    /// It provides a method for transmitting requests to the server.
+    /// </summary>
     public interface ServerSpi {
 
         /// <summary>
