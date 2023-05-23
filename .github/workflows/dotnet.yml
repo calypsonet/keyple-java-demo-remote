@@ -21,10 +21,10 @@ jobs:
       with:
         dotnet-version: 6.0.x
     - name: Restore dependencies
-      run: dotnet restore
-    - name: Build
-      run: | 
+      run: |
         cd client\dotnet 
-        dotnet build --no-restore
+        dotnet restore
+    - name: Build
+      run:  dotnet build --no-restore
     - name: Test
       run: dotnet test --no-build --verbosity normal
