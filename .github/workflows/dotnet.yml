@@ -4,6 +4,7 @@
 name: .NET
 
 on:
+  workflow_dispatch: # To authorize manual run
   push:
     branches: [ "main" ]
   pull_request:
