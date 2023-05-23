@@ -14,7 +14,6 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
-
     steps:
     - uses: actions/checkout@v3
     - name: Setup .NET
@@ -22,11 +21,11 @@ jobs:
       with:
         dotnet-version: 6.0.x
     - name: Restore dependencies
-      run: |
-        cd client
-        cd dotnet 
-        dotnet restore
+      working-directory: ./client/dotnet
+      run: dotnet restore
     - name: Build
-      run:  dotnet build --no-restore
+      working-directory: ./client/dotnet
+      run: dotnet build --no-restore
     - name: Test
+      working-directory: ./client/dotnet
       run: dotnet test --no-build --verbosity normal
