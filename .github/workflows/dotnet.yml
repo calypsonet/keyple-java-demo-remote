@@ -22,7 +22,8 @@ jobs:
         dotnet-version: 6.0.x
     - name: Restore dependencies
       run: |
-        cd client\dotnet 
+        cd client
+        cd dotnet 
         dotnet restore
     - name: Build
       run:  dotnet build --no-restore
