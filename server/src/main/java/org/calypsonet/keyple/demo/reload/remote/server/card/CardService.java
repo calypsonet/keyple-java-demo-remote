@@ -145,23 +145,27 @@ public class CardService {
     cardSelectionManager.prepareSelection(
         calypsoCardService.createCardSelection().acceptInvalidatedCard().filterByDfName(AID));
 
-    // Actual card communication: run the selection scenario.
-    CardSelectionResult selectionResult =
-        cardSelectionManager.processCardSelectionScenario(cardReader);
-
-    // Check the selection result.
-    if (selectionResult.getActiveSmartCard() == null) {
-      throw new IllegalStateException("The selection of the application " + AID + " failed.");
-    }
-
-    // Get the SmartCard resulting of the selection.
-    CalypsoCard calypsoCard = (CalypsoCard) selectionResult.getActiveSmartCard();
-
-    CardResource samResource =
-        CardResourceServiceProvider.getService()
-            .getCardResource(CardConfigurator.SAM_RESOURCE_PROFILE_NAME);
-
+    CalypsoCard calypsoCard = null;
+    CardResource samResource = null;
+    List<String> output = new ArrayList<>();
+    int statusCode = 0;
     try {
+      // Actual card communication: run the selection scenario.
+      CardSelectionResult selectionResult =
+          cardSelectionManager.processCardSelectionScenario(cardReader);
+
+      // Check the selection result.
+      if (selectionResult.getActiveSmartCard() == null) {
+        throw new IllegalStateException("The selection of the application " + AID + " failed.");
+      }
+
+      // Get the SmartCard resulting of the selection.
+      calypsoCard = (CalypsoCard) selectionResult.getActiveSmartCard();
+
+      samResource =
+          CardResourceServiceProvider.getService()
+              .getCardResource(CardConfigurator.SAM_RESOURCE_PROFILE_NAME);
+
       Card card = cardRepository.readCard(cardReader, calypsoCard, samResource);
       logger.info("{}", card);
       activityService.push(
@@ -171,41 +175,34 @@ public class CardService {
               .setType(SECURED_READ)
               .setCardSerialNumber(HexUtil.toHex(calypsoCard.getApplicationSerialNumber())));
       List<ContractStructure> validContracts = findValidContracts(card);
-      List<String> output = new ArrayList<>();
+
       for (ContractStructure contractStructure : validContracts) {
         output.add(contractStructureToString(contractStructure));
       }
-      return new SelectAppAndReadContractsOutputDto(output, 0);
     } catch (CardNotPersonalizedException e) {
-      logger.error(AN_ERROR_OCCURRED_WHILE_READING_THE_CARD_CONTENT, e.getMessage());
-      activityService.push(
-          new Activity()
-              .setPlugin(CUSTOM_PLUGIN)
-              .setStatus(FAIL)
-              .setType(SECURED_READ)
-              .setCardSerialNumber(HexUtil.toHex(calypsoCard.getApplicationSerialNumber())));
-      return new SelectAppAndReadContractsOutputDto(Collections.emptyList(), 3);
+      statusCode = 3;
+      logger.error(AN_ERROR_OCCURRED_WHILE_INCREASING_THE_CONTRACT_COUNTER, e.getMessage());
     } catch (ExpiredEnvironmentException e) {
-      logger.error(AN_ERROR_OCCURRED_WHILE_READING_THE_CARD_CONTENT, e.getMessage());
-      activityService.push(
-          new Activity()
-              .setPlugin(CUSTOM_PLUGIN)
-              .setStatus(FAIL)
-              .setType(SECURED_READ)
-              .setCardSerialNumber(HexUtil.toHex(calypsoCard.getApplicationSerialNumber())));
-      return new SelectAppAndReadContractsOutputDto(Collections.emptyList(), 4);
+      statusCode = 4;
+      logger.error(AN_ERROR_OCCURRED_WHILE_INCREASING_THE_CONTRACT_COUNTER, e.getMessage());
     } catch (RuntimeException e) {
-      logger.error(AN_ERROR_OCCURRED_WHILE_READING_THE_CARD_CONTENT, e.getMessage(), e);
+      statusCode = 1;
+      logger.error(AN_ERROR_OCCURRED_WHILE_INCREASING_THE_CONTRACT_COUNTER, e.getMessage(), e);
+    } finally {
       activityService.push(
           new Activity()
               .setPlugin(CUSTOM_PLUGIN)
-              .setStatus(FAIL)
-              .setType(SECURED_READ)
-              .setCardSerialNumber(HexUtil.toHex(calypsoCard.getApplicationSerialNumber())));
-      return new SelectAppAndReadContractsOutputDto(Collections.emptyList(), 1);
-    } finally {
-      CardResourceServiceProvider.getService().releaseCardResource(samResource);
+              .setStatus(statusCode == 0 ? SUCCESS : FAIL)
+              .setType(RELOAD)
+              .setCardSerialNumber(
+                  calypsoCard == null
+                      ? "-"
+                      : HexUtil.toHex(calypsoCard.getApplicationSerialNumber())));
+      if (samResource != null) {
+        CardResourceServiceProvider.getService().releaseCardResource(samResource);
+      }
     }
+    return new SelectAppAndReadContractsOutputDto(output, statusCode);
   }
 
   SelectAppAndIncreaseContractCounterOutputDto selectAppAndIncreaseContractCounter(
@@ -216,27 +213,29 @@ public class CardService {
     CalypsoExtensionService calypsoCardService = CalypsoExtensionService.getInstance();
 
     CardSelectionManager cardSelectionManager = smartCardService.createCardSelectionManager();
-
     cardSelectionManager.prepareSelection(
         calypsoCardService.createCardSelection().acceptInvalidatedCard().filterByDfName(AID));
 
-    // Actual card communication: run the selection scenario.
-    CardSelectionResult selectionResult =
-        cardSelectionManager.processCardSelectionScenario(cardReader);
-
-    // Check the selection result.
-    if (selectionResult.getActiveSmartCard() == null) {
-      throw new IllegalStateException("The selection of the application " + AID + " failed.");
-    }
-
-    // Get the SmartCard resulting of the selection.
-    CalypsoCard calypsoCard = (CalypsoCard) selectionResult.getActiveSmartCard();
-
-    CardResource samResource =
-        CardResourceServiceProvider.getService()
-            .getCardResource(CardConfigurator.SAM_RESOURCE_PROFILE_NAME);
-
+    CalypsoCard calypsoCard = null;
+    CardResource samResource = null;
+    int statusCode = 0;
     try {
+      // Actual card communication: run the selection scenario.
+      CardSelectionResult selectionResult =
+          cardSelectionManager.processCardSelectionScenario(cardReader);
+
+      // Check the selection result.
+      if (selectionResult.getActiveSmartCard() == null) {
+        throw new IllegalStateException("The selection of the application " + AID + " failed.");
+      }
+
+      // Get the SmartCard resulting of the selection.
+      calypsoCard = (CalypsoCard) selectionResult.getActiveSmartCard();
+
+      samResource =
+          CardResourceServiceProvider.getService()
+              .getCardResource(CardConfigurator.SAM_RESOURCE_PROFILE_NAME);
+
       Card card = cardRepository.readCard(cardReader, calypsoCard, samResource);
       logger.info("{}", card);
       activityService.push(
@@ -247,38 +246,31 @@ public class CardService {
               .setCardSerialNumber(HexUtil.toHex(calypsoCard.getApplicationSerialNumber()))
               .setContractLoaded("MULTI TRIP: " + inputData.getCounterIncrement()));
       insertNewContract(PriorityCode.MULTI_TRIP, inputData.getCounterIncrement(), card);
-      int statusCode = cardRepository.writeCard(cardReader, calypsoCard, samResource, card);
-      return new SelectAppAndIncreaseContractCounterOutputDto(statusCode);
+      statusCode = cardRepository.writeCard(cardReader, calypsoCard, samResource, card);
     } catch (CardNotPersonalizedException e) {
+      statusCode = 3;
       logger.error(AN_ERROR_OCCURRED_WHILE_INCREASING_THE_CONTRACT_COUNTER, e.getMessage());
-      activityService.push(
-          new Activity()
-              .setPlugin(CUSTOM_PLUGIN)
-              .setStatus(FAIL)
-              .setType(RELOAD)
-              .setCardSerialNumber(HexUtil.toHex(calypsoCard.getApplicationSerialNumber())));
-      return new SelectAppAndIncreaseContractCounterOutputDto(3);
     } catch (ExpiredEnvironmentException e) {
+      statusCode = 4;
       logger.error(AN_ERROR_OCCURRED_WHILE_INCREASING_THE_CONTRACT_COUNTER, e.getMessage());
-      activityService.push(
-          new Activity()
-              .setPlugin(CUSTOM_PLUGIN)
-              .setStatus(FAIL)
-              .setType(RELOAD)
-              .setCardSerialNumber(HexUtil.toHex(calypsoCard.getApplicationSerialNumber())));
-      return new SelectAppAndIncreaseContractCounterOutputDto(4);
     } catch (RuntimeException e) {
+      statusCode = 1;
       logger.error(AN_ERROR_OCCURRED_WHILE_INCREASING_THE_CONTRACT_COUNTER, e.getMessage(), e);
+    } finally {
       activityService.push(
           new Activity()
               .setPlugin(CUSTOM_PLUGIN)
-              .setStatus(FAIL)
+              .setStatus(statusCode == 0 ? SUCCESS : FAIL)
               .setType(RELOAD)
-              .setCardSerialNumber(HexUtil.toHex(calypsoCard.getApplicationSerialNumber())));
-      return new SelectAppAndIncreaseContractCounterOutputDto(1);
-    } finally {
-      CardResourceServiceProvider.getService().releaseCardResource(samResource);
+              .setCardSerialNumber(
+                  calypsoCard == null
+                      ? "-"
+                      : HexUtil.toHex(calypsoCard.getApplicationSerialNumber())));
+      if (samResource != null) {
+        CardResourceServiceProvider.getService().releaseCardResource(samResource);
+      }
     }
+    return new SelectAppAndIncreaseContractCounterOutputDto(statusCode);
   }
 
   AnalyzeContractsOutputDto analyzeContracts(

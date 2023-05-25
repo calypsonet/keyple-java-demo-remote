@@ -63,6 +63,7 @@ namespace App.application
             else
             {
                 Misc.DisplayAndLog("Reading failed, status code: " + outputDto.OutputData.StatusCode, ConsoleColor.DarkGreen, LogEventLevel.Information, _logger);
+                return;
             }
 
             List<string> contracts = outputDto.OutputData.Items;

@@ -234,7 +234,7 @@ namespace App.domain.data
     /// <summary>
     /// Represents the body of a command. It is dedicated to the message identification step.
     /// </summary>
-    public class CommandBody
+    public class CmdBody
     {
         /// <summary>
         /// Service name.

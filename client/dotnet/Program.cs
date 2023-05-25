@@ -88,6 +88,8 @@ catch (Exception ex)
 }
 finally
 {
+    Console.WriteLine("Press any key to exit.");
+    Console.ReadKey();
     Log.Information("Closing the application");
     Log.CloseAndFlush();
 }

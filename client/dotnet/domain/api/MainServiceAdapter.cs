@@ -199,7 +199,11 @@ namespace App.domain.api
                     apduRequest.Info = "Internal Select Application";
                 }
 
-                return ProcessApduRequest(apduRequest);
+                ApduResponse apduResponse = ProcessApduRequest(apduRequest);
+                if(cardSelector.SuccessfulSelectionStatusWords.Contains(apduResponse.StatusWord)) { 
+                    return apduResponse;
+                }
+                throw new UnexpectedStatusWordException($"Unexpected status word in response to select application: {apduResponse.StatusWord:X}");
             }
 
             // Handle the case where cardSelector or cardSelector.Aid is null.
@@ -219,7 +223,7 @@ namespace App.domain.api
 
                     if (!apduRequest.SuccessfulStatusWords.Contains(apduResponse.StatusWord))
                     {
-                        throw new UnexpectedStatusWordException("Unexpected status word.");
+                        throw new UnexpectedStatusWordException($"Unexpected status word: {apduResponse.StatusWord:X}");
                     }
                 }
                 catch (ServerIOException ex)
@@ -266,7 +270,7 @@ namespace App.domain.api
             {
                 _logger.Information($"Processing action {message.Action}");
 
-                CommandBody command = JsonConvert.DeserializeObject<CommandBody>(message.Body)!;
+                CmdBody command = JsonConvert.DeserializeObject<CmdBody>(message.Body)!;
 
                 string service = command.Service;
                 _logger.Information($"Service: {service}");
@@ -274,32 +278,16 @@ namespace App.domain.api
                 switch (service)
                 {
                     case IS_CONTACTLESS:
-                        IsContactlessRespBody isContactlessRespBody = new IsContactlessRespBody();
-                        isContactlessRespBody.Result = true;
-                        jsonBodyString = JsonConvert.SerializeObject(isContactlessRespBody, Formatting.None);
+                        jsonBodyString = IsContactless();
                         break;
                     case IS_CARD_PRESENT:
-                        IsCardPresentRespBody isCardPresentRespBody = new IsCardPresentRespBody();
-                        isCardPresentRespBody.Result = true;
-                        jsonBodyString = JsonConvert.SerializeObject(isCardPresentRespBody, Formatting.None);
+                        jsonBodyString = IsCardPresent();
                         break;
                     case TRANSMIT_CARD_SELECTION_REQUESTS:
-                        TransmitCardSelectionRequestsRespBody transmitCardSelectionRequestsRespBody = new TransmitCardSelectionRequestsRespBody();
-                        TransmitCardSelectionRequestsCmdBody transmitCardSelectionRequestsCmdBody = JsonConvert.DeserializeObject<TransmitCardSelectionRequestsCmdBody>(message.Body)!;
-                        CardSelectionRequest cardSelectionRequest = transmitCardSelectionRequestsCmdBody.Parameters.CardSelectionRequests[0];
-                        CardSelectionResponse cardSelectionResponse = ProcessCardSelectionRequest(cardSelectionRequest);
-                        List<CardSelectionResponse> cardSelectionResponses = new List<CardSelectionResponse>();
-                        cardSelectionResponses.Add(cardSelectionResponse);
-                        transmitCardSelectionRequestsRespBody.Result = cardSelectionResponses;
-                        jsonBodyString = JsonConvert.SerializeObject(transmitCardSelectionRequestsRespBody, Formatting.None);
+                        jsonBodyString = TransmitCardSelectionRequest(message);
                         break;
                     case TRANSMIT_CARD_REQUEST:
-                        TransmitCardRequestsRespBody transmitCardRequestsRespBody = new TransmitCardRequestsRespBody();
-                        TransmitCardRequestCmdBody transmitCardRequestsCmdBody = JsonConvert.DeserializeObject<TransmitCardRequestCmdBody>(message.Body)!;
-                        CardRequest cardRequest = transmitCardRequestsCmdBody.Parameters.CardRequest;
-                        CardResponse cardResponse = ProcessCardRequest(cardRequest);
-                        transmitCardRequestsRespBody.Result = cardResponse;
-                        jsonBodyString = JsonConvert.SerializeObject(transmitCardRequestsRespBody, Formatting.None);
+                        jsonBodyString = TransmitCardRequest(message);
                         break;
                 }
                 message.SetAction(RESP);
@@ -308,6 +296,80 @@ namespace App.domain.api
                 message = JsonConvert.DeserializeObject<List<MessageDto>>(jsonResponse)![0];
             }
             return message;
+        }
+
+        private static string IsContactless()
+        {
+            string jsonBodyString;
+            IsContactlessRespBody isContactlessRespBody = new IsContactlessRespBody();
+            isContactlessRespBody.Result = true;
+            jsonBodyString = JsonConvert.SerializeObject(isContactlessRespBody, Formatting.None);
+            return jsonBodyString;
+        }
+
+        private static string IsCardPresent()
+        {
+            string jsonBodyString;
+            IsCardPresentRespBody isCardPresentRespBody = new IsCardPresentRespBody();
+            isCardPresentRespBody.Result = true;
+            jsonBodyString = JsonConvert.SerializeObject(isCardPresentRespBody, Formatting.None);
+            return jsonBodyString;
+        }
+
+        private string TransmitCardSelectionRequest(MessageDto message)
+        {
+            string jsonBodyString;
+            TransmitCardSelectionRequestsRespBody transmitCardSelectionRequestsRespBody = new TransmitCardSelectionRequestsRespBody();
+            TransmitCardSelectionRequestsCmdBody transmitCardSelectionRequestsCmdBody = JsonConvert.DeserializeObject<TransmitCardSelectionRequestsCmdBody>(message.Body)!;
+            CardSelectionRequest cardSelectionRequest = transmitCardSelectionRequestsCmdBody.Parameters.CardSelectionRequests[0];
+            try
+            {
+                CardSelectionResponse cardSelectionResponse = ProcessCardSelectionRequest(cardSelectionRequest);
+                List<CardSelectionResponse> cardSelectionResponses = new List<CardSelectionResponse>();
+                cardSelectionResponses.Add(cardSelectionResponse);
+                transmitCardSelectionRequestsRespBody.Result = cardSelectionResponses;
+            }
+            catch (CardIOException ex)
+            {
+                transmitCardSelectionRequestsRespBody.Error = new Error { Code = ErrorCode.CARD_COMMUNICATION_ERROR, Message = ex.Message };
+            }
+            catch (ReaderIOException ex)
+            {
+                transmitCardSelectionRequestsRespBody.Error = new Error { Code = ErrorCode.READER_COMMUNICATION_ERROR, Message = ex.Message };
+            }
+            catch (UnexpectedStatusWordException ex)
+            {
+                transmitCardSelectionRequestsRespBody.Error = new Error { Code = ErrorCode.CARD_COMMAND_ERROR, Message = ex.Message };
+            }
+            jsonBodyString = JsonConvert.SerializeObject(transmitCardSelectionRequestsRespBody, Formatting.None);
+            return jsonBodyString;
+        }
+
+        private string TransmitCardRequest(MessageDto message)
+        {
+            string jsonBodyString;
+            TransmitCardRequestsRespBody transmitCardRequestsRespBody = new TransmitCardRequestsRespBody();
+            TransmitCardRequestCmdBody transmitCardRequestsCmdBody = JsonConvert.DeserializeObject<TransmitCardRequestCmdBody>(message.Body)!;
+            CardRequest cardRequest = transmitCardRequestsCmdBody.Parameters.CardRequest;
+            try
+            {
+                CardResponse cardResponse = ProcessCardRequest(cardRequest);
+                transmitCardRequestsRespBody.Result = cardResponse;
+            }
+            catch (CardIOException ex)
+            {
+                transmitCardRequestsRespBody.Error = new Error { Code = ErrorCode.CARD_COMMUNICATION_ERROR, Message = ex.Message };
+            }
+            catch (ReaderIOException ex)
+            {
+                transmitCardRequestsRespBody.Error = new Error { Code = ErrorCode.READER_COMMUNICATION_ERROR, Message = ex.Message };
+            }
+            catch (UnexpectedStatusWordException ex)
+            {
+                transmitCardRequestsRespBody.Error = new Error { Code = ErrorCode.CARD_COMMAND_ERROR, Message = ex.Message };
+            }
+            jsonBodyString = JsonConvert.SerializeObject(transmitCardRequestsRespBody, Formatting.None);
+            return jsonBodyString;
         }
 
         private string ExecuteRemoteService(string serviceId, InputData inputData)

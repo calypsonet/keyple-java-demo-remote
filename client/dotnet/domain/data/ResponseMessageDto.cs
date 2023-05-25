@@ -46,7 +46,7 @@ namespace App.domain.data
         /// </summary>
         [JsonConverter(typeof(StringEnumConverter))]
         [JsonProperty("code")]
-        public required string Code { get; set; }
+        public required ErrorCode Code { get; set; }
 
         /// <summary>
         /// Error message.
