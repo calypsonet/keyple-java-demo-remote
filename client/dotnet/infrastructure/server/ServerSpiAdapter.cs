@@ -1,7 +1,17 @@
-﻿using System.Text;
-using App.application;
+﻿// Copyright (c) 2023 Calypso Networks Association https://calypsonet.org/
+//
+// See the NOTICE file(s) distributed with this work for additional information
+// regarding copyright ownership.
+//
+// This program and the accompanying materials are made available under the terms of the
+// Eclipse Public License 2.0 which is available at http://www.eclipse.org/legal/epl-2.0
+//
+// SPDX-License-Identifier: EPL-2.0
+
+using System.Text;
 using App.domain.spi;
 using Serilog;
+using Serilog.Events;
 
 namespace App.infrastructure.server
 {
@@ -35,7 +45,7 @@ namespace App.infrastructure.server
         /// <returns>A JSON string containing the server's response.</returns>
         public string transmitRequest(string jsonRequest)
         {
-            if (_logger.IsEnabled(Serilog.Events.LogEventLevel.Debug))
+            if (_logger.IsEnabled(LogEventLevel.Debug))
             {
                 _logger.Debug($"Tx Json = {jsonRequest}");
             }
@@ -56,7 +66,7 @@ namespace App.infrastructure.server
                         // If the request was successful, read the content of the response
                         result = response.Content.ReadAsStringAsync().Result;
 
-                        if (_logger.IsEnabled(Serilog.Events.LogEventLevel.Debug))
+                        if (_logger.IsEnabled(LogEventLevel.Debug))
                         {
                             _logger.Debug($"Rx Json = {result}");
                         }

@@ -1,8 +1,17 @@
-﻿using App.application;
+﻿// Copyright (c) 2023 Calypso Networks Association https://calypsonet.org/
+//
+// See the NOTICE file(s) distributed with this work for additional information
+// regarding copyright ownership.
+//
+// This program and the accompanying materials are made available under the terms of the
+// Eclipse Public License 2.0 which is available at http://www.eclipse.org/legal/epl-2.0
+//
+// SPDX-License-Identifier: EPL-2.0
+
+using App.application;
 using App.domain.data;
 using App.domain.spi;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using Serilog;
 using Serilog.Events;
 
@@ -185,7 +194,7 @@ namespace App.domain.api
                     SuccessfulStatusWords = new HashSet<int>()
                 };
 
-                if (_logger.IsEnabled(Serilog.Events.LogEventLevel.Debug))
+                if (_logger.IsEnabled(LogEventLevel.Debug))
                 {
                     apduRequest.Info = "Internal Select Application";
                 }

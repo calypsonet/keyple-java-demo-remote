@@ -51,6 +51,9 @@ dotnet_style_qualification_for_event = false:suggestion
 
 # C# files
 [*.cs]
+# Licence header
+file_header_template = Copyright (c) 2023 Calypso Networks Association https://calypsonet.org/\n\nSee the NOTICE file(s) distributed with this work for additional information\nregarding copyright ownership.\n\nThis program and the accompanying materials are made available under the terms of the\nEclipse Public License 2.0 which is available at http://www.eclipse.org/legal/epl-2.0\n\nSPDX-License-Identifier: EPL-2.0
+
 # New line preferences
 csharp_new_line_before_open_brace = all
 csharp_new_line_before_else = true
