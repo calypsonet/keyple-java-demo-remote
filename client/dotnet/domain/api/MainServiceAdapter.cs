@@ -200,7 +200,8 @@ namespace App.domain.api
                 }
 
                 ApduResponse apduResponse = ProcessApduRequest(apduRequest);
-                if(cardSelector.SuccessfulSelectionStatusWords.Contains(apduResponse.StatusWord)) { 
+                if (cardSelector.SuccessfulSelectionStatusWords.Contains(apduResponse.StatusWord))
+                {
                     return apduResponse;
                 }
                 throw new UnexpectedStatusWordException($"Unexpected status word in response to select application: {apduResponse.StatusWord:X}");
