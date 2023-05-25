@@ -250,7 +250,7 @@ namespace App.domain.data
         /// Parameters for transmitting card selection requests.
         /// </summary>
         [JsonProperty("parameters")]
-        public new required TransmitCardSelectionRequestsParameters Parameters { get; set; }
+        public required TransmitCardSelectionRequestsParameters Parameters { get; set; }
     }
 
     /// <summary>

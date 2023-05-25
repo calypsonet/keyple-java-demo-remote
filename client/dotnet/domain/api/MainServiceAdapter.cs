@@ -314,12 +314,8 @@ namespace App.domain.api
             };
 
             // Create and fill RemoteServiceDto object
-            MessageDto message = new MessageDto()
-                .SetAction(EXECUTE_REMOTE_SERVICE)
-                .SetLocalReaderName(_localReaderName)
-                .SetBody(JsonConvert.SerializeObject(bodyContent, Formatting.None))
-                .SetClientNodeId(_clientNodeId)
-                .SetSessionId(sessionId);
+            MessageDto message = new MessageDto { Action = EXECUTE_REMOTE_SERVICE, Body = JsonConvert.SerializeObject(bodyContent, Formatting.None), ClientNodeId = _clientNodeId, SessionId = sessionId };
+            message.SetLocalReaderName(_localReaderName);
 
             string jsonResponse = _server.transmitRequest(JsonConvert.SerializeObject(message));
 

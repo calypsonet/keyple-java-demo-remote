@@ -10,19 +10,25 @@ public class MessageDto
     /// Action associated with the message.
     /// </summary>
     [JsonProperty("action")]
-    public string Action { get; set; }
+    public required string Action { get; set; }
 
     /// <summary>
     /// Body of the message.
     /// </summary>
     [JsonProperty("body")]
-    public string Body { get; set; }
+    public required string Body { get; set; }
 
     /// <summary>
     /// Client node ID.
     /// </summary>
     [JsonProperty("clientNodeId")]
-    public string ClientNodeId { get; set; }
+    public required string ClientNodeId { get; set; }
+
+    /// <summary>
+    /// Session ID.
+    /// </summary>
+    [JsonProperty("sessionId")]
+    public required string SessionId { get; set; }
 
     /// <summary>
     /// Name of the local reader.
@@ -41,12 +47,6 @@ public class MessageDto
     /// </summary>
     [JsonProperty("serverNodeId")]
     public string? ServerNodeId { get; set; }
-
-    /// <summary>
-    /// Session ID.
-    /// </summary>
-    [JsonProperty("sessionId")]
-    public string SessionId { get; set; }
 
     /// <summary>
     /// Sets the action associated with the message.
