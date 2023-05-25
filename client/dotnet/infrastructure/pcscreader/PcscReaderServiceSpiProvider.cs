@@ -1,36 +1,38 @@
-﻿using App.domain.spi;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using App.domain.spi;
 
-namespace App.infrastructure.pcscreader {
+namespace App.infrastructure.pcscreader
+{
     /// <summary>
     /// Provides a singleton instance of PcscReaderSpi implemented by PcscReaderServiceSpiAdapter.
     /// </summary>
-    public class PcscReaderServiceSpiProvider {
-        private static PcscReaderServiceSpiAdapter? _instance;
-        private static readonly object _lock = new object ();
+    public class PcscReaderServiceSpiProvider
+    {
+        private static PcscReaderServiceSpiAdapter? s_instance;
+        private static readonly object s_lock = new object();
 
-        private PcscReaderServiceSpiProvider ( ) { }
+        private PcscReaderServiceSpiProvider() { }
 
         /// <summary>
         /// Gets the singleton instance of PcscReaderServiceSpiAdapter.
         /// </summary>
-        public static ReaderServiceSpi getInstance ( )
+        public static ReaderServiceSpi getInstance()
         {
-            if (_instance == null)
+            if (s_instance == null)
             {
-                lock (_lock)
+                lock (s_lock)
                 {
-                    if (_instance == null)
+                    if (s_instance == null)
                     {
-                        _instance = new PcscReaderServiceSpiAdapter ();
+                        s_instance = new PcscReaderServiceSpiAdapter();
                     }
                 }
             }
-            return _instance;
+            return s_instance;
         }
     }
 }

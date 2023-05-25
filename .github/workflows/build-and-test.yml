@@ -1,4 +1,4 @@
-name: Compile and Test Java Api
+name: Build and Test
 
 on:
   pull_request:
@@ -23,6 +23,10 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 16
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: 6.0.x
       - name: Update permissions
         working-directory: .
         run: chmod +x ./client/android/gradlew ./server/gradlew ./.github/scripts/*.sh
@@ -32,6 +36,13 @@ jobs:
       - name: Check version server
         working-directory: ./server/
         run: ../.github/scripts/check_version.sh
+      - name: Check code format, build and test client .NET
+        working-directory: ./client/dotnet
+        run: |
+          dotnet restore
+          dotnet format --verify-no-changes App.sln
+          dotnet build --no-restore
+          dotnet test --no-build --verbosity normal
       - name: Build and Test client Android
         working-directory: ./client/android/
         run: ./gradlew build test --info --stacktrace

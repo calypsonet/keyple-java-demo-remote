@@ -1,37 +1,39 @@
-﻿using App.domain.spi;
-using App.infrastructure.pcscreader;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using App.domain.spi;
+using App.infrastructure.pcscreader;
 
-namespace App.infrastructure.server {
+namespace App.infrastructure.server
+{
     /// <summary>
     /// Provides a singleton instance of ServerSpi implemented by ServerSpiAdapter.
     /// </summary>
-    public class ServerSpiProvider {
-        private static ServerSpiAdapter? _instance;
-        private static readonly object _lock = new object ();
+    public class ServerSpiProvider
+    {
+        private static ServerSpiAdapter? s_instance;
+        private static readonly object s_lock = new object();
 
-        private ServerSpiProvider ( ) { }
+        private ServerSpiProvider() { }
 
         /// <summary>
         /// Gets the singleton instance of ServerSpiAdapter.
         /// </summary>
-        public static ServerSpi getInstance ( string baseUrl, int port, string endPoint )
+        public static ServerSpi getInstance(string baseUrl, int port, string endPoint)
         {
-            if (_instance == null)
+            if (s_instance == null)
             {
-                lock (_lock)
+                lock (s_lock)
                 {
-                    if (_instance == null)
+                    if (s_instance == null)
                     {
-                        _instance = new ServerSpiAdapter ( baseUrl, port, endPoint );
+                        s_instance = new ServerSpiAdapter(baseUrl, port, endPoint);
                     }
                 }
             }
-            return _instance;
+            return s_instance;
         }
     }
 }

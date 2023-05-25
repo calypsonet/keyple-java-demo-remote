@@ -5,45 +5,51 @@ using System.Runtime.Versioning;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace App.domain.spi {
-    public interface ReaderServiceSpi {
+namespace App.domain.spi
+{
+    /// <summary>
+    /// The ReaderServiceSpi interface represents the reader service provider interface (SPI).
+    /// It provides methods to manage the card reader.
+    /// </summary>
+    public interface ReaderServiceSpi
+    {
 
         /// <summary>
         /// Retrieves a list of available smart card readers.
         /// </summary>
         /// <returns>A list of reader names.</returns>
-        public List<string> GetReaders ( );
+        public List<string> GetReaders();
 
         /// <summary>
         /// Selects the reader to work with.
         /// </summary>
         /// <param name="readerName">The name of the reader.</param>
-        void SelectReader ( string readerName );
+        void SelectReader(string readerName);
 
         /// <summary>
         /// Checks if a card is present in the reader.
         /// </summary>
         /// <returns>True if a card is present, otherwise false.</returns>
-        bool IsCardPresent ( );
+        bool IsCardPresent();
 
         /// <summary>
         /// Waits for a card to be inserted in the reader.
         /// </summary>
         /// <returns>True if a card is detected, otherwise false.</returns>
-        bool WaitForCardPresent ( );
+        bool WaitForCardPresent();
 
         /// <summary>
         /// Waits for thr card to be removed in the reader.
         /// </summary>
         /// <returns>True if a card is removed, otherwise false.</returns>
-        bool WaitForCardAbsent ( );
+        bool WaitForCardAbsent();
 
         /// <summary>
         /// Attempts to open the physical channel (to establish communication with the card).
         /// </summary>
         /// <exception cref="ReaderIOException">If the communication with the reader has failed.</exception>
         /// <exception cref="CardIOException">If the communication with the card has failed.</exception>
-        void OpenPhysicalChannel ( );
+        void OpenPhysicalChannel();
 
         /// <summary>
         /// Attempts to close the current physical channel.
@@ -51,7 +57,7 @@ namespace App.domain.spi {
         /// The physical channel may have been implicitly closed previously by a card withdrawal.
         /// </summary>
         /// <exception cref="ReaderIOException">If the communication with the reader has failed.</exception>
-        void ClosePhysicalChannel ( );
+        void ClosePhysicalChannel();
 
         /// <summary>
         /// Gets the power-on data.
@@ -69,7 +75,7 @@ namespace App.domain.spi {
         /// which can be either a hexadecimal string or any other relevant information.
         /// </summary>
         /// <returns>A not empty string.</returns>
-        string GetPowerOnData ( );
+        string GetPowerOnData();
 
 
         /// <summary>
@@ -77,6 +83,6 @@ namespace App.domain.spi {
         /// </summary>
         /// <param name="commandApdu">The command APDU to be transmitted.</param>
         /// <returns>The response APDU received from the smart card.</returns>
-        byte[] TransmitApdu ( byte[] commandApdu );
+        byte[] TransmitApdu(byte[] commandApdu);
     }
 }

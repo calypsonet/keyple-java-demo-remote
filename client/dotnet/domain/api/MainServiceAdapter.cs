@@ -10,7 +10,8 @@ namespace App.domain.api
 {
 
 
-    class MainServiceAdapter : MainServiceApi {
+    class MainServiceAdapter : MainServiceApi
+    {
         private readonly ILogger _logger;
         private readonly ReaderServiceSpi _readerService;
         private readonly ServerSpi _server;
@@ -22,38 +23,48 @@ namespace App.domain.api
         private const int SW1_MASK = 0xFF00;
         private const int SW2_MASK = 0x00FF;
 
-        internal MainServiceAdapter ( ReaderServiceSpi readerService, string readerName, ServerSpi server )
-        {
-            _logger = Log.ForContext<MainServiceAdapter> ();
+        private const string EXECUTE_REMOTE_SERVICE = "EXECUTE_REMOTE_SERVICE";
+        private const string END_REMOTE_SERVICE = "END_REMOTE_SERVICE";
+        private const string CMD = "CMD";
+        private const string RESP = "RESP";
 
-            _logger.Information ( "Creation of main service..." );
+        private const string IS_CONTACTLESS = "IS_CONTACTLESS";
+        private const string IS_CARD_PRESENT = "IS_CARD_PRESENT";
+        private const string TRANSMIT_CARD_SELECTION_REQUESTS = "TRANSMIT_CARD_SELECTION_REQUESTS";
+        private const string TRANSMIT_CARD_REQUEST = "TRANSMIT_CARD_REQUEST";
+
+        internal MainServiceAdapter(ReaderServiceSpi readerService, string readerName, ServerSpi server)
+        {
+            _logger = Log.ForContext<MainServiceAdapter>();
+
+            _logger.Information("Creation of main service...");
 
             _readerService = readerService;
             _server = server;
 
-            _clientNodeId = Guid.NewGuid ().ToString ();
+            _clientNodeId = Guid.NewGuid().ToString();
 
-            List<string> readerNames = readerService.GetReaders ();
-            
+            List<string> readerNames = readerService.GetReaders();
+
             if (readerNames.Count == 0)
             {
-                Misc.DisplayAndLog ( "No reader found!", ConsoleColor.Red, LogEventLevel.Error, _logger );
-                Environment.Exit ( 1 );
+                Misc.DisplayAndLog("No reader found!", ConsoleColor.Red, LogEventLevel.Error, _logger);
+                Environment.Exit(1);
             }
 
-            if (!readerNames.Contains ( readerName ))
+            if (!readerNames.Contains(readerName))
             {
-                Misc.DisplayAndLog ( $"Reader '{readerName}' is not found in the list of readers.", ConsoleColor.Red, LogEventLevel.Error, _logger );
-                Environment.Exit ( 1 );
+                Misc.DisplayAndLog($"Reader '{readerName}' is not found in the list of readers.", ConsoleColor.Red, LogEventLevel.Error, _logger);
+                Environment.Exit(1);
             }
 
             _localReaderName = readerName;
-            _logger.Information ( $"Select reader {_localReaderName}" );
-            readerService.SelectReader ( _localReaderName );
+            _logger.Information($"Select reader {_localReaderName}");
+            readerService.SelectReader(_localReaderName);
         }
 
 
-        private bool IsCase4 ( byte[] apduCommand )
+        private bool IsCase4(byte[] apduCommand)
         {
             if (apduCommand != null && apduCommand.Length > 4)
             {
@@ -63,12 +74,14 @@ namespace App.domain.api
         }
 
 
-        ApduResponse ProcessApduRequest ( ApduRequest apduRequest )
+        ApduResponse ProcessApduRequest(ApduRequest apduRequest)
         {
-            ApduResponse apduResponse = new ApduResponse ();
-
-            apduResponse.Apdu = _readerService.TransmitApdu ( apduRequest.Apdu );
-            apduResponse.StatusWord = (apduResponse.Apdu[apduResponse.Apdu.Length - 2] << 8) | apduResponse.Apdu[apduResponse.Apdu.Length - 1];
+            byte[] apdu = _readerService.TransmitApdu(apduRequest.Apdu);
+            ApduResponse apduResponse = new ApduResponse
+            {
+                Apdu = apdu,
+                StatusWord = (apdu[apdu.Length - 2] << 8) | apdu[apdu.Length - 1]
+            };
 
             if (apduResponse.Apdu.Length == 2)
             {
@@ -81,16 +94,16 @@ namespace App.domain.api
                         0x00,
                         (byte)(apduResponse.StatusWord & SW2_MASK)
                         };
-                    apduResponse = ProcessApduRequest ( new ApduRequest { Apdu = getResponseApdu, Info = "Internal Get Response" } );
+                    apduResponse = ProcessApduRequest(new ApduRequest { Apdu = getResponseApdu, SuccessfulStatusWords = new HashSet<int>(), Info = "Internal Get Response" });
                 }
                 else if ((apduResponse.StatusWord & SW1_MASK) == SW_6C00)
                 {
                     apduRequest.Apdu[apduRequest.Apdu.Length - 1] =
                         (byte)(apduResponse.StatusWord & SW2_MASK);
-                    apduResponse = ProcessApduRequest ( apduRequest );
+                    apduResponse = ProcessApduRequest(apduRequest);
                 }
-                else if (IsCase4 ( apduRequest.Apdu )
-                    && apduRequest.SuccessfulStatusWords.Contains ( apduResponse.StatusWord ))
+                else if (IsCase4(apduRequest.Apdu)
+                    && apduRequest.SuccessfulStatusWords.Contains(apduResponse.StatusWord))
                 {
                     byte[] getResponseApdu = {
                     0x00,
@@ -99,14 +112,14 @@ namespace App.domain.api
                     0x00,
                     apduRequest.Apdu[apduRequest.Apdu.Length - 1]
                     };
-                    apduResponse = ProcessApduRequest ( new ApduRequest { Apdu = getResponseApdu, Info = "Internal Get Response" } );
+                    apduResponse = ProcessApduRequest(new ApduRequest { Apdu = getResponseApdu, SuccessfulStatusWords = new HashSet<int>(), Info = "Internal Get Response" });
                 }
             }
 
             return apduResponse;
         }
 
-        private byte ComputeSelectApplicationP2 ( FileOccurrence fileOccurrence, FileControlInformation fileControlInformation )
+        private byte ComputeSelectApplicationP2(FileOccurrence fileOccurrence, FileControlInformation fileControlInformation)
         {
             byte p2;
 
@@ -125,7 +138,7 @@ namespace App.domain.api
                     p2 = 0x03;
                     break;
                 default:
-                    throw new Exception ( "Unexpected value: " + fileOccurrence );
+                    throw new Exception("Unexpected value: " + fileOccurrence);
             }
 
             switch (fileControlInformation)
@@ -143,74 +156,81 @@ namespace App.domain.api
                     p2 |= 0x0C;
                     break;
                 default:
-                    throw new Exception ( "Unexpected value: " + fileControlInformation );
+                    throw new Exception("Unexpected value: " + fileControlInformation);
             }
 
             return p2;
         }
 
-        private ApduResponse SelectApplication ( CardSelector cardSelector )
+        private ApduResponse SelectApplication(CardSelector cardSelector)
         {
-            byte[] selectApplicationCommand = new byte[6 + cardSelector.Aid.Length];
-            selectApplicationCommand[0] = 0x00; // CLA
-            selectApplicationCommand[1] = 0xA4; // INS
-            selectApplicationCommand[2] = 0x04; // P1: select by name
-                                                // P2: b0,b1 define the File occurrence, b2,b3 define the File control information
-                                                // we use the bitmask defined in the respective enums
-            selectApplicationCommand[3] =
-                ComputeSelectApplicationP2 (
-                    cardSelector.FileOccurrence, cardSelector.FileControlInformation );
-            selectApplicationCommand[4] = (byte)(cardSelector.Aid.Length); // Lc
-            Array.Copy ( cardSelector.Aid, 0, selectApplicationCommand, 5, cardSelector.Aid.Length ); // data
-            selectApplicationCommand[5 + cardSelector.Aid.Length] = 0x00; // Le
-
-            ApduRequest apduRequest = new ApduRequest
+            if (cardSelector != null && cardSelector.Aid != null)
             {
-                Apdu = selectApplicationCommand
-            };
+                byte[] selectApplicationCommand = new byte[6 + cardSelector.Aid.Length];
+                selectApplicationCommand[0] = 0x00; // CLA
+                selectApplicationCommand[1] = 0xA4; // INS
+                selectApplicationCommand[2] = 0x04; // P1: select by name
+                                                    // P2: b0,b1 define the File occurrence, b2,b3 define the File control information
+                                                    // we use the bitmask defined in the respective enums
+                selectApplicationCommand[3] =
+                    ComputeSelectApplicationP2(
+                        cardSelector.FileOccurrence, cardSelector.FileControlInformation);
+                selectApplicationCommand[4] = (byte)(cardSelector.Aid.Length); // Lc
+                Array.Copy(cardSelector.Aid, 0, selectApplicationCommand, 5, cardSelector.Aid.Length); // data
+                selectApplicationCommand[5 + cardSelector.Aid.Length] = 0x00; // Le
 
-            if (_logger.IsEnabled ( Serilog.Events.LogEventLevel.Debug ))
-            {
-                apduRequest.Info = "Internal Select Application";
+                ApduRequest apduRequest = new ApduRequest
+                {
+                    Apdu = selectApplicationCommand,
+                    SuccessfulStatusWords = new HashSet<int>()
+                };
+
+                if (_logger.IsEnabled(Serilog.Events.LogEventLevel.Debug))
+                {
+                    apduRequest.Info = "Internal Select Application";
+                }
+
+                return ProcessApduRequest(apduRequest);
             }
 
-            return ProcessApduRequest ( apduRequest );
+            // Handle the case where cardSelector or cardSelector.Aid is null.
+            throw new ArgumentNullException("cardSelector or cardSelector.Aid is null.");
         }
 
-        private CardResponse ProcessCardRequest ( CardRequest cardRequest )
+        private CardResponse ProcessCardRequest(CardRequest cardRequest)
         {
-            var apduResponses = new List<ApduResponse> ();
+            List<ApduResponse> apduResponses = new List<ApduResponse>();
 
-            foreach (var apduRequest in cardRequest.ApduRequests)
+            foreach (ApduRequest apduRequest in cardRequest.ApduRequests)
             {
                 try
                 {
-                    var apduResponse = ProcessApduRequest ( apduRequest );
-                    apduResponses.Add ( apduResponse );
+                    ApduResponse apduResponse = ProcessApduRequest(apduRequest);
+                    apduResponses.Add(apduResponse);
 
-                    if (!apduRequest.SuccessfulStatusWords.Contains ( apduResponse.StatusWord ))
+                    if (!apduRequest.SuccessfulStatusWords.Contains(apduResponse.StatusWord))
                     {
-                        throw new UnexpectedStatusWordException ( "Unexpected status word." );
+                        throw new UnexpectedStatusWordException("Unexpected status word.");
                     }
                 }
                 catch (ServerIOException ex)
                 {
                     // The process has been interrupted. We close the logical channel and throw a
                     // ReaderBrokenCommunicationException.
-                    _readerService.ClosePhysicalChannel ();
+                    _readerService.ClosePhysicalChannel();
 
-                    throw new ReaderIOException ( "Reader communication failure while transmitting a card request.",
-                        ex );
+                    throw new ReaderIOException("Reader communication failure while transmitting a card request.",
+                        ex);
                 }
                 catch (UnexpectedStatusWordException ex)
                 {
                     // The process has been interrupted. We close the logical channel and throw a
                     // CardBrokenCommunicationException.
-                    _readerService.ClosePhysicalChannel ();
+                    _readerService.ClosePhysicalChannel();
 
-                    throw new CardIOException (
+                    throw new CardIOException(
                         "Card communication failure while transmitting a card request.",
-                        ex );
+                        ex);
                 }
             }
 
@@ -218,111 +238,123 @@ namespace App.domain.api
         }
 
 
-        private CardSelectionResponse ProcessCardSelectionRequest ( CardSelectionRequest cardSelectionRequest )
+        private CardSelectionResponse ProcessCardSelectionRequest(CardSelectionRequest cardSelectionRequest)
         {
-            _readerService.OpenPhysicalChannel ();
-            ApduResponse selectAppResponse = SelectApplication ( cardSelectionRequest.CardSelector );
-            CardResponse cardResponse = null;
+            _readerService.OpenPhysicalChannel();
+            ApduResponse selectAppResponse = SelectApplication(cardSelectionRequest.CardSelector);
+            CardResponse? cardResponse = null;
             if (cardSelectionRequest.CardRequest != null)
             {
-                cardResponse = ProcessCardRequest ( cardSelectionRequest.CardRequest );
+                cardResponse = ProcessCardRequest(cardSelectionRequest.CardRequest);
             }
-            CardSelectionResponse cardSelectionResponse = new CardSelectionResponse { HasMatched = true, PowerOnData = _readerService.GetPowerOnData (), SelectApplicationResponse = selectAppResponse, CardResponse = cardResponse };
+            CardSelectionResponse cardSelectionResponse = new CardSelectionResponse { HasMatched = true, PowerOnData = _readerService.GetPowerOnData(), SelectApplicationResponse = selectAppResponse, CardResponse = cardResponse };
             return cardSelectionResponse;
         }
 
-        private MessageDto ProcessTransaction ( MessageDto message )
+        private MessageDto ProcessTransaction(MessageDto message)
         {
-            while (message.Action != "END_REMOTE_SERVICE")
+            while (message.Action != END_REMOTE_SERVICE)
             {
-                _logger.Information ( $"Processing action {message.Action}" );
-                var jsonObject = JObject.Parse ( message.Body );
-                string service = jsonObject["service"].ToString ();
-                JObject body = new JObject ();
-                body["service"] = service;
-                _logger.Information ( $"Service: {service}" );
+                _logger.Information($"Processing action {message.Action}");
+
+                CommandBody command = JsonConvert.DeserializeObject<CommandBody>(message.Body)!;
+
+                string service = command.Service;
+                _logger.Information($"Service: {service}");
+                string jsonBodyString = "";
                 switch (service)
                 {
-                    case "IS_CONTACTLESS":
-                        body["result"] = true;
+                    case IS_CONTACTLESS:
+                        IsContactlessRespBody isContactlessRespBody = new IsContactlessRespBody();
+                        isContactlessRespBody.Result = true;
+                        jsonBodyString = JsonConvert.SerializeObject(isContactlessRespBody, Formatting.None);
                         break;
-                    case "IS_CARD_PRESENT":
-                        body["result"] = true;
+                    case IS_CARD_PRESENT:
+                        IsCardPresentRespBody isCardPresentRespBody = new IsCardPresentRespBody();
+                        isCardPresentRespBody.Result = true;
+                        jsonBodyString = JsonConvert.SerializeObject(isCardPresentRespBody, Formatting.None);
                         break;
-                    case "TRANSMIT_CARD_SELECTION_REQUESTS":
-                        var transmitCardSelectionRequestsCmdBody = JsonConvert.DeserializeObject<TransmitCardSelectionRequestsCmdBody> ( message.Body );
-                        var cardSelectionRequest = transmitCardSelectionRequestsCmdBody.Parameters.CardSelectionRequests[0];
-                        var cardSelectionResponse = ProcessCardSelectionRequest ( cardSelectionRequest );
-                        var cardSelectionResponses = new List<CardSelectionResponse> ();
-                        cardSelectionResponses.Add ( cardSelectionResponse );
-                        body["result"] = JArray.FromObject ( cardSelectionResponses );
+                    case TRANSMIT_CARD_SELECTION_REQUESTS:
+                        TransmitCardSelectionRequestsRespBody transmitCardSelectionRequestsRespBody = new TransmitCardSelectionRequestsRespBody();
+                        TransmitCardSelectionRequestsCmdBody transmitCardSelectionRequestsCmdBody = JsonConvert.DeserializeObject<TransmitCardSelectionRequestsCmdBody>(message.Body)!;
+                        CardSelectionRequest cardSelectionRequest = transmitCardSelectionRequestsCmdBody.Parameters.CardSelectionRequests[0];
+                        CardSelectionResponse cardSelectionResponse = ProcessCardSelectionRequest(cardSelectionRequest);
+                        List<CardSelectionResponse> cardSelectionResponses = new List<CardSelectionResponse>();
+                        cardSelectionResponses.Add(cardSelectionResponse);
+                        transmitCardSelectionRequestsRespBody.Result = cardSelectionResponses;
+                        jsonBodyString = JsonConvert.SerializeObject(transmitCardSelectionRequestsRespBody, Formatting.None);
                         break;
-                    case "TRANSMIT_CARD_REQUEST":
-                        var transmitCardRequestsCmdBody = JsonConvert.DeserializeObject<TransmitCardRequestCmdBody> ( message.Body );
-                        var cardRequest = transmitCardRequestsCmdBody.Parameters.CardRequest;
-                        var cardResponse = ProcessCardRequest ( cardRequest );
-                        body["result"] = JObject.FromObject ( cardResponse );
+                    case TRANSMIT_CARD_REQUEST:
+                        TransmitCardRequestsRespBody transmitCardRequestsRespBody = new TransmitCardRequestsRespBody();
+                        TransmitCardRequestCmdBody transmitCardRequestsCmdBody = JsonConvert.DeserializeObject<TransmitCardRequestCmdBody>(message.Body)!;
+                        CardRequest cardRequest = transmitCardRequestsCmdBody.Parameters.CardRequest;
+                        CardResponse cardResponse = ProcessCardRequest(cardRequest);
+                        transmitCardRequestsRespBody.Result = cardResponse;
+                        jsonBodyString = JsonConvert.SerializeObject(transmitCardRequestsRespBody, Formatting.None);
                         break;
                 }
-                message.SetAction ( "RESP" );
-                string jsonBodyString = JsonConvert.SerializeObject ( body, Formatting.None );
-                message.SetBody ( jsonBodyString );
-                var jsonResponse = _server.transmitRequest ( JsonConvert.SerializeObject ( message, Formatting.None ) );
-                message = JsonConvert.DeserializeObject<List<MessageDto>> ( jsonResponse )[0];
+                message.SetAction(RESP);
+                message.SetBody(jsonBodyString);
+                string jsonResponse = _server.transmitRequest(JsonConvert.SerializeObject(message, Formatting.None));
+                message = JsonConvert.DeserializeObject<List<MessageDto>>(jsonResponse)![0];
             }
             return message;
         }
 
-        private string ExecuteRemoteService ( string serviceId, InputData inputData )
+        private string ExecuteRemoteService(string serviceId, InputData inputData)
         {
-            string sessionId = Guid.NewGuid ().ToString ();
+            string sessionId = Guid.NewGuid().ToString();
 
 
             // Create and fill ExecuteRemoteServiceBodyContent object
-            ExecuteRemoteServiceBodyContent bodyContent = new ExecuteRemoteServiceBodyContent
+            ExecuteRemoteServiceBody bodyContent = new ExecuteRemoteServiceBody
             {
                 ServiceId = serviceId,
                 InputData = inputData
             };
 
             // Create and fill RemoteServiceDto object
-            var message = new MessageDto ()
-                .SetAction ( "EXECUTE_REMOTE_SERVICE" )
-                .SetBody ( JsonConvert.SerializeObject ( bodyContent, Formatting.None ) )
-                .SetClientNodeId ( _clientNodeId )
-                .SetLocalReaderName ( _localReaderName )
-                .SetSessionId ( sessionId );
+            MessageDto message = new MessageDto()
+                .SetAction(EXECUTE_REMOTE_SERVICE)
+                .SetLocalReaderName(_localReaderName)
+                .SetBody(JsonConvert.SerializeObject(bodyContent, Formatting.None))
+                .SetClientNodeId(_clientNodeId)
+                .SetSessionId(sessionId);
 
-            var jsonResponse = _server.transmitRequest ( JsonConvert.SerializeObject ( message ) );
+            string jsonResponse = _server.transmitRequest(JsonConvert.SerializeObject(message));
 
-            message = JsonConvert.DeserializeObject<List<MessageDto>> ( jsonResponse )[0];
+            message = JsonConvert.DeserializeObject<List<MessageDto>>(jsonResponse)![0];
 
-            message = ProcessTransaction ( message );
+            message = ProcessTransaction(message);
 
             return message.Body;
         }
-        public void WaitForCardInsertion ( )
+        /// <inheritdoc/>
+        public void WaitForCardInsertion()
         {
             _readerService.WaitForCardPresent();
         }
 
-        public void WaitForCardRemoval ( )
+        /// <inheritdoc/>
+        public void WaitForCardRemoval()
         {
             _readerService.WaitForCardAbsent();
         }
 
-        public string SelectAndReadContracts ( )
+        /// <inheritdoc/>
+        public string SelectAndReadContracts()
         {
-            _logger.Information ( "Execute remote service to read the card content..." );
+            _logger.Information("Execute remote service to read the card content...");
 
-            return ExecuteRemoteService ( "SELECT_APP_AND_READ_CONTRACTS", new InputDataRead { } );
+            return ExecuteRemoteService("SELECT_APP_AND_READ_CONTRACTS", new InputDataRead { });
         }
 
-        public string SelectAndIncreaseContractCounter ( int counterIncrement )
+        /// <inheritdoc/>
+        public string SelectAndIncreaseContractCounter(int counterIncrement)
         {
-            _logger.Information ( "Execute remote service to increase the contract counter..." );
+            _logger.Information("Execute remote service to increase the contract counter...");
 
-            return ExecuteRemoteService ( "SELECT_APP_AND_INCREASE_CONTRACT_COUNTER", new InputDataWrite { CounterIncrement = counterIncrement.ToString () } );
+            return ExecuteRemoteService("SELECT_APP_AND_INCREASE_CONTRACT_COUNTER", new InputDataWrite { CounterIncrement = counterIncrement.ToString() });
         }
 
     }

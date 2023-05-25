@@ -11,7 +11,7 @@ namespace App.domain.utils
         /// <summary>
         /// A precomputed table of hexadecimal representations of bytes.
         /// </summary>
-        private static readonly string[] ByteToHexTable = new string[]
+        private static readonly string[] s_byteToHexTable = new string[]
         {
         "00", "01", "02", "03", "04", "05", "06", "07", "08", "09", "0A", "0B", "0C", "0D", "0E", "0F",
         "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "1A", "1B", "1C", "1D", "1E", "1F",
@@ -35,7 +35,7 @@ namespace App.domain.utils
         /// A readonly byte array used for converting hexadecimal characters to their corresponding
         /// nibble (half-byte) values.
         /// </summary>
-        private static readonly byte[] hexToNibble = InitializeHexToNibble();
+        private static readonly byte[] s_hexToNibble = InitializeHexToNibble();
 
         /// <summary>
         /// Converts a byte array to a hexadecimal string.
@@ -44,10 +44,10 @@ namespace App.domain.utils
         /// <returns>A hexadecimal string representing the byte array.</returns>
         public static string ToHex(byte[] byteArray)
         {
-            var hexBuilder = new StringBuilder(byteArray.Length * 2);
+            StringBuilder hexBuilder = new StringBuilder(byteArray.Length * 2);
             foreach (byte b in byteArray)
             {
-                hexBuilder.Append(ByteToHexTable[b]);
+                hexBuilder.Append(s_byteToHexTable[b]);
             }
             return hexBuilder.ToString();
         }
@@ -110,10 +110,9 @@ namespace App.domain.utils
             byte[] byteArray = new byte[hex.Length / 2];
             for (int i = 0; i < hex.Length; i += 2)
             {
-                byteArray[i / 2] = (byte)((hexToNibble[hex[i]] << 4) + (hexToNibble[hex[i + 1]] & 0xFF));
+                byteArray[i / 2] = (byte)((s_hexToNibble[hex[i]] << 4) + (s_hexToNibble[hex[i + 1]] & 0xFF));
             }
             return byteArray;
         }
     }
-
 }
