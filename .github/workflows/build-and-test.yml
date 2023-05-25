@@ -9,7 +9,7 @@ on:
       - main
 
 jobs:
-  java-test:
+  build-and-test:
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository code from ${{ github.repository }}/${{ github.ref }}
