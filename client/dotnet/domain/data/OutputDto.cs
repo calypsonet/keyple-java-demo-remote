@@ -25,6 +25,12 @@ class OutputData
     /// </summary>
     [JsonProperty("statusCode")]
     public int StatusCode { get; set; }
+
+    /// <summary>
+    /// Gets or sets the message.
+    /// </summary>
+    [JsonProperty("message")]
+    public string Message{ get; set; }
 }
 
 class OutputDto

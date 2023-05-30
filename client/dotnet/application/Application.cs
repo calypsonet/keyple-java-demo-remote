@@ -62,7 +62,8 @@ namespace App.application
             }
             else
             {
-                Misc.DisplayAndLog("Reading failed, status code: " + outputDto.OutputData.StatusCode, ConsoleColor.DarkGreen, LogEventLevel.Information, _logger);
+                Misc.DisplayAndLog("Reading failed, status code: " + outputDto.OutputData.StatusCode, ConsoleColor.DarkRed, LogEventLevel.Information, _logger);
+                Misc.DisplayAndLog(outputDto.OutputData.Message, ConsoleColor.DarkRed, LogEventLevel.Information, _logger);
                 return;
             }
 
@@ -115,7 +116,8 @@ namespace App.application
             }
             else
             {
-                Misc.DisplayAndLog("Reloading failed, status code: " + outputDto.OutputData.StatusCode, ConsoleColor.DarkGreen, LogEventLevel.Information, _logger);
+                Misc.DisplayAndLog("Reloading failed, status code: " + outputDto.OutputData.StatusCode, ConsoleColor.DarkRed, LogEventLevel.Information, _logger);
+                Misc.DisplayAndLog(outputDto.OutputData.Message, ConsoleColor.DarkRed, LogEventLevel.Information, _logger);
             }
         }
     }

@@ -36,6 +36,7 @@ import org.eclipse.keyple.core.service.SmartCardServiceProvider;
 import org.eclipse.keyple.core.service.resource.CardResource;
 import org.eclipse.keyple.core.service.resource.CardResourceServiceProvider;
 import org.eclipse.keyple.core.util.HexUtil;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -75,6 +76,9 @@ public class CardService {
   private static final String CONTRACT_AT_INDEX = "Contract at index {}: {} {}";
   private static final String CONTRACTS = "Contracts {}";
   private static final String CUSTOM_PLUGIN = "Non Keyple plugin";
+  private static final String CARD_NOT_PERSONALIZED = "Card not personalized.";
+  private static final String ENVIRONMENT_EXPIRED = "Environment expired.";
+  private static final String RUNTIME_EXCEPTION = "Runtime exception: ";
 
   @Inject CardRepository cardRepository;
   @Inject ActivityService activityService;
@@ -134,8 +138,8 @@ public class CardService {
     return builder.toString();
   }
 
-  SelectAppAndReadContractsOutputDto selectAppAndReadContracts(CardReader cardReader) {
-
+  @NotNull
+  private static CardSelectionManager createCardSelectionManager() {
     SmartCardService smartCardService = SmartCardServiceProvider.getService();
 
     CalypsoExtensionService calypsoCardService = CalypsoExtensionService.getInstance();
@@ -143,12 +147,40 @@ public class CardService {
     CardSelectionManager cardSelectionManager = smartCardService.createCardSelectionManager();
 
     cardSelectionManager.prepareSelection(
-        calypsoCardService.createCardSelection().acceptInvalidatedCard().filterByDfName(AID));
+        calypsoCardService
+            .createCardSelection()
+            .acceptInvalidatedCard()
+            .filterByDfName(CardConstant.Companion.getAID_KEYPLE_GENERIC()));
+
+    cardSelectionManager.prepareSelection(
+        calypsoCardService
+            .createCardSelection()
+            .acceptInvalidatedCard()
+            .filterByDfName(CardConstant.Companion.getAID_CALYPSO_LIGHT()));
+
+    cardSelectionManager.prepareSelection(
+        calypsoCardService
+            .createCardSelection()
+            .acceptInvalidatedCard()
+            .filterByDfName(CardConstant.Companion.getAID_CD_LIGHT_GTML()));
+
+    cardSelectionManager.prepareSelection(
+        calypsoCardService
+            .createCardSelection()
+            .acceptInvalidatedCard()
+            .filterByDfName(CardConstant.Companion.getAID_NORMALIZED_IDF()));
+    return cardSelectionManager;
+  }
+
+  SelectAppAndReadContractsOutputDto selectAppAndReadContracts(CardReader cardReader) {
+
+    CardSelectionManager cardSelectionManager = createCardSelectionManager();
 
     CalypsoCard calypsoCard = null;
     CardResource samResource = null;
     List<String> output = new ArrayList<>();
     int statusCode = 0;
+    String message = "Success.";
     try {
       // Actual card communication: run the selection scenario.
       CardSelectionResult selectionResult =
@@ -182,12 +214,15 @@ public class CardService {
     } catch (CardNotPersonalizedException e) {
       statusCode = 3;
       logger.error(AN_ERROR_OCCURRED_WHILE_INCREASING_THE_CONTRACT_COUNTER, e.getMessage());
+      message = CARD_NOT_PERSONALIZED;
     } catch (ExpiredEnvironmentException e) {
       statusCode = 4;
       logger.error(AN_ERROR_OCCURRED_WHILE_INCREASING_THE_CONTRACT_COUNTER, e.getMessage());
+      message = ENVIRONMENT_EXPIRED;
     } catch (RuntimeException e) {
       statusCode = 1;
       logger.error(AN_ERROR_OCCURRED_WHILE_INCREASING_THE_CONTRACT_COUNTER, e.getMessage(), e);
+      message = RUNTIME_EXCEPTION + e.getMessage();
     } finally {
       activityService.push(
           new Activity()
@@ -202,23 +237,18 @@ public class CardService {
         CardResourceServiceProvider.getService().releaseCardResource(samResource);
       }
     }
-    return new SelectAppAndReadContractsOutputDto(output, statusCode);
+    return new SelectAppAndReadContractsOutputDto(output, statusCode, message);
   }
 
   SelectAppAndIncreaseContractCounterOutputDto selectAppAndIncreaseContractCounter(
       CardReader cardReader, SelectAppAndIncreaseContractCounterInputDto inputData) {
 
-    SmartCardService smartCardService = SmartCardServiceProvider.getService();
-
-    CalypsoExtensionService calypsoCardService = CalypsoExtensionService.getInstance();
-
-    CardSelectionManager cardSelectionManager = smartCardService.createCardSelectionManager();
-    cardSelectionManager.prepareSelection(
-        calypsoCardService.createCardSelection().acceptInvalidatedCard().filterByDfName(AID));
+    CardSelectionManager cardSelectionManager = createCardSelectionManager();
 
     CalypsoCard calypsoCard = null;
     CardResource samResource = null;
     int statusCode = 0;
+    String message = "Success.";
     try {
       // Actual card communication: run the selection scenario.
       CardSelectionResult selectionResult =
@@ -249,12 +279,15 @@ public class CardService {
       statusCode = cardRepository.writeCard(cardReader, calypsoCard, samResource, card);
     } catch (CardNotPersonalizedException e) {
       statusCode = 3;
+      message = CARD_NOT_PERSONALIZED;
       logger.error(AN_ERROR_OCCURRED_WHILE_INCREASING_THE_CONTRACT_COUNTER, e.getMessage());
     } catch (ExpiredEnvironmentException e) {
       statusCode = 4;
+      message = ENVIRONMENT_EXPIRED;
       logger.error(AN_ERROR_OCCURRED_WHILE_INCREASING_THE_CONTRACT_COUNTER, e.getMessage());
     } catch (RuntimeException e) {
       statusCode = 1;
+      message = RUNTIME_EXCEPTION + e.getMessage();
       logger.error(AN_ERROR_OCCURRED_WHILE_INCREASING_THE_CONTRACT_COUNTER, e.getMessage(), e);
     } finally {
       activityService.push(
@@ -270,7 +303,7 @@ public class CardService {
         CardResourceServiceProvider.getService().releaseCardResource(samResource);
       }
     }
-    return new SelectAppAndIncreaseContractCounterOutputDto(statusCode);
+    return new SelectAppAndIncreaseContractCounterOutputDto(statusCode, message);
   }
 
   AnalyzeContractsOutputDto analyzeContracts(

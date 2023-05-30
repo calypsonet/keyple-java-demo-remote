@@ -27,6 +27,7 @@ namespace App.domain.api
         private readonly string _clientNodeId;
         private string _localReaderName;
 
+        private const int SW_9000 = 0x9000;
         private const int SW_6100 = 0x6100;
         private const int SW_6C00 = 0x6C00;
         private const int SW1_MASK = 0xFF00;
@@ -199,12 +200,7 @@ namespace App.domain.api
                     apduRequest.Info = "Internal Select Application";
                 }
 
-                ApduResponse apduResponse = ProcessApduRequest(apduRequest);
-                if (cardSelector.SuccessfulSelectionStatusWords.Contains(apduResponse.StatusWord))
-                {
-                    return apduResponse;
-                }
-                throw new UnexpectedStatusWordException($"Unexpected status word in response to select application: {apduResponse.StatusWord:X}");
+                return ProcessApduRequest(apduRequest);
             }
 
             // Handle the case where cardSelector or cardSelector.Aid is null.
@@ -257,11 +253,20 @@ namespace App.domain.api
             _readerService.OpenPhysicalChannel();
             ApduResponse selectAppResponse = SelectApplication(cardSelectionRequest.CardSelector);
             CardResponse? cardResponse = null;
+
             if (cardSelectionRequest.CardRequest != null)
             {
                 cardResponse = ProcessCardRequest(cardSelectionRequest.CardRequest);
             }
-            CardSelectionResponse cardSelectionResponse = new CardSelectionResponse { HasMatched = true, PowerOnData = _readerService.GetPowerOnData(), SelectApplicationResponse = selectAppResponse, CardResponse = cardResponse };
+
+            CardSelectionResponse cardSelectionResponse = new CardSelectionResponse
+            {
+                HasMatched = cardSelectionRequest.CardSelector.SuccessfulSelectionStatusWords.Contains(selectAppResponse.StatusWord),
+                PowerOnData = _readerService.GetPowerOnData(),
+                SelectApplicationResponse = selectAppResponse,
+                CardResponse = cardResponse
+            };
+
             return cardSelectionResponse;
         }
 
@@ -322,26 +327,37 @@ namespace App.domain.api
             string jsonBodyString;
             TransmitCardSelectionRequestsRespBody transmitCardSelectionRequestsRespBody = new TransmitCardSelectionRequestsRespBody();
             TransmitCardSelectionRequestsCmdBody transmitCardSelectionRequestsCmdBody = JsonConvert.DeserializeObject<TransmitCardSelectionRequestsCmdBody>(message.Body)!;
-            CardSelectionRequest cardSelectionRequest = transmitCardSelectionRequestsCmdBody.Parameters.CardSelectionRequests[0];
-            try
+            List<CardSelectionResponse> cardSelectionResponses = new List<CardSelectionResponse>();
+
+            foreach (CardSelectionRequest cardSelectionRequest in transmitCardSelectionRequestsCmdBody.Parameters.CardSelectionRequests)
             {
-                CardSelectionResponse cardSelectionResponse = ProcessCardSelectionRequest(cardSelectionRequest);
-                List<CardSelectionResponse> cardSelectionResponses = new List<CardSelectionResponse>();
-                cardSelectionResponses.Add(cardSelectionResponse);
-                transmitCardSelectionRequestsRespBody.Result = cardSelectionResponses;
+                try
+                {
+                    CardSelectionResponse cardSelectionResponse = ProcessCardSelectionRequest(cardSelectionRequest);
+                    cardSelectionResponses.Add(cardSelectionResponse);
+                    if (cardSelectionResponse.HasMatched)
+                    {
+                        break;
+                    }
+                }
+                catch (CardIOException ex)
+                {
+                    transmitCardSelectionRequestsRespBody.Error = new Error { Code = ErrorCode.CARD_COMMUNICATION_ERROR, Message = ex.Message };
+                    break;
+                }
+                catch (ReaderIOException ex)
+                {
+                    transmitCardSelectionRequestsRespBody.Error = new Error { Code = ErrorCode.READER_COMMUNICATION_ERROR, Message = ex.Message };
+                    break;
+                }
+                catch (UnexpectedStatusWordException ex)
+                {
+                    transmitCardSelectionRequestsRespBody.Error = new Error { Code = ErrorCode.CARD_COMMAND_ERROR, Message = ex.Message };
+                    break;
+                }
             }
-            catch (CardIOException ex)
-            {
-                transmitCardSelectionRequestsRespBody.Error = new Error { Code = ErrorCode.CARD_COMMUNICATION_ERROR, Message = ex.Message };
-            }
-            catch (ReaderIOException ex)
-            {
-                transmitCardSelectionRequestsRespBody.Error = new Error { Code = ErrorCode.READER_COMMUNICATION_ERROR, Message = ex.Message };
-            }
-            catch (UnexpectedStatusWordException ex)
-            {
-                transmitCardSelectionRequestsRespBody.Error = new Error { Code = ErrorCode.CARD_COMMAND_ERROR, Message = ex.Message };
-            }
+
+            transmitCardSelectionRequestsRespBody.Result = cardSelectionResponses;
             jsonBodyString = JsonConvert.SerializeObject(transmitCardSelectionRequestsRespBody, Formatting.None);
             return jsonBodyString;
         }
