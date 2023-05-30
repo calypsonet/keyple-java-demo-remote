@@ -30,7 +30,7 @@ class OutputData
     /// Gets or sets the message.
     /// </summary>
     [JsonProperty("message")]
-    public string Message{ get; set; }
+    public string Message { get; set; }
 }
 
 class OutputDto
