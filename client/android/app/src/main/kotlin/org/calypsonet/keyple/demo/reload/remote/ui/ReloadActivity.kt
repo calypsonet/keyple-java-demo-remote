@@ -115,7 +115,7 @@ class ReloadActivity : AbstractCardActivity() {
         val analyseContractsInput = AnalyzeContractsInputDto(pluginType)
         // un-mock for run
         localServiceClient.executeRemoteService(
-            RemoteServiceId.CONTRACT_ANALYSIS.name,
+            RemoteServiceId.READ_CARD_AND_ANALYZE_CONTRACTS.name,
             selectedDeviceReaderName,
             transactionManager.calypsoCard,
             analyseContractsInput,
@@ -131,7 +131,7 @@ class ReloadActivity : AbstractCardActivity() {
 
         val writeTitleOutput =
             localServiceClient.executeRemoteService(
-                RemoteServiceId.WRITE_CONTRACT.name,
+                RemoteServiceId.READ_CARD_AND_WRITE_CONTRACT.name,
                 selectedDeviceReaderName,
                 transactionManager.calypsoCard,
                 writeContractInputDto,

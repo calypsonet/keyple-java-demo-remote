@@ -214,7 +214,7 @@ public class CardConfigurator {
         // Execute service
         outputData = cardService.selectAppAndIncreaseContractCounter(reader, inputData);
 
-      } else if (RemoteServiceId.CONTRACT_ANALYSIS.name().equals(serviceId)) {
+      } else if (RemoteServiceId.READ_CARD_AND_ANALYZE_CONTRACTS.name().equals(serviceId)) {
 
         // Get input data
         AnalyzeContractsInputDto inputData =
@@ -225,7 +225,7 @@ public class CardConfigurator {
             cardService.analyzeContracts(
                 reader, (CalypsoCard) readerExtension.getInitialCardContent(), inputData);
 
-      } else if (RemoteServiceId.WRITE_CONTRACT.name().equals(serviceId)) {
+      } else if (RemoteServiceId.READ_CARD_AND_WRITE_CONTRACT.name().equals(serviceId)) {
 
         // Get input data
         WriteContractInputDto inputData = readerExtension.getInputData(WriteContractInputDto.class);
@@ -235,7 +235,7 @@ public class CardConfigurator {
             cardService.writeContract(
                 reader, (CalypsoCard) readerExtension.getInitialCardContent(), inputData);
 
-      } else if (RemoteServiceId.CARD_ISSUANCE.name().equals(serviceId)) {
+      } else if (RemoteServiceId.PERSONALIZE_CARD.name().equals(serviceId)) {
 
         // Get input data
         CardIssuanceInputDto inputData = readerExtension.getInputData(CardIssuanceInputDto.class);
