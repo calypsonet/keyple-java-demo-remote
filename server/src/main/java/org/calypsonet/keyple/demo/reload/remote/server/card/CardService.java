@@ -83,7 +83,7 @@ public class CardService {
   @Inject CardRepository cardRepository;
   @Inject ActivityService activityService;
 
-  private String contractStructureToString(ContractStructure contractStructure) {
+  private String formatContractStructure(ContractStructure contractStructure) {
     StringBuilder builder = new StringBuilder();
 
     builder
@@ -209,7 +209,7 @@ public class CardService {
       List<ContractStructure> validContracts = findValidContracts(card);
 
       for (ContractStructure contractStructure : validContracts) {
-        output.add(contractStructureToString(contractStructure));
+        output.add(formatContractStructure(contractStructure));
       }
     } catch (CardNotPersonalizedException e) {
       statusCode = 3;
