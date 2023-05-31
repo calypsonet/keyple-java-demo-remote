@@ -17,6 +17,7 @@ import javax.inject.Inject;
 import org.calypsonet.keyple.demo.common.constant.RemoteServiceId;
 import org.calypsonet.keyple.demo.common.dto.AnalyzeContractsInputDto;
 import org.calypsonet.keyple.demo.common.dto.CardIssuanceInputDto;
+import org.calypsonet.keyple.demo.common.dto.SelectAppAndIncreaseContractCounterInputDto;
 import org.calypsonet.keyple.demo.common.dto.WriteContractInputDto;
 import org.calypsonet.terminal.calypso.card.CalypsoCard;
 import org.calypsonet.terminal.calypso.sam.CalypsoSam;
@@ -196,36 +197,53 @@ public class CardConfigurator {
       // Analyses the Service ID contains in the reader to find which business service to execute.
       // The Service ID was specified by the client when executing the remote service.
       Object outputData;
-      if (RemoteServiceId.CONTRACT_ANALYSIS.name().equals(readerExtension.getServiceId())) {
+      String serviceId = readerExtension.getServiceId();
+
+      if (RemoteServiceId.SELECT_APP_AND_READ_CONTRACTS.name().equals(serviceId)) {
+
+        // Execute service
+        outputData = cardService.selectAppAndReadContracts(reader);
+
+      } else if (RemoteServiceId.SELECT_APP_AND_INCREASE_CONTRACT_COUNTER
+          .name()
+          .equals(serviceId)) {
+
+        SelectAppAndIncreaseContractCounterInputDto inputData =
+            readerExtension.getInputData(SelectAppAndIncreaseContractCounterInputDto.class);
+
+        // Execute service
+        outputData = cardService.selectAppAndIncreaseContractCounter(reader, inputData);
+
+      } else if (RemoteServiceId.READ_CARD_AND_ANALYZE_CONTRACTS.name().equals(serviceId)) {
 
         // Get input data
-        CardResource cardResource =
-            new CardResource(reader, (CalypsoCard) readerExtension.getInitialCardContent());
         AnalyzeContractsInputDto inputData =
             readerExtension.getInputData(AnalyzeContractsInputDto.class);
 
         // Execute service
-        outputData = cardService.analyzeContracts(cardResource, inputData);
+        outputData =
+            cardService.analyzeContracts(
+                reader, (CalypsoCard) readerExtension.getInitialCardContent(), inputData);
 
-      } else if (RemoteServiceId.WRITE_CONTRACT.name().equals(readerExtension.getServiceId())) {
+      } else if (RemoteServiceId.READ_CARD_AND_WRITE_CONTRACT.name().equals(serviceId)) {
 
         // Get input data
-        CardResource cardResource =
-            new CardResource(reader, (CalypsoCard) readerExtension.getInitialCardContent());
         WriteContractInputDto inputData = readerExtension.getInputData(WriteContractInputDto.class);
 
         // Execute service
-        outputData = cardService.writeContract(cardResource, inputData);
+        outputData =
+            cardService.writeContract(
+                reader, (CalypsoCard) readerExtension.getInitialCardContent(), inputData);
 
-      } else if (RemoteServiceId.CARD_ISSUANCE.name().equals(readerExtension.getServiceId())) {
+      } else if (RemoteServiceId.PERSONALIZE_CARD.name().equals(serviceId)) {
 
         // Get input data
-        CardResource cardResource =
-            new CardResource(reader, (CalypsoCard) readerExtension.getInitialCardContent());
         CardIssuanceInputDto inputData = readerExtension.getInputData(CardIssuanceInputDto.class);
 
         // Execute service
-        outputData = cardService.initCard(cardResource, inputData);
+        outputData =
+            cardService.initCard(
+                reader, (CalypsoCard) readerExtension.getInitialCardContent(), inputData);
 
       } else {
         throw new IllegalArgumentException("Service ID not recognized");

@@ -33,7 +33,12 @@ import org.calypsonet.terminal.calypso.card.FileData;
 import org.calypsonet.terminal.calypso.sam.CalypsoSam;
 import org.calypsonet.terminal.calypso.transaction.CardSecuritySetting;
 import org.calypsonet.terminal.calypso.transaction.CardTransactionManager;
+import org.calypsonet.terminal.reader.CardReader;
+import org.calypsonet.terminal.reader.selection.CardSelectionManager;
+import org.calypsonet.terminal.reader.selection.CardSelectionResult;
 import org.eclipse.keyple.card.calypso.CalypsoExtensionService;
+import org.eclipse.keyple.core.service.SmartCardService;
+import org.eclipse.keyple.core.service.SmartCardServiceProvider;
 import org.eclipse.keyple.core.service.resource.CardResource;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
@@ -46,13 +51,59 @@ public class CardRepository {
 
   private static final String CALYPSO_SESSION_CLOSED = "Calypso Session Closed.";
 
-  public Card readCard(CardResource cardResource, CardResource samResource) {
+  private static CardSelectionManager createCardSelectionManager() {
+    SmartCardService smartCardService = SmartCardServiceProvider.getService();
 
-    CalypsoCard calypsoCard = (CalypsoCard) cardResource.getSmartCard();
+    CalypsoExtensionService calypsoCardService = CalypsoExtensionService.getInstance();
+
+    CardSelectionManager cardSelectionManager = smartCardService.createCardSelectionManager();
+
+    cardSelectionManager.prepareSelection(
+        calypsoCardService
+            .createCardSelection()
+            .acceptInvalidatedCard()
+            .filterByDfName(CardConstant.Companion.getAID_KEYPLE_GENERIC()));
+
+    cardSelectionManager.prepareSelection(
+        calypsoCardService
+            .createCardSelection()
+            .acceptInvalidatedCard()
+            .filterByDfName(CardConstant.Companion.getAID_CALYPSO_LIGHT()));
+
+    cardSelectionManager.prepareSelection(
+        calypsoCardService
+            .createCardSelection()
+            .acceptInvalidatedCard()
+            .filterByDfName(CardConstant.Companion.getAID_CD_LIGHT_GTML()));
+
+    cardSelectionManager.prepareSelection(
+        calypsoCardService
+            .createCardSelection()
+            .acceptInvalidatedCard()
+            .filterByDfName(CardConstant.Companion.getAID_NORMALIZED_IDF()));
+    return cardSelectionManager;
+  }
+
+  public CalypsoCard selectCard(CardReader cardReader) {
+    CardSelectionManager cardSelectionManager = createCardSelectionManager();
+    // Actual card communication: run the selection scenario.
+    CardSelectionResult selectionResult =
+        cardSelectionManager.processCardSelectionScenario(cardReader);
+
+    // Check the selection result.
+    if (selectionResult.getActiveSmartCard() == null) {
+      throw new IllegalStateException("The selection of the application failed.");
+    }
+
+    // Get the SmartCard resulting of the selection.
+    return (CalypsoCard) selectionResult.getActiveSmartCard();
+  }
+
+  public Card readCard(CardReader cardReader, CalypsoCard calypsoCard, CardResource samResource) {
     int contractCount = getContractCount(calypsoCard);
 
     CardTransactionManager cardTransactionManager =
-        initCardTransactionManager(cardResource, samResource, calypsoCard);
+        initCardTransactionManager(cardReader, calypsoCard, samResource);
 
     logger.info("Open Calypso Session (LOAD)...");
     cardTransactionManager
@@ -69,12 +120,11 @@ public class CardRepository {
     return parse(calypsoCard);
   }
 
-  public int writeCard(CardResource cardResource, CardResource samResource, Card card) {
-
-    CalypsoCard calypsoCard = (CalypsoCard) cardResource.getSmartCard();
+  public int writeCard(
+      CardReader cardReader, CalypsoCard calypsoCard, CardResource samResource, Card card) {
 
     CardTransactionManager cardTransactionManager =
-        initCardTransactionManager(cardResource, samResource, calypsoCard);
+        initCardTransactionManager(cardReader, calypsoCard, samResource);
 
     logger.info("Open Calypso Session (LOAD)...");
     cardTransactionManager.prepareOpenSecureSession(WriteAccessLevel.LOAD);
@@ -113,12 +163,10 @@ public class CardRepository {
     return 0;
   }
 
-  public void initCard(CardResource cardResource, CardResource samResource) {
-
-    CalypsoCard calypsoCard = (CalypsoCard) cardResource.getSmartCard();
+  public void initCard(CardReader cardReader, CalypsoCard calypsoCard, CardResource samResource) {
 
     CardTransactionManager cardTransactionManager =
-        initCardTransactionManager(cardResource, samResource, calypsoCard);
+        initCardTransactionManager(cardReader, calypsoCard, samResource);
 
     logger.info("Open Calypso Session (PERSONALIZATION)...");
     cardTransactionManager.prepareOpenSecureSession(WriteAccessLevel.PERSONALIZATION);
@@ -150,7 +198,7 @@ public class CardRepository {
 
   @NotNull
   private CardTransactionManager initCardTransactionManager(
-      CardResource cardResource, CardResource samResource, CalypsoCard calypsoCard) {
+      CardReader cardReader, CalypsoCard calypsoCard, CardResource samResource) {
 
     CardSecuritySetting cardSecuritySetting =
         CalypsoExtensionService.getInstance()
@@ -164,7 +212,7 @@ public class CardRepository {
                 samResource.getReader(), (CalypsoSam) samResource.getSmartCard());
 
     return CalypsoExtensionService.getInstance()
-        .createCardTransaction(cardResource.getReader(), calypsoCard, cardSecuritySetting);
+        .createCardTransaction(cardReader, calypsoCard, cardSecuritySetting);
   }
 
   private EnvironmentHolderStructure buildEnvironmentHolderStructure() {

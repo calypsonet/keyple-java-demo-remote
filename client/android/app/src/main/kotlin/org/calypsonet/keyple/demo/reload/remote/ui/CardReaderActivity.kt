@@ -134,7 +134,7 @@ class CardReaderActivity : AbstractCardActivity() {
         // un-mock for run
         val compatibleContractOutput =
             localServiceClient.executeRemoteService(
-                RemoteServiceId.CONTRACT_ANALYSIS.name,
+                RemoteServiceId.READ_CARD_AND_ANALYZE_CONTRACTS.name,
                 selectedDeviceReaderName,
                 transactionManager.calypsoCard,
                 analyseContractsInput,

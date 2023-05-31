@@ -131,7 +131,7 @@ class PersonalizationActivity : AbstractCardActivity() {
         val cardIssuanceInput = CardIssuanceInputDto(pluginType)
         val cardIssuanceOutput =
             localServiceClient.executeRemoteService(
-                RemoteServiceId.CARD_ISSUANCE.name,
+                RemoteServiceId.PERSONALIZE_CARD.name,
                 selectedDeviceReaderName,
                 transactionManager.calypsoCard,
                 cardIssuanceInput,
