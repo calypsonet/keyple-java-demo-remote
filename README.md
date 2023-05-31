@@ -5,12 +5,17 @@ This is the repository for the Keyple Java Reload Demo application.
 This demo is an open source project provided by [Calypso Networks Association](https://calypsonet.org),
 you can adapt the demo for your cards, terminals, projects, etc. 
 
-This is a client/server demonstration of the [Eclipse Keyple Distributed Solution](https://keyple.org/docs/developer-guide/distributed-application/) 
+This is a client/server demonstration of the 
+[Eclipse Keyple Distributed Solution](https://keyple.org/docs/developer-guide/distributed-application/) 
 feature where all ticketing procedures and sessions are fully managed by the server.
 
 The [Eclipse Keyple](https://keyple.org) SDK is used to remotely initialize a card and reload a contract (Season Pass 
-and/or Multi-trip ticket) on a Calypso contactless card using the [Keyple Plugin Android NFC | Eclipse Keyple](https://keyple.org/components-java/plugins/nfc/) 
+and/or Multi-trip ticket) on a Calypso contactless card using the 
+[Keyple Plugin Android NFC | Eclipse Keyple](https://keyple.org/components-java/plugins/nfc/) 
 plugin.
+
+Alternatively, there's also a client (written in C#) that shows how an application can interact with the server without 
+using the Keyple SDK.
 
 ## Keyple Demos
 
@@ -20,21 +25,23 @@ This demo is part of a set of three demos:
 * [Keyple Control Demo](https://github.com/calypsonet/keyple-android-demo-control)
 
 These demos are all based on a common library that defines elements such as constants and data structures implemented
-for the logic of the ticketing application: [Keyple Demo Common Library](https://github.com/calypsonet/keyple-demo-common-lib).
+for the logic of the ticketing application: 
+[Keyple Demo Common Library](https://github.com/calypsonet/keyple-demo-common-lib).
 
 Please refer to the [README](https://github.com/calypsonet/keyple-demo-common-lib/blob/main/README.md)
 file of this library to discover these data structures.
 
 ## Code organization
 
-This repository is organized in 2 source code folders:
+This repository is organized in 3 source code folders:
 
 - **server**: source code of the server part of the demo. The sever should run on a computer with a JVM and have a card reader with a SAM connected.
-- **client**: source code of the client part of the demo. Content clients available to consume server's webservices. 
+- **client/android**: source code of the client part of the demo as an Android project.
+- **client/dotnet**: source code of the client part of the demo not using the Keyple SDK as Microsoft Visual Studio project.
 
 ## Project's details
 
-Each application's code source contains a README file, please refer to this document for more information.
+Each application's code source contains a `README` file, please refer to this document for more information.
 
 ## Card Issuance / Personalization and Distribution / Loading Procedures
 
@@ -51,7 +58,6 @@ Steps:
 ### Card Issuance / Personalization Process
 
 For this demo, a simple example card issuance / personalization procedure has been implemented. 
-This procedure is implemented in the 'XXXX' classes.
 
 Opening a Calypso secure session is mandatory for this procedure since we need to write on the card.
 
@@ -100,7 +106,6 @@ Steps:
 ### Distribution / Loading Process
 
 For this demo, a simple example card issuance / personalization procedure has been implemented. 
-This procedure is implemented in the 'XXXX' class.
 
 Opening a Calypso secure session is mandatory for this procedure since we need to write on the card.
 

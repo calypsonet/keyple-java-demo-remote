@@ -44,28 +44,26 @@ namespace App.application
         /// </summary>
         public void Start()
         {
-            Misc.DisplayAndLog("Waiting for a card...", ConsoleColor.DarkBlue, LogEventLevel.Information, _logger);
+            DisplayAndLog("Waiting for a card...", ConsoleColor.DarkBlue, LogEventLevel.Information, _logger);
 
             _mainService.WaitForCardInsertion();
 
-            Misc.DisplayAndLog("Card found!\nContacting server...", ConsoleColor.Green, LogEventLevel.Information, _logger);
+            DisplayAndLog("Card found!\nContacting server...", ConsoleColor.Green, LogEventLevel.Information, _logger);
 
             // Select the card and read its content
-            string output = _mainService.SelectAndReadContracts();
+            string output = _mainService.SelectCardAndReadContracts();
 
             // Deserialize the output into a dynamic object
-            OutputDto outputDto = JsonConvert.DeserializeObject<OutputDto>(output)!;
+            EndRemoteServiceBody outputDto = JsonConvert.DeserializeObject<EndRemoteServiceBody>(output)!;
 
-            if (outputDto.OutputData.StatusCode == 0)
+            if (outputDto.OutputData.StatusCode != 0)
             {
-                Misc.DisplayAndLog("Reading successful", ConsoleColor.DarkGreen, LogEventLevel.Information, _logger);
-            }
-            else
-            {
-                Misc.DisplayAndLog("Reading failed, status code: " + outputDto.OutputData.StatusCode, ConsoleColor.DarkRed, LogEventLevel.Information, _logger);
-                Misc.DisplayAndLog(outputDto.OutputData.Message, ConsoleColor.DarkRed, LogEventLevel.Information, _logger);
+                DisplayAndLog("Reading failed, status code: " + outputDto.OutputData.StatusCode, ConsoleColor.DarkRed, LogEventLevel.Information, _logger);
+                DisplayAndLog(outputDto.OutputData.Message, ConsoleColor.DarkRed, LogEventLevel.Information, _logger);
                 return;
             }
+
+            DisplayAndLog("Reading successful", ConsoleColor.DarkGreen, LogEventLevel.Information, _logger);
 
             List<string> contracts = outputDto.OutputData.Items;
             int i = 1;
@@ -73,7 +71,7 @@ namespace App.application
             foreach (string contract in contracts)
             {
                 // Print each item to the console
-                Misc.DisplayAndLog($"Contract #{i++}:\r\n" + contract, ConsoleColor.DarkGreen, LogEventLevel.Information, _logger);
+                DisplayAndLog($"Contract #{i++}:\r\n" + contract, ConsoleColor.DarkGreen, LogEventLevel.Information, _logger);
                 if (contract.Contains("MULTI_TRIP"))
                 {
                     multitripContractPresent = true;
@@ -82,7 +80,7 @@ namespace App.application
 
             if (!multitripContractPresent)
             {
-                Misc.DisplayAndLog("No MULTI_TRIP contract found.", ConsoleColor.DarkRed, LogEventLevel.Information, _logger);
+                DisplayAndLog("No MULTI_TRIP contract found.", ConsoleColor.DarkRed, LogEventLevel.Information, _logger);
             }
 
             int nbUnits;
@@ -97,28 +95,42 @@ namespace App.application
                 }
             } while (nbUnits < 1 || nbUnits > 20);
 
-            Misc.DisplayAndLog($"The card will now be (re)loaded with {nbUnits} unit(s).", ConsoleColor.DarkCyan, LogEventLevel.Information, _logger);
-
-            Misc.DisplayAndLog("Waiting for a card...", ConsoleColor.DarkBlue, LogEventLevel.Information, _logger);
+            DisplayAndLog($"The card will now be (re)loaded with {nbUnits} unit(s).", ConsoleColor.DarkCyan, LogEventLevel.Information, _logger);
+            DisplayAndLog("Waiting for a card...", ConsoleColor.DarkBlue, LogEventLevel.Information, _logger);
 
             _mainService.WaitForCardInsertion();
 
-            Misc.DisplayAndLog("Card found!\nContacting server...", ConsoleColor.Green, LogEventLevel.Information, _logger);
+            DisplayAndLog("Card found!\nContacting server...", ConsoleColor.Green, LogEventLevel.Information, _logger);
 
             // Select the card and increase the contract counter by one unit
-            output = _mainService.SelectAndIncreaseContractCounter(nbUnits);
+            output = _mainService.SelectCardAndIncreaseContractCounter(nbUnits);
 
-            outputDto = JsonConvert.DeserializeObject<OutputDto>(output)!;
+            outputDto = JsonConvert.DeserializeObject<EndRemoteServiceBody>(output)!;
 
             if (outputDto.OutputData.StatusCode == 0)
             {
-                Misc.DisplayAndLog("Reloading successful", ConsoleColor.DarkGreen, LogEventLevel.Information, _logger);
+                DisplayAndLog("Reloading successful", ConsoleColor.DarkGreen, LogEventLevel.Information, _logger);
             }
             else
             {
-                Misc.DisplayAndLog("Reloading failed, status code: " + outputDto.OutputData.StatusCode, ConsoleColor.DarkRed, LogEventLevel.Information, _logger);
-                Misc.DisplayAndLog(outputDto.OutputData.Message, ConsoleColor.DarkRed, LogEventLevel.Information, _logger);
+                DisplayAndLog("Reloading failed, status code: " + outputDto.OutputData.StatusCode, ConsoleColor.DarkRed, LogEventLevel.Information, _logger);
+                DisplayAndLog(outputDto.OutputData.Message, ConsoleColor.DarkRed, LogEventLevel.Information, _logger);
             }
+        }
+
+        /// <summary>
+        /// Displays the text in the specified color on the console and logs it with the specified log level using the provided logger.
+        /// </summary>
+        /// <param name="text">The text to be displayed and logged.</param>
+        /// <param name="color">The color in which the text will be displayed on the console.</param>
+        /// <param name="logLevel">The log level at which the text will be logged.</param>
+        /// <param name="logger">The logger instance to use for logging.</param>
+        private void DisplayAndLog(string text, ConsoleColor color, LogEventLevel logLevel, ILogger logger)
+        {
+            Console.ForegroundColor = color;
+            Console.WriteLine(text);
+            Console.ResetColor();
+            logger.Write(logLevel, text);
         }
     }
 }

@@ -9,9 +9,9 @@
     <Title>Dotnet Keyple Client Demo</Title>
     <Company>Calypso Networks Association</Company>
     <PackageReadmeFile>README.md</PackageReadmeFile>
-    <AssemblyVersion>2023.05.25</AssemblyVersion>
-    <FileVersion>2023.05.25</FileVersion>
-    <Version>2023.05.25</Version>
+    <AssemblyVersion>2023.05.31</AssemblyVersion>
+    <FileVersion>2023.05.31</FileVersion>
+    <Version>2023.05.31</Version>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

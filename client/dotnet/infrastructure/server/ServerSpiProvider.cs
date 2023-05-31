@@ -25,7 +25,7 @@ namespace App.infrastructure.server
         /// <summary>
         /// Gets the singleton instance of ServerSpiAdapter.
         /// </summary>
-        public static ServerSpi getInstance(string baseUrl, int port, string endPoint)
+        public static ServerSpi getInstance(string baseUrl, int port, string endpoint)
         {
             if (s_instance == null)
             {
@@ -33,7 +33,7 @@ namespace App.infrastructure.server
                 {
                     if (s_instance == null)
                     {
-                        s_instance = new ServerSpiAdapter(baseUrl, port, endPoint);
+                        s_instance = new ServerSpiAdapter(baseUrl, port, endpoint);
                     }
                 }
             }

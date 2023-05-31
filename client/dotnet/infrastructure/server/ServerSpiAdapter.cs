@@ -23,19 +23,19 @@ namespace App.infrastructure.server
     {
         private readonly ILogger _logger;
         private readonly string _baseUrl;
-        private readonly string _endPoint;
+        private readonly string _endpoint;
 
         /// <summary>
         /// Initializes a new instance of the ServerSpiAdapter class.
         /// </summary>
         /// <param name="baseUrl">The base URL of the server to connect to.</param>
         /// <param name="port">The port to connect on.</param>
-        /// <param name="endPoint">The endpoint to send requests to.</param>
-        public ServerSpiAdapter(string baseUrl, int port, string endPoint)
+        /// <param name="endpoint">The endpoint to send requests to.</param>
+        public ServerSpiAdapter(string baseUrl, int port, string endpoint)
         {
             _logger = Log.ForContext<ServerSpiAdapter>();
             _baseUrl = $"{baseUrl}:{port}";
-            _endPoint = endPoint;
+            _endpoint = endpoint;
         }
 
         /// <summary>
@@ -59,7 +59,7 @@ namespace App.infrastructure.server
                     StringContent content = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
 
                     // Send the POST request and get the response
-                    HttpResponseMessage response = httpClient.PostAsync(_endPoint, content).Result;
+                    HttpResponseMessage response = httpClient.PostAsync(_endpoint, content).Result;
 
                     if (response.IsSuccessStatusCode)
                     {
@@ -74,7 +74,7 @@ namespace App.infrastructure.server
                     else
                     {
                         // If the request was not successful, throw an exception with the status code
-                        throw new ServerIOException($"Error when calling the API: {response.StatusCode}");
+                        throw new ServerIOException($"Server status code: {response.StatusCode}");
                     }
                 }
             }

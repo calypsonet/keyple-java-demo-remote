@@ -29,16 +29,16 @@ public class MessageDto
     public required string Body { get; set; }
 
     /// <summary>
-    /// Client node ID.
-    /// </summary>
-    [JsonProperty("clientNodeId")]
-    public required string ClientNodeId { get; set; }
-
-    /// <summary>
     /// Session ID.
     /// </summary>
     [JsonProperty("sessionId")]
     public required string SessionId { get; set; }
+
+    /// <summary>
+    /// Client node ID.
+    /// </summary>
+    [JsonProperty("clientNodeId")]
+    public required string ClientNodeId { get; set; }
 
     /// <summary>
     /// Name of the local reader.
@@ -47,16 +47,16 @@ public class MessageDto
     public string? LocalReaderName { get; set; }
 
     /// <summary>
-    /// Name of the remote reader.
-    /// </summary>
-    [JsonProperty("remoteReaderName")]
-    public string? RemoteReaderName { get; set; }
-
-    /// <summary>
     /// Server node ID.
     /// </summary>
     [JsonProperty("serverNodeId")]
     public string? ServerNodeId { get; set; }
+
+    /// <summary>
+    /// Name of the remote reader.
+    /// </summary>
+    [JsonProperty("remoteReaderName")]
+    public string? RemoteReaderName { get; set; }
 
     /// <summary>
     /// Sets the action associated with the message.
@@ -77,6 +77,17 @@ public class MessageDto
     public MessageDto SetBody(string body)
     {
         this.Body = body;
+        return this;
+    }
+
+    /// <summary>
+    /// Sets the session ID.
+    /// </summary>
+    /// <param name="sessionId">The session ID to set.</param>
+    /// <returns>The updated <see cref="MessageDto"/> instance.</returns>
+    public MessageDto SetSessionId(string sessionId)
+    {
+        this.SessionId = sessionId;
         return this;
     }
 
@@ -103,17 +114,6 @@ public class MessageDto
     }
 
     /// <summary>
-    /// Sets the name of the remote reader.
-    /// </summary>
-    /// <param name="remoteReaderName">The name of the remote reader to set.</param>
-    /// <returns>The updated <see cref="MessageDto"/> instance.</returns>
-    public MessageDto SetRemoteReaderName(string remoteReaderName)
-    {
-        this.RemoteReaderName = remoteReaderName;
-        return this;
-    }
-
-    /// <summary>
     /// Sets the server node ID.
     /// </summary>
     /// <param name="serverNodeId">The server node ID to set.</param>
@@ -125,13 +125,13 @@ public class MessageDto
     }
 
     /// <summary>
-    /// Sets the session ID.
+    /// Sets the name of the remote reader.
     /// </summary>
-    /// <param name="sessionId">The session ID to set.</param>
+    /// <param name="remoteReaderName">The name of the remote reader to set.</param>
     /// <returns>The updated <see cref="MessageDto"/> instance.</returns>
-    public MessageDto SetSessionId(string sessionId)
+    public MessageDto SetRemoteReaderName(string remoteReaderName)
     {
-        this.SessionId = sessionId;
+        this.RemoteReaderName = remoteReaderName;
         return this;
     }
 }

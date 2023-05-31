@@ -24,16 +24,11 @@ namespace App.domain.api
         void WaitForCardInsertion();
 
         /// <summary>
-        /// Blocks until a card is removed. 
-        /// </summary>
-        void WaitForCardRemoval();
-
-        /// <summary>
         /// Selects the card and reads contracts.
         /// The transaction is fully operated by the server.
         /// </summary>
         /// <returns>A string representation of the contracts read from the card.</returns>
-        string SelectAndReadContracts();
+        string SelectCardAndReadContracts();
 
         /// <summary>
         /// Selects the card and increases the counter of its MULTI_TRIP contract if it exists.
@@ -41,6 +36,6 @@ namespace App.domain.api
         /// </summary>
         /// <param name="counterIncrement">The amount by which to increase the contract's counter.</param>
         /// <returns>A string representation of the status of the operation.</returns>
-        string SelectAndIncreaseContractCounter(int counterIncrement);
+        string SelectCardAndIncreaseContractCounter(int counterIncrement);
     }
 }

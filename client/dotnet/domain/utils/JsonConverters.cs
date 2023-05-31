@@ -8,7 +8,7 @@
 //
 // SPDX-License-Identifier: EPL-2.0
 
-using App.domain.data;
+using App.domain.data.command;
 using Newtonsoft.Json;
 
 namespace App.domain.utils
