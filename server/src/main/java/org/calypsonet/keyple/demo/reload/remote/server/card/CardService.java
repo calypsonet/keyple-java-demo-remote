@@ -28,15 +28,9 @@ import org.calypsonet.keyple.demo.reload.remote.server.activity.Activity;
 import org.calypsonet.keyple.demo.reload.remote.server.activity.ActivityService;
 import org.calypsonet.terminal.calypso.card.CalypsoCard;
 import org.calypsonet.terminal.reader.CardReader;
-import org.calypsonet.terminal.reader.selection.CardSelectionManager;
-import org.calypsonet.terminal.reader.selection.CardSelectionResult;
-import org.eclipse.keyple.card.calypso.CalypsoExtensionService;
-import org.eclipse.keyple.core.service.SmartCardService;
-import org.eclipse.keyple.core.service.SmartCardServiceProvider;
 import org.eclipse.keyple.core.service.resource.CardResource;
 import org.eclipse.keyple.core.service.resource.CardResourceServiceProvider;
 import org.eclipse.keyple.core.util.HexUtil;
-import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -138,61 +132,16 @@ public class CardService {
     return builder.toString();
   }
 
-  @NotNull
-  private static CardSelectionManager createCardSelectionManager() {
-    SmartCardService smartCardService = SmartCardServiceProvider.getService();
-
-    CalypsoExtensionService calypsoCardService = CalypsoExtensionService.getInstance();
-
-    CardSelectionManager cardSelectionManager = smartCardService.createCardSelectionManager();
-
-    cardSelectionManager.prepareSelection(
-        calypsoCardService
-            .createCardSelection()
-            .acceptInvalidatedCard()
-            .filterByDfName(CardConstant.Companion.getAID_KEYPLE_GENERIC()));
-
-    cardSelectionManager.prepareSelection(
-        calypsoCardService
-            .createCardSelection()
-            .acceptInvalidatedCard()
-            .filterByDfName(CardConstant.Companion.getAID_CALYPSO_LIGHT()));
-
-    cardSelectionManager.prepareSelection(
-        calypsoCardService
-            .createCardSelection()
-            .acceptInvalidatedCard()
-            .filterByDfName(CardConstant.Companion.getAID_CD_LIGHT_GTML()));
-
-    cardSelectionManager.prepareSelection(
-        calypsoCardService
-            .createCardSelection()
-            .acceptInvalidatedCard()
-            .filterByDfName(CardConstant.Companion.getAID_NORMALIZED_IDF()));
-    return cardSelectionManager;
-  }
-
   SelectAppAndReadContractsOutputDto selectAppAndReadContracts(CardReader cardReader) {
 
-    CardSelectionManager cardSelectionManager = createCardSelectionManager();
-
     CalypsoCard calypsoCard = null;
-    CardResource samResource = null;
     List<String> output = new ArrayList<>();
     int statusCode = 0;
     String message = "Success.";
+    CardResource samResource = null;
+
     try {
-      // Actual card communication: run the selection scenario.
-      CardSelectionResult selectionResult =
-          cardSelectionManager.processCardSelectionScenario(cardReader);
-
-      // Check the selection result.
-      if (selectionResult.getActiveSmartCard() == null) {
-        throw new IllegalStateException("The selection of the application " + AID + " failed.");
-      }
-
-      // Get the SmartCard resulting of the selection.
-      calypsoCard = (CalypsoCard) selectionResult.getActiveSmartCard();
+      calypsoCard = cardRepository.selectCard(cardReader);
 
       samResource =
           CardResourceServiceProvider.getService()
@@ -243,24 +192,12 @@ public class CardService {
   SelectAppAndIncreaseContractCounterOutputDto selectAppAndIncreaseContractCounter(
       CardReader cardReader, SelectAppAndIncreaseContractCounterInputDto inputData) {
 
-    CardSelectionManager cardSelectionManager = createCardSelectionManager();
-
     CalypsoCard calypsoCard = null;
     CardResource samResource = null;
     int statusCode = 0;
     String message = "Success.";
     try {
-      // Actual card communication: run the selection scenario.
-      CardSelectionResult selectionResult =
-          cardSelectionManager.processCardSelectionScenario(cardReader);
-
-      // Check the selection result.
-      if (selectionResult.getActiveSmartCard() == null) {
-        throw new IllegalStateException("The selection of the application " + AID + " failed.");
-      }
-
-      // Get the SmartCard resulting of the selection.
-      calypsoCard = (CalypsoCard) selectionResult.getActiveSmartCard();
+      calypsoCard = cardRepository.selectCard(cardReader);
 
       samResource =
           CardResourceServiceProvider.getService()

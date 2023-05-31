@@ -49,7 +49,7 @@ dependencies {
     implementation("org.calypsonet.terminal:calypsonet-terminal-reader-java-api:1.3.0")
     implementation("org.calypsonet.terminal:calypsonet-terminal-calypso-java-api:1.8.0")
     implementation("org.eclipse.keyple:keyple-common-java-api:2.0.0")
-    implementation("org.eclipse.keyple:keyple-service-java-lib:2.3.0")
+    implementation("org.eclipse.keyple:keyple-service-java-lib:2.3.1")
     implementation("org.eclipse.keyple:keyple-service-resource-java-lib:2.1.1")
     implementation("org.eclipse.keyple:keyple-distributed-network-java-lib:2.2.0")
     implementation("org.eclipse.keyple:keyple-distributed-remote-java-lib:2.2.1")
