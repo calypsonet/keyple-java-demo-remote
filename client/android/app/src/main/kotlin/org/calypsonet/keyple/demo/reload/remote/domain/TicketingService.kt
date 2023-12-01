@@ -21,18 +21,17 @@ import org.calypsonet.keyple.demo.reload.remote.di.scopes.AppScoped
 import org.eclipse.keyple.card.calypso.CalypsoExtensionService
 import org.eclipse.keyple.core.service.SmartCardServiceProvider
 import org.eclipse.keypop.calypso.card.card.CalypsoCard
-import org.eclipse.keypop.calypso.card.transaction.FreeTransactionManager
 
 @AppScoped
 class TicketingService @Inject constructor(private var readerRepository: ReaderRepository) {
 
   /** Select card and retrieve CalypsoPO */
   @Throws(IllegalStateException::class, Exception::class)
-  fun getTransactionManager(
+  fun getCalypsoCard(
       readerName: String,
       aidEnums: ArrayList<ByteArray>,
       protocol: String?
-  ): FreeTransactionManager? {
+  ): CalypsoCard {
     with(ReaderRepository.getReader(readerName)) {
       if (isCardPresent) {
         val smartCardService = SmartCardServiceProvider.getService()
@@ -77,8 +76,7 @@ class TicketingService @Inject constructor(private var readerRepository: ReaderR
               aidEnums[selectionResult.activeSelectionIndex], calypsoCard.dfName)) {
             throw IllegalStateException("Unexpected DF name")
           }
-          return calypsoExtension.calypsoCardApiFactory.createFreeTransactionManager(
-              reader, selectionResult.activeSmartCard as CalypsoCard)
+          return calypsoCard
         } else {
           throw IllegalStateException("Selection error: AID not found")
         }

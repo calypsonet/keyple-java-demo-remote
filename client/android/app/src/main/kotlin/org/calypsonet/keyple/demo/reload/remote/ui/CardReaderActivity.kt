@@ -128,15 +128,15 @@ class CardReaderActivity : AbstractCardActivity() {
   ) {
     withContext(Dispatchers.IO) {
       try {
-        val transactionManager =
-            ticketingService.getTransactionManager(selectedDeviceReaderName, aidEnums, protocol)
+        val calypsoCard =
+            ticketingService.getCalypsoCard(selectedDeviceReaderName, aidEnums, protocol)
         val analyseContractsInput = AnalyzeContractsInputDto(pluginType)
         // un-mock for run
         val compatibleContractOutput =
             localServiceClient.executeRemoteService(
                 RemoteServiceId.READ_CARD_AND_ANALYZE_CONTRACTS.name,
                 selectedDeviceReaderName,
-                transactionManager.calypsoCard,
+                calypsoCard,
                 analyseContractsInput,
                 AnalyzeContractsOutputDto::class.java)
 
@@ -154,7 +154,7 @@ class CardReaderActivity : AbstractCardActivity() {
               changeDisplay(
                   CardReaderResponse(
                       status, "", contracts.size, buildCardTitles(contracts), arrayListOf(), ""),
-                  HexUtil.toHex(transactionManager.calypsoCard.applicationSerialNumber),
+                  HexUtil.toHex(calypsoCard!!.applicationSerialNumber),
                   finishActivity)
             }
           } // success,
@@ -165,7 +165,7 @@ class CardReaderActivity : AbstractCardActivity() {
             launchInvalidCardResponse(
                 String.format(
                     getString(R.string.card_invalid_structure),
-                    HexUtil.toHex(transactionManager.calypsoCard.applicationSubtype)))
+                    HexUtil.toHex(calypsoCard!!.applicationSubtype)))
           } // card rejected
           3 -> {
             launchInvalidCardResponse(getString(R.string.card_not_personalized))
