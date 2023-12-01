@@ -18,10 +18,10 @@ import kotlin.jvm.Throws
 import org.calypsonet.keyple.demo.common.constant.CardConstant
 import org.calypsonet.keyple.demo.reload.remote.data.ReaderRepository
 import org.calypsonet.keyple.demo.reload.remote.di.scopes.AppScoped
-import org.calypsonet.terminal.calypso.card.CalypsoCard
-import org.calypsonet.terminal.calypso.transaction.CardTransactionManager
 import org.eclipse.keyple.card.calypso.CalypsoExtensionService
 import org.eclipse.keyple.core.service.SmartCardServiceProvider
+import org.eclipse.keypop.calypso.card.card.CalypsoCard
+import org.eclipse.keypop.calypso.card.transaction.FreeTransactionManager
 
 @AppScoped
 class TicketingService @Inject constructor(private var readerRepository: ReaderRepository) {
@@ -32,10 +32,12 @@ class TicketingService @Inject constructor(private var readerRepository: ReaderR
       readerName: String,
       aidEnums: ArrayList<ByteArray>,
       protocol: String?
-  ): CardTransactionManager {
+  ): FreeTransactionManager? {
     with(ReaderRepository.getReader(readerName)) {
       if (isCardPresent) {
         val smartCardService = SmartCardServiceProvider.getService()
+
+        val readerApiFactory = smartCardService.readerApiFactory
 
         val reader = ReaderRepository.getReader(readerName)
 
@@ -45,23 +47,26 @@ class TicketingService @Inject constructor(private var readerRepository: ReaderR
         /** Verify that the extension's API level is consistent with the current service. */
         smartCardService.checkCardExtension(calypsoExtension)
 
-        val cardSelectionManager = smartCardService.createCardSelectionManager()
+        val cardSelectionManager =
+            smartCardService.getReaderApiFactory().createCardSelectionManager()
 
         aidEnums.forEach {
           /**
            * Generic selection: configures a CardSelector with all the desired attributes to make
            * the selection and read additional information afterwards
            */
-          val cardSelection =
+          val cardSelector =
               if (protocol != null) {
-                calypsoExtension
-                    .createCardSelection()
+                readerApiFactory
+                    .createIsoCardSelector()
                     .filterByDfName(it)
                     .filterByCardProtocol(protocol)
               } else {
-                calypsoExtension.createCardSelection().filterByDfName(it)
+                readerApiFactory.createIsoCardSelector().filterByDfName(it)
               }
-          cardSelectionManager.prepareSelection(cardSelection)
+          cardSelectionManager.prepareSelection(
+              cardSelector,
+              calypsoExtension.calypsoCardApiFactory.createCalypsoCardSelectionExtension())
         }
 
         val selectionResult = cardSelectionManager.processCardSelectionScenario(reader)
@@ -72,7 +77,7 @@ class TicketingService @Inject constructor(private var readerRepository: ReaderR
               aidEnums[selectionResult.activeSelectionIndex], calypsoCard.dfName)) {
             throw IllegalStateException("Unexpected DF name")
           }
-          return calypsoExtension.createCardTransactionWithoutSecurity(
+          return calypsoExtension.calypsoCardApiFactory.createFreeTransactionManager(
               reader, selectionResult.activeSmartCard as CalypsoCard)
         } else {
           throw IllegalStateException("Selection error: AID not found")

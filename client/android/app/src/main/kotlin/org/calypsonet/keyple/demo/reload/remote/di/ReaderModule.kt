@@ -29,14 +29,11 @@ class ReaderModule {
   fun provideLocalServiceClient(
       keypleSyncEndPointClient: KeypleSyncEndPointClient
   ): LocalServiceClient {
-    if (!SmartCardServiceProvider.getService()
-        .isDistributedLocalServiceRegistered("localService")) {
-      SmartCardServiceProvider.getService()
-          .registerDistributedLocalService(
-              LocalServiceClientFactoryBuilder.builder("localService")
-                  .withSyncNode(keypleSyncEndPointClient)
-                  .build())
-    }
+    SmartCardServiceProvider.getService()
+        .registerDistributedLocalService(
+            LocalServiceClientFactoryBuilder.builder("localService")
+                .withSyncNode(keypleSyncEndPointClient)
+                .build())
     return SmartCardServiceProvider.getService()
         .getDistributedLocalService("localService")
         .getExtension(LocalServiceClient::class.java)

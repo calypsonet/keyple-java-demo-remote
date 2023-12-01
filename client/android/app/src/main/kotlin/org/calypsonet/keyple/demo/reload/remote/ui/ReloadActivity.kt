@@ -37,8 +37,8 @@ import org.calypsonet.keyple.demo.reload.remote.data.model.DeviceEnum
 import org.calypsonet.keyple.demo.reload.remote.data.model.Status
 import org.calypsonet.keyple.demo.reload.remote.di.scopes.ActivityScoped
 import org.calypsonet.keyple.demo.reload.remote.domain.TicketingService
-import org.calypsonet.terminal.reader.CardReaderEvent
 import org.eclipse.keyple.core.util.HexUtil
+import org.eclipse.keypop.reader.CardReaderEvent
 import timber.log.Timber
 
 @ActivityScoped

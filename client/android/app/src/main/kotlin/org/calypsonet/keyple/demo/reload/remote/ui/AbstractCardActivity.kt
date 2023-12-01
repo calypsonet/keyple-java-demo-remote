@@ -20,10 +20,6 @@ import org.calypsonet.keyple.demo.reload.remote.data.model.AppSettings
 import org.calypsonet.keyple.demo.reload.remote.data.model.CardReaderResponse
 import org.calypsonet.keyple.demo.reload.remote.data.model.DeviceEnum
 import org.calypsonet.keyple.demo.reload.remote.data.model.Status
-import org.calypsonet.terminal.reader.ConfigurableCardReader
-import org.calypsonet.terminal.reader.ObservableCardReader
-import org.calypsonet.terminal.reader.spi.CardReaderObservationExceptionHandlerSpi
-import org.calypsonet.terminal.reader.spi.CardReaderObserverSpi
 import org.eclipse.keyple.core.service.KeyplePluginException
 import org.eclipse.keyple.distributed.LocalServiceClient
 import org.eclipse.keyple.plugin.android.nfc.AndroidNfcPlugin
@@ -33,6 +29,10 @@ import org.eclipse.keyple.plugin.android.nfc.AndroidNfcSupportedProtocols
 import org.eclipse.keyple.plugin.android.omapi.AndroidOmapiPlugin
 import org.eclipse.keyple.plugin.android.omapi.AndroidOmapiPluginFactoryProvider
 import org.eclipse.keyple.plugin.android.omapi.AndroidOmapiReader
+import org.eclipse.keypop.reader.ConfigurableCardReader
+import org.eclipse.keypop.reader.ObservableCardReader
+import org.eclipse.keypop.reader.spi.CardReaderObservationExceptionHandlerSpi
+import org.eclipse.keypop.reader.spi.CardReaderObserverSpi
 import timber.log.Timber
 
 abstract class AbstractCardActivity :

@@ -26,11 +26,11 @@ import org.calypsonet.keyple.demo.common.model.type.PriorityCode;
 import org.calypsonet.keyple.demo.common.model.type.VersionNumber;
 import org.calypsonet.keyple.demo.reload.remote.server.activity.Activity;
 import org.calypsonet.keyple.demo.reload.remote.server.activity.ActivityService;
-import org.calypsonet.terminal.calypso.card.CalypsoCard;
-import org.calypsonet.terminal.reader.CardReader;
 import org.eclipse.keyple.core.service.resource.CardResource;
 import org.eclipse.keyple.core.service.resource.CardResourceServiceProvider;
 import org.eclipse.keyple.core.util.HexUtil;
+import org.eclipse.keypop.calypso.card.card.CalypsoCard;
+import org.eclipse.keypop.reader.CardReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

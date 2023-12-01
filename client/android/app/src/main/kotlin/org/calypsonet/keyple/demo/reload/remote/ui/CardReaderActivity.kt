@@ -38,10 +38,10 @@ import org.calypsonet.keyple.demo.reload.remote.data.model.*
 import org.calypsonet.keyple.demo.reload.remote.di.scopes.ActivityScoped
 import org.calypsonet.keyple.demo.reload.remote.domain.TicketingService
 import org.calypsonet.keyple.demo.reload.remote.ui.cardsummary.CardSummaryActivity
-import org.calypsonet.terminal.reader.CardReaderEvent
-import org.calypsonet.terminal.reader.ReaderCommunicationException
 import org.eclipse.keyple.core.service.KeyplePluginException
 import org.eclipse.keyple.core.util.HexUtil
+import org.eclipse.keypop.reader.CardReaderEvent
+import org.eclipse.keypop.reader.ReaderCommunicationException
 import timber.log.Timber
 
 @ActivityScoped

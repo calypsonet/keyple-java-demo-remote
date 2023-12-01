@@ -12,11 +12,11 @@
 package org.calypsonet.keyple.demo.reload.remote.data
 
 import kotlin.jvm.Throws
-import org.calypsonet.terminal.reader.CardReader
-import org.calypsonet.terminal.reader.ObservableCardReader
-import org.calypsonet.terminal.reader.ReaderCommunicationException
 import org.eclipse.keyple.core.common.KeyplePluginExtensionFactory
 import org.eclipse.keyple.core.service.SmartCardServiceProvider
+import org.eclipse.keypop.reader.CardReader
+import org.eclipse.keypop.reader.ObservableCardReader
+import org.eclipse.keypop.reader.ReaderCommunicationException
 import timber.log.Timber
 
 /**
