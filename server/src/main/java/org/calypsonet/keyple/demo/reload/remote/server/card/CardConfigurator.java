@@ -89,6 +89,7 @@ public class CardConfigurator {
         samReaderFilter,
         SAM_RESOURCE_PROFILE_NAME);
 
+    // Create a card resource extension expecting a SAM "C1".
     CardResourceProfileExtension samResourceProfileExtension =
         LegacySamExtensionService.getInstance()
             .createLegacySamResourceProfileExtension(
@@ -97,7 +98,6 @@ public class CardConfigurator {
                     .createLegacySamSelectionExtension(),
                 LegacySamUtil.buildPowerOnDataFilter(LegacySam.ProductType.SAM_C1, null));
 
-    // Create a card resource extension expecting a SAM "C1".
     // Create a minimalist configuration (no plugin/reader observation)
     CardResourceService cardResourceService = CardResourceServiceProvider.getService();
     cardResourceService

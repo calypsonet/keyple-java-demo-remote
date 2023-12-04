@@ -46,8 +46,7 @@ class TicketingService @Inject constructor(private var readerRepository: ReaderR
         /** Verify that the extension's API level is consistent with the current service. */
         smartCardService.checkCardExtension(calypsoExtension)
 
-        val cardSelectionManager =
-            smartCardService.getReaderApiFactory().createCardSelectionManager()
+        val cardSelectionManager = readerApiFactory.createCardSelectionManager()
 
         aidEnums.forEach {
           /**

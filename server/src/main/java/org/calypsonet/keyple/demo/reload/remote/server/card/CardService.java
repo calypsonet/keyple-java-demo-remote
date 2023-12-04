@@ -43,9 +43,6 @@ public class CardService {
   private static final String SECURED_READ = "SECURED READ";
   private static final String RELOAD = "RELOAD";
   private static final String ISSUANCE = "ISSUANCE";
-  private static final String AID = "315449432E49434131";
-  private static final String AN_ERROR_OCCURRED_WHILE_READING_THE_CARD_CONTENT =
-      "An error occurred while reading the card content: {}";
   private static final String AN_ERROR_OCCURRED_WHILE_INCREASING_THE_CONTRACT_COUNTER =
       "An error occurred while increasing the contract counter: {}";
   private static final String AN_ERROR_OCCURRED_WHILE_ANALYZING_THE_CONTRACTS =

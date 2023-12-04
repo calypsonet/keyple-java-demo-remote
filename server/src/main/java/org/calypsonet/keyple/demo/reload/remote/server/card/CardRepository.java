@@ -31,6 +31,7 @@ import org.eclipse.keyple.card.calypso.CalypsoExtensionService;
 import org.eclipse.keyple.card.calypso.crypto.legacysam.LegacySamExtensionService;
 import org.eclipse.keyple.core.service.SmartCardServiceProvider;
 import org.eclipse.keyple.core.service.resource.CardResource;
+import org.eclipse.keypop.calypso.card.CalypsoCardApiFactory;
 import org.eclipse.keypop.calypso.card.WriteAccessLevel;
 import org.eclipse.keypop.calypso.card.card.CalypsoCard;
 import org.eclipse.keypop.calypso.card.card.FileData;
@@ -55,50 +56,37 @@ public class CardRepository {
 
   private static CardSelectionManager createCardSelectionManager() {
     ReaderApiFactory readerApiFactory = SmartCardServiceProvider.getService().getReaderApiFactory();
-
-    CalypsoExtensionService calypsoCardService = CalypsoExtensionService.getInstance();
-
     CardSelectionManager cardSelectionManager = readerApiFactory.createCardSelectionManager();
+    CalypsoCardApiFactory calypsoCardApiFactory =
+        CalypsoExtensionService.getInstance().getCalypsoCardApiFactory();
 
     cardSelectionManager.prepareSelection(
         readerApiFactory
             .createIsoCardSelector()
             .filterByDfName(CardConstant.Companion.getAID_KEYPLE_GENERIC()),
-        calypsoCardService
-            .getCalypsoCardApiFactory()
-            .createCalypsoCardSelectionExtension()
-            .acceptInvalidatedCard());
+        calypsoCardApiFactory.createCalypsoCardSelectionExtension().acceptInvalidatedCard());
 
     cardSelectionManager.prepareSelection(
         readerApiFactory
             .createIsoCardSelector()
             .filterByDfName(CardConstant.Companion.getAID_CALYPSO_LIGHT()),
-        calypsoCardService
-            .getCalypsoCardApiFactory()
-            .createCalypsoCardSelectionExtension()
-            .acceptInvalidatedCard());
+        calypsoCardApiFactory.createCalypsoCardSelectionExtension().acceptInvalidatedCard());
 
     cardSelectionManager.prepareSelection(
         readerApiFactory
             .createIsoCardSelector()
             .filterByDfName(CardConstant.Companion.getAID_CD_LIGHT_GTML()),
-        calypsoCardService
-            .getCalypsoCardApiFactory()
-            .createCalypsoCardSelectionExtension()
-            .acceptInvalidatedCard());
+        calypsoCardApiFactory.createCalypsoCardSelectionExtension().acceptInvalidatedCard());
 
     cardSelectionManager.prepareSelection(
         readerApiFactory
             .createIsoCardSelector()
             .filterByDfName(CardConstant.Companion.getAID_NORMALIZED_IDF()),
-        calypsoCardService
-            .getCalypsoCardApiFactory()
-            .createCalypsoCardSelectionExtension()
-            .acceptInvalidatedCard());
+        calypsoCardApiFactory.createCalypsoCardSelectionExtension().acceptInvalidatedCard());
     return cardSelectionManager;
   }
 
-  public CalypsoCard selectCard(CardReader cardReader) {
+  CalypsoCard selectCard(CardReader cardReader) {
     CardSelectionManager cardSelectionManager = createCardSelectionManager();
     // Actual card communication: run the selection scenario.
     CardSelectionResult selectionResult =
@@ -113,7 +101,7 @@ public class CardRepository {
     return (CalypsoCard) selectionResult.getActiveSmartCard();
   }
 
-  public Card readCard(CardReader cardReader, CalypsoCard calypsoCard, CardResource samResource) {
+  Card readCard(CardReader cardReader, CalypsoCard calypsoCard, CardResource samResource) {
     int contractCount = getContractCount(calypsoCard);
 
     SecureRegularModeTransactionManager cardTransactionManager =
@@ -134,7 +122,7 @@ public class CardRepository {
     return parse(calypsoCard);
   }
 
-  public int writeCard(
+  int writeCard(
       CardReader cardReader, CalypsoCard calypsoCard, CardResource samResource, Card card) {
 
     SecureRegularModeTransactionManager cardTransactionManager =
@@ -177,7 +165,7 @@ public class CardRepository {
     return 0;
   }
 
-  public void initCard(CardReader cardReader, CalypsoCard calypsoCard, CardResource samResource) {
+  void initCard(CardReader cardReader, CalypsoCard calypsoCard, CardResource samResource) {
 
     SecureRegularModeTransactionManager cardTransactionManager =
         initCardTransactionManager(cardReader, calypsoCard, samResource);
@@ -213,10 +201,10 @@ public class CardRepository {
   @NotNull
   private SecureRegularModeTransactionManager initCardTransactionManager(
       CardReader cardReader, CalypsoCard calypsoCard, CardResource samResource) {
-
+    CalypsoCardApiFactory calypsoCardApiFactory =
+        CalypsoExtensionService.getInstance().getCalypsoCardApiFactory();
     SymmetricCryptoSecuritySetting cardSecuritySetting =
-        CalypsoExtensionService.getInstance()
-            .getCalypsoCardApiFactory()
+        calypsoCardApiFactory
             .createSymmetricCryptoSecuritySetting(
                 LegacySamExtensionService.getInstance()
                     .getLegacySamApiFactory()
@@ -228,9 +216,8 @@ public class CardRepository {
             .assignDefaultKif(WriteAccessLevel.LOAD, CardConstant.DEFAULT_KIF_LOAD)
             .assignDefaultKif(WriteAccessLevel.DEBIT, CardConstant.DEFAULT_KIF_DEBIT);
 
-    return CalypsoExtensionService.getInstance()
-        .getCalypsoCardApiFactory()
-        .createSecureRegularModeTransactionManager(cardReader, calypsoCard, cardSecuritySetting);
+    return calypsoCardApiFactory.createSecureRegularModeTransactionManager(
+        cardReader, calypsoCard, cardSecuritySetting);
   }
 
   private EnvironmentHolderStructure buildEnvironmentHolderStructure() {
