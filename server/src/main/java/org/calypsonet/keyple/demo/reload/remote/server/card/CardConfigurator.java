@@ -19,11 +19,8 @@ import org.calypsonet.keyple.demo.common.dto.AnalyzeContractsInputDto;
 import org.calypsonet.keyple.demo.common.dto.CardIssuanceInputDto;
 import org.calypsonet.keyple.demo.common.dto.SelectAppAndIncreaseContractCounterInputDto;
 import org.calypsonet.keyple.demo.common.dto.WriteContractInputDto;
-import org.calypsonet.terminal.calypso.card.CalypsoCard;
-import org.calypsonet.terminal.calypso.sam.CalypsoSam;
-import org.calypsonet.terminal.reader.CardReader;
-import org.calypsonet.terminal.reader.spi.CardReaderObservationExceptionHandlerSpi;
-import org.eclipse.keyple.card.calypso.CalypsoExtensionService;
+import org.eclipse.keyple.card.calypso.crypto.legacysam.LegacySamExtensionService;
+import org.eclipse.keyple.card.calypso.crypto.legacysam.LegacySamUtil;
 import org.eclipse.keyple.core.service.*;
 import org.eclipse.keyple.core.service.resource.*;
 import org.eclipse.keyple.core.service.resource.spi.CardResourceProfileExtension;
@@ -35,6 +32,10 @@ import org.eclipse.keyple.distributed.RemotePluginServerFactoryBuilder;
 import org.eclipse.keyple.distributed.RemoteReaderServer;
 import org.eclipse.keyple.plugin.pcsc.PcscPluginFactoryBuilder;
 import org.eclipse.keyple.plugin.pcsc.PcscReader;
+import org.eclipse.keypop.calypso.card.card.CalypsoCard;
+import org.eclipse.keypop.calypso.crypto.legacysam.sam.LegacySam;
+import org.eclipse.keypop.reader.CardReader;
+import org.eclipse.keypop.reader.spi.CardReaderObservationExceptionHandlerSpi;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -87,13 +88,16 @@ public class CardConfigurator {
         plugin.getName(),
         samReaderFilter,
         SAM_RESOURCE_PROFILE_NAME);
+
     // Create a card resource extension expecting a SAM "C1".
     CardResourceProfileExtension samResourceProfileExtension =
-        CalypsoExtensionService.getInstance()
-            .createSamResourceProfileExtension(
-                CalypsoExtensionService.getInstance()
-                    .createSamSelection()
-                    .filterByProductType(CalypsoSam.ProductType.SAM_C1));
+        LegacySamExtensionService.getInstance()
+            .createLegacySamResourceProfileExtension(
+                LegacySamExtensionService.getInstance()
+                    .getLegacySamApiFactory()
+                    .createLegacySamSelectionExtension(),
+                LegacySamUtil.buildPowerOnDataFilter(LegacySam.ProductType.SAM_C1, null));
+
     // Create a minimalist configuration (no plugin/reader observation)
     CardResourceService cardResourceService = CardResourceServiceProvider.getService();
     cardResourceService

@@ -37,8 +37,8 @@ import org.calypsonet.keyple.demo.reload.remote.data.model.DeviceEnum
 import org.calypsonet.keyple.demo.reload.remote.data.model.Status
 import org.calypsonet.keyple.demo.reload.remote.di.scopes.ActivityScoped
 import org.calypsonet.keyple.demo.reload.remote.domain.TicketingService
-import org.calypsonet.terminal.reader.CardReaderEvent
 import org.eclipse.keyple.core.util.HexUtil
+import org.eclipse.keypop.reader.CardReaderEvent
 import timber.log.Timber
 
 @ActivityScoped
@@ -102,11 +102,9 @@ class ReloadActivity : AbstractCardActivity() {
     withContext(Dispatchers.IO) {
       try {
         val readCardSerialNumber = intent.getStringExtra(CARD_APPLICATION_NUMBER)
-
-        val transactionManager =
-            ticketingService.getTransactionManager(selectedDeviceReaderName, aidEnums, protocol)
-        if (HexUtil.toHex(transactionManager.calypsoCard.applicationSerialNumber) !=
-            readCardSerialNumber) {
+        val calypsoCard =
+            ticketingService.getCalypsoCard(selectedDeviceReaderName, aidEnums, protocol)
+        if (HexUtil.toHex(calypsoCard!!.applicationSerialNumber) != readCardSerialNumber) {
           // Ticket would have been bought for the Card read at step one.
           // To avoid swapping we check thant loading is done on the same card
           throw IllegalStateException("Not the same card")
@@ -117,7 +115,7 @@ class ReloadActivity : AbstractCardActivity() {
         localServiceClient.executeRemoteService(
             RemoteServiceId.READ_CARD_AND_ANALYZE_CONTRACTS.name,
             selectedDeviceReaderName,
-            transactionManager.calypsoCard,
+            calypsoCard,
             analyseContractsInput,
             AnalyzeContractsOutputDto::class.java)
 
@@ -133,7 +131,7 @@ class ReloadActivity : AbstractCardActivity() {
             localServiceClient.executeRemoteService(
                 RemoteServiceId.READ_CARD_AND_WRITE_CONTRACT.name,
                 selectedDeviceReaderName,
-                transactionManager.calypsoCard,
+                calypsoCard,
                 writeContractInputDto,
                 WriteContractOutputDto::class.java)
 
@@ -153,7 +151,7 @@ class ReloadActivity : AbstractCardActivity() {
             launchInvalidCardResponse(
                 String.format(
                     getString(R.string.card_invalid_structure),
-                    HexUtil.toHex(transactionManager.calypsoCard.applicationSubtype)))
+                    HexUtil.toHex(calypsoCard!!.applicationSubtype)))
           } // card rejected
         }
       } catch (e: IllegalStateException) {

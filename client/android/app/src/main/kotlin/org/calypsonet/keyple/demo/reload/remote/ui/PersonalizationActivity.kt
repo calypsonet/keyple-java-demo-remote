@@ -32,8 +32,8 @@ import org.calypsonet.keyple.demo.reload.remote.data.model.DeviceEnum
 import org.calypsonet.keyple.demo.reload.remote.data.model.Status
 import org.calypsonet.keyple.demo.reload.remote.di.scopes.ActivityScoped
 import org.calypsonet.keyple.demo.reload.remote.domain.TicketingService
-import org.calypsonet.terminal.reader.CardReaderEvent
 import org.eclipse.keyple.core.util.HexUtil
+import org.eclipse.keypop.reader.CardReaderEvent
 import timber.log.Timber
 
 @ActivityScoped
@@ -126,14 +126,14 @@ class PersonalizationActivity : AbstractCardActivity() {
   ) {
     withContext(Dispatchers.IO) {
       try {
-        val transactionManager =
-            ticketingService.getTransactionManager(selectedDeviceReaderName, aidEnums, protocol)
+        val calypsoCard =
+            ticketingService.getCalypsoCard(selectedDeviceReaderName, aidEnums, protocol)
         val cardIssuanceInput = CardIssuanceInputDto(pluginType)
         val cardIssuanceOutput =
             localServiceClient.executeRemoteService(
                 RemoteServiceId.PERSONALIZE_CARD.name,
                 selectedDeviceReaderName,
-                transactionManager.calypsoCard,
+                calypsoCard,
                 cardIssuanceInput,
                 CardIssuanceOutputDto::class.java)
         when (cardIssuanceOutput.statusCode) {
@@ -141,8 +141,7 @@ class PersonalizationActivity : AbstractCardActivity() {
             runOnUiThread {
               changeDisplay(
                   CardReaderResponse(Status.SUCCESS, "", 0, arrayListOf(), arrayListOf(), ""),
-                  applicationSerialNumber =
-                      HexUtil.toHex(transactionManager.calypsoCard.applicationSerialNumber),
+                  applicationSerialNumber = HexUtil.toHex(calypsoCard!!.applicationSerialNumber),
                   finishActivity = true)
             }
           } // success,
@@ -153,7 +152,7 @@ class PersonalizationActivity : AbstractCardActivity() {
             launchInvalidCardResponse(
                 String.format(
                     getString(R.string.card_invalid_structure),
-                    HexUtil.toHex(transactionManager.calypsoCard.applicationSubtype)))
+                    HexUtil.toHex(calypsoCard!!.applicationSubtype)))
           } // card rejected
         }
       } catch (e: IllegalStateException) {

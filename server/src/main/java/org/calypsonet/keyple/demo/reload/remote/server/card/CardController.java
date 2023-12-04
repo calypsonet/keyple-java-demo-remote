@@ -17,12 +17,12 @@ import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import org.calypsonet.terminal.reader.CardReader;
-import org.calypsonet.terminal.reader.ReaderCommunicationException;
 import org.eclipse.keyple.core.service.SmartCardServiceProvider;
 import org.eclipse.keyple.distributed.MessageDto;
 import org.eclipse.keyple.distributed.RemotePluginServer;
 import org.eclipse.keyple.distributed.SyncNodeServer;
+import org.eclipse.keypop.reader.CardReader;
+import org.eclipse.keypop.reader.ReaderCommunicationException;
 
 @Path("/card")
 public class CardController {
