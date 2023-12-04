@@ -369,15 +369,15 @@ namespace App.domain.api
                         throw new UnexpectedStatusWordException($"Unexpected status word: {apduResponse.StatusWord:X}");
                     }
                 }
-                catch (ReaderIOException ex)
+                catch (ReaderIOException)
                 {
                     _reader.ClosePhysicalChannel();
-                    throw ex;
+                    throw;
                 }
-                catch (CardIOException ex)
+                catch (CardIOException)
                 {
                     _reader.ClosePhysicalChannel();
-                    throw ex;
+                    throw;
                 }
             }
 
