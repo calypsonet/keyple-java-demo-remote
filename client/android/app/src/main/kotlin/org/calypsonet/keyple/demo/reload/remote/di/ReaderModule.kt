@@ -26,17 +26,15 @@ class ReaderModule {
 
   @Provides
   @AppScoped
-  fun provideLocalServiceClient(
-      keypleSyncEndPointClient: KeypleSyncEndPointClient
-  ): LocalServiceClient {
-    SmartCardServiceProvider.getService()
-        .registerDistributedLocalService(
-            LocalServiceClientFactoryBuilder.builder("localService")
-                .withSyncNode(keypleSyncEndPointClient)
-                .build())
-    return SmartCardServiceProvider.getService()
-        .getDistributedLocalService("localService")
-        .getExtension(LocalServiceClient::class.java)
+  fun provideLocalServiceClient(keypleSyncEndPointClient: KeypleSyncEndPointClient): LocalServiceClient {
+      val serviceProvider = SmartCardServiceProvider.getService()
+      val localService = serviceProvider.getDistributedLocalService("localService")
+          ?: serviceProvider.registerDistributedLocalService(
+              LocalServiceClientFactoryBuilder.builder("localService")
+                  .withSyncNode(keypleSyncEndPointClient)
+                  .build()
+          )
+      return localService.getExtension(LocalServiceClient::class.java)
   }
 
   @Provides

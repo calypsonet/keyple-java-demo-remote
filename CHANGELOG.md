@@ -11,6 +11,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Keyple Service Resource Library `2.1.1` -> `3.0.0`
 - Keyple Calypso Card Library `2.3.5` -> `3.0.0`
 - Keyple Util Library `2.3.0` -> `2.3.1`
+- Keyple Distributed Local Library `2.2.0` -> `2.3.0`
 - Keyple Distributed Network Library `2.2.0` -> `2.3.0`
 - Keyple Distributed Remote Library `2.2.1` -> `2.3.0`
 
