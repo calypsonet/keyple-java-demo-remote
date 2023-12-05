@@ -13,6 +13,7 @@ package org.calypsonet.keyple.demo.reload.remote.data
 
 import kotlin.jvm.Throws
 import org.eclipse.keyple.core.common.KeyplePluginExtensionFactory
+import org.eclipse.keyple.core.service.Plugin
 import org.eclipse.keyple.core.service.SmartCardServiceProvider
 import org.eclipse.keypop.reader.CardReader
 import org.eclipse.keypop.reader.ObservableCardReader
@@ -26,11 +27,11 @@ import timber.log.Timber
 object ReaderRepository {
 
   /** Register any keyple plugin */
-  fun registerPlugin(factory: KeyplePluginExtensionFactory) {
-    try {
+  fun registerPlugin(factory: KeyplePluginExtensionFactory): Plugin? {
+    return try {
       SmartCardServiceProvider.getService().registerPlugin(factory)
     } catch (e: Exception) {
-      Timber.e(e)
+      null
     }
   }
 

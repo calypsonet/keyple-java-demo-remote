@@ -21,6 +21,7 @@ import org.calypsonet.keyple.demo.reload.remote.data.model.CardReaderResponse
 import org.calypsonet.keyple.demo.reload.remote.data.model.DeviceEnum
 import org.calypsonet.keyple.demo.reload.remote.data.model.Status
 import org.eclipse.keyple.core.service.KeyplePluginException
+import org.eclipse.keyple.core.service.Plugin
 import org.eclipse.keyple.distributed.LocalServiceClient
 import org.eclipse.keyple.plugin.android.nfc.AndroidNfcPlugin
 import org.eclipse.keyple.plugin.android.nfc.AndroidNfcPluginFactoryProvider
@@ -88,18 +89,24 @@ abstract class AbstractCardActivity :
   /** Android Nfc Reader is strongly dependent and Android Activity component. */
   @Throws(KeyplePluginException::class)
   fun initAndActivateAndroidKeypleNfcReader() {
-    readerRepository.registerPlugin(
-        AndroidNfcPluginFactoryProvider(this@AbstractCardActivity).getFactory())
+    val plugin: Plugin? =
+        readerRepository.registerPlugin(
+            AndroidNfcPluginFactoryProvider(this@AbstractCardActivity).getFactory())
 
-    val androidNfcReader = readerRepository.getObservableReader(selectedDeviceReaderName)
-    androidNfcReader.setReaderObservationExceptionHandler(this@AbstractCardActivity)
-    androidNfcReader.addObserver(this@AbstractCardActivity)
-    androidNfcReader.setReaderObservationExceptionHandler(this@AbstractCardActivity)
+    if (plugin == null) {
+      return
+    }
 
-    (readerRepository.getReader(selectedDeviceReaderName) as ConfigurableCardReader)
-        .activateProtocol(AndroidNfcSupportedProtocols.ISO_14443_4.name, "ISO_14443_4")
+    val observableCardReader: ObservableCardReader =
+        readerRepository.getObservableReader(selectedDeviceReaderName)
+    observableCardReader.setReaderObservationExceptionHandler(this@AbstractCardActivity)
+    observableCardReader.addObserver(this@AbstractCardActivity)
+    observableCardReader.setReaderObservationExceptionHandler(this@AbstractCardActivity)
 
-    androidNfcReader.startCardDetection(ObservableCardReader.DetectionMode.REPEATING)
+    (observableCardReader as ConfigurableCardReader).activateProtocol(
+        AndroidNfcSupportedProtocols.ISO_14443_4.name, "ISO_14443_4")
+
+    observableCardReader.startCardDetection(ObservableCardReader.DetectionMode.REPEATING)
   }
 
   @Throws(KeyplePluginException::class)
