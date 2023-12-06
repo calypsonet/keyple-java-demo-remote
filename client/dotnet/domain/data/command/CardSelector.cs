@@ -10,7 +10,6 @@
 
 using App.domain.utils;
 using Newtonsoft.Json;
-using System.Collections.Generic;
 
 namespace App.domain.data.command
 {

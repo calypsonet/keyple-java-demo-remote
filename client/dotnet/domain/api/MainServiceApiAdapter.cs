@@ -236,7 +236,7 @@ namespace App.domain.api
 
             CardSelectionResponse cardSelectionResponse = new CardSelectionResponse
             {
-                HasMatched = cardSelectionRequest.SuccessfulSelectionStatusWords.Contains(selectAppResponse.StatusWord),
+                HasMatched = cardSelectionRequest.SuccessfulSelectionStatusWords?.Contains(selectAppResponse.StatusWord) ?? false,
                 PowerOnData = _reader.GetPowerOnData(),
                 SelectApplicationResponse = selectAppResponse,
                 CardResponse = cardResponse
