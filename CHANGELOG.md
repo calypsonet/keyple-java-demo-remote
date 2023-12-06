@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
+
+## [2023.12.06]
 ### Upgraded
 - Calypsonet Terminal Reader API `1.3.0` -> Keypop Reader API `2.0.0`
 - Calypsonet Terminal Calypso API `1.8.0` -> Keypop Calypso Card API `2.0.0`
@@ -67,7 +69,8 @@ New dependencies
 - `keyple-plugin-android-omapi-java-lib:2.0.1`
 - `keyple-util-java-lib:2.3.0`
   
-[Unreleased]: https://github.com/calypsonet/keyple-java-demo-remote/compare/2023.05.31...HEAD
+[Unreleased]: https://github.com/calypsonet/keyple-java-demo-remote/compare/2023.12.06...HEAD
+[2023.12.06]: https://github.com/calypsonet/keyple-java-demo-remote/compare/2023.05.31...2023.12.06
 [2023.05.31]: https://github.com/calypsonet/keyple-java-demo-remote/compare/2023.03.03...2023.05.31
 [2023.03.03]: https://github.com/calypsonet/keyple-java-demo-remote/compare/2023.02.24...2023.03.03
 [2023.02.24]: https://github.com/calypsonet/keyple-java-demo-remote/compare/2022.11.18...2023.02.24
