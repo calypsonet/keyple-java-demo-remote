@@ -19,12 +19,6 @@ namespace App.domain.data.command
     public class TransmitCardSelectionRequestsParameters
     {
         /// <summary>
-        /// Array of card selection requests.
-        /// </summary>
-        [JsonProperty("cardSelectionRequests")]
-        public required CardSelectionRequest[] CardSelectionRequests { get; set; }
-
-        /// <summary>
         /// Multi-selection processing mode.
         /// </summary>
         [JsonConverter(typeof(MultiSelectionProcessingConverter))]
@@ -37,5 +31,17 @@ namespace App.domain.data.command
         [JsonConverter(typeof(ChannelControlConverter))]
         [JsonProperty("channelControl")]
         public required ChannelControl ChannelControl { get; set; }
+
+        /// <summary>
+        /// Card selector for the card selection.
+        /// </summary>
+        [JsonProperty("cardSelectors")]
+        public required CardSelector[] CardSelectors { get; set; }
+
+        /// <summary>
+        /// Array of card selection requests.
+        /// </summary>
+        [JsonProperty("cardSelectionRequests")]
+        public required CardSelectionRequest[] CardSelectionRequests { get; set; }
     }
 }

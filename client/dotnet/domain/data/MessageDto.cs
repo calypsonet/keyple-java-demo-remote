@@ -15,18 +15,11 @@ using Newtonsoft.Json;
 /// </summary>
 public class MessageDto
 {
-
     /// <summary>
-    /// Action associated with the message.
+    /// API level.
     /// </summary>
-    [JsonProperty("action")]
-    public required string Action { get; set; }
-
-    /// <summary>
-    /// Body of the message.
-    /// </summary>
-    [JsonProperty("body")]
-    public required string Body { get; set; }
+    [JsonProperty("apiLevel")]
+    public required int ApiLevel { get; set; }
 
     /// <summary>
     /// Session ID.
@@ -35,16 +28,16 @@ public class MessageDto
     public required string SessionId { get; set; }
 
     /// <summary>
+    /// Action associated with the message.
+    /// </summary>
+    [JsonProperty("action")]
+    public required string Action { get; set; }
+
+    /// <summary>
     /// Client node ID.
     /// </summary>
     [JsonProperty("clientNodeId")]
     public required string ClientNodeId { get; set; }
-
-    /// <summary>
-    /// Name of the local reader.
-    /// </summary>
-    [JsonProperty("localReaderName")]
-    public string? LocalReaderName { get; set; }
 
     /// <summary>
     /// Server node ID.
@@ -53,10 +46,22 @@ public class MessageDto
     public string? ServerNodeId { get; set; }
 
     /// <summary>
+    /// Name of the local reader.
+    /// </summary>
+    [JsonProperty("localReaderName")]
+    public string? LocalReaderName { get; set; }
+
+    /// <summary>
     /// Name of the remote reader.
     /// </summary>
     [JsonProperty("remoteReaderName")]
     public string? RemoteReaderName { get; set; }
+
+    /// <summary>
+    /// Body of the message.
+    /// </summary>
+    [JsonProperty("body")]
+    public required string Body { get; set; }
 
     /// <summary>
     /// Sets the action associated with the message.

@@ -18,6 +18,12 @@ namespace App.domain.data.response
     public class TransmitCardSelectionRequestsRespBody
     {
         /// <summary>
+        /// Core API level.
+        /// </summary>
+        [JsonProperty("coreApiLevel")]
+        public const int CoreApiLevel = ApiInfo.CORE_API_LEVEL;
+
+        /// <summary>
         /// Service name.
         /// </summary>
         [JsonProperty("service")]

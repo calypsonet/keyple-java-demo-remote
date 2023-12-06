@@ -18,6 +18,12 @@ namespace App.domain.data.command
     public class CmdBody
     {
         /// <summary>
+        /// Core API level.
+        /// </summary>
+        [JsonProperty("coreApiLevel")]
+        public required int CoreApiLevel { get; set; }
+
+        /// <summary>
         /// Service name.
         /// </summary>
         [JsonProperty("service")]

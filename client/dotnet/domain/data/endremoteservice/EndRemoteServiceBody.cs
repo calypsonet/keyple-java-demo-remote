@@ -16,6 +16,12 @@ using Newtonsoft.Json;
 public class EndRemoteServiceBody
 {
     /// <summary>
+    /// Core API level.
+    /// </summary>
+    [JsonProperty("coreApiLevel")]
+    public required int CoreApiLevel { get; set; }
+
+    /// <summary>
     /// Gets or sets the OutputData.
     /// </summary>
     [JsonProperty("outputData")]

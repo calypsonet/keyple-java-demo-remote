@@ -10,17 +10,46 @@
 
 using App.domain.utils;
 using Newtonsoft.Json;
+using System.Collections.Generic;
 
 namespace App.domain.data.command
 {
     /// <summary>
     /// Card selector used for card selection.
     /// </summary>
-    /// <param name="CardProtocol"> Card protocol. </param>
-    /// <param name="PowerOnDataRegex"> Power On Data regular expression filter. </param>
-    /// <param name="Aid"> Application Identifier (AID) of the card. </param>
-    /// <param name="FileOccurrence"> File occurrence. </param>
-    /// <param name="FileControlInformation"> File control information. </param>
-    /// <param name="SuccessfulSelectionStatusWords"> Successful status words of the selection application command. </param>
-    public record CardSelector([property: JsonProperty("cardProtocol")] string? CardProtocol, [property: JsonProperty("powerOnDataRegex")] string? PowerOnDataRegex, [property: JsonConverter(typeof(HexStringToByteArrayConverter))][property: JsonProperty("aid")] byte[]? Aid, [property: JsonConverter(typeof(FileOccurrenceConverter))][property: JsonProperty("fileOccurrence")] FileOccurrence FileOccurrence, [property: JsonConverter(typeof(FileControlInformationConverter))][property: JsonProperty("fileControlInformation")] FileControlInformation FileControlInformation, [property: JsonConverter(typeof(HexStringToSetToIntHashSetConverter))][property: JsonProperty("successfulSelectionStatusWords")] HashSet<int> SuccessfulSelectionStatusWords);
+    public class CardSelector
+    {
+        /// <summary>
+        /// Card protocol.
+        /// </summary>
+        [JsonProperty("cardProtocol")]
+        public string? CardProtocol { get; set; }
+
+        /// <summary>
+        /// Power On Data regular expression filter.
+        /// </summary>
+        [JsonProperty("powerOnDataRegex")]
+        public string? PowerOnDataRegex { get; set; }
+
+        /// <summary>
+        /// Application Identifier (AID) of the card.
+        /// </summary>
+        [JsonConverter(typeof(HexStringToByteArrayConverter))]
+        [JsonProperty("aid")]
+        public byte[]? Aid { get; set; }
+
+        /// <summary>
+        /// File occurrence.
+        /// </summary>
+        [JsonConverter(typeof(FileOccurrenceConverter))]
+        [JsonProperty("fileOccurrence")]
+        public FileOccurrence FileOccurrence { get; set; }
+
+        /// <summary>
+        /// File control information.
+        /// </summary>
+        [JsonConverter(typeof(FileControlInformationConverter))]
+        [JsonProperty("fileControlInformation")]
+        public FileControlInformation FileControlInformation { get; set; }
+    }
 }

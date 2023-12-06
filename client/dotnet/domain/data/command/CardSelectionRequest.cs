@@ -8,6 +8,7 @@
 //
 // SPDX-License-Identifier: EPL-2.0
 
+using App.domain.utils;
 using Newtonsoft.Json;
 
 namespace App.domain.data.command
@@ -18,15 +19,16 @@ namespace App.domain.data.command
     public class CardSelectionRequest
     {
         /// <summary>
-        /// Card selector for the card selection.
-        /// </summary>
-        [JsonProperty("cardSelector")]
-        public required CardSelector CardSelector { get; set; }
-
-        /// <summary>
         /// Card request associated with the card selection.
         /// </summary>
         [JsonProperty("cardRequest")]
         public CardRequest? CardRequest { get; set; }
+
+        /// <summary>
+        /// Successful status words of the selection application command.
+        /// </summary>
+        [JsonConverter(typeof(HexStringToSetToIntHashSetConverter))]
+        [JsonProperty("successfulSelectionStatusWords")]
+        public HashSet<int>? SuccessfulSelectionStatusWords { get; set; }
     }
 }

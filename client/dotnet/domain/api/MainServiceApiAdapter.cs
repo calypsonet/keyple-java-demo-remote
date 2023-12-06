@@ -8,6 +8,7 @@
 //
 // SPDX-License-Identifier: EPL-2.0
 
+using App.domain.data;
 using App.domain.data.command;
 using App.domain.data.executeremoteservice;
 using App.domain.data.response;
@@ -91,7 +92,7 @@ namespace App.domain.api
         {
             _logger.Information("Execute remote service to increase the contract counter...");
 
-            return ExecuteRemoteService(SELECT_APP_AND_INCREASE_CONTRACT_COUNTER, new InputDataWrite { CounterIncrement = counterIncrement.ToString() });
+            return ExecuteRemoteService(SELECT_APP_AND_INCREASE_CONTRACT_COUNTER, new InputDataWrite { CounterIncrement = counterIncrement.ToString("X") });
         }
 
         private string ExecuteRemoteService(string serviceId, InputData inputData)
@@ -108,11 +109,12 @@ namespace App.domain.api
             // Create and fill RemoteServiceDto object
             MessageDto message = new MessageDto
             {
-                Action = EXECUTE_REMOTE_SERVICE,
-                Body = JsonConvert.SerializeObject(bodyContent, Formatting.None),
+                ApiLevel = ApiInfo.API_LEVEL,
                 SessionId = sessionId,
+                Action = EXECUTE_REMOTE_SERVICE,
                 ClientNodeId = _clientNodeId,
-                LocalReaderName = _localReaderName
+                LocalReaderName = _localReaderName,
+                Body = JsonConvert.SerializeObject(bodyContent, Formatting.None)
             };
 
             string jsonResponse = _server.transmitRequest(JsonConvert.SerializeObject(message));
@@ -150,8 +152,9 @@ namespace App.domain.api
                         jsonBodyString = TransmitCardRequest(message);
                         break;
                 }
-                message.SetAction(RESP);
-                message.SetBody(jsonBodyString);
+                message.ApiLevel = ApiInfo.API_LEVEL;
+                message.Action = RESP;
+                message.Body = jsonBodyString;
                 string jsonResponse = _server.transmitRequest(JsonConvert.SerializeObject(message, Formatting.None));
                 message = JsonConvert.DeserializeObject<List<MessageDto>>(jsonResponse)![0];
             }
@@ -178,12 +181,14 @@ namespace App.domain.api
             TransmitCardSelectionRequestsRespBody transmitCardSelectionRequestsRespBody = new TransmitCardSelectionRequestsRespBody();
             List<CardSelectionResponse> cardSelectionResponses = new List<CardSelectionResponse>();
             Error? error = null;
-
-            foreach (CardSelectionRequest cardSelectionRequest in transmitCardSelectionRequestsCmdBody.Parameters.CardSelectionRequests)
+            int nbIterations = transmitCardSelectionRequestsCmdBody.Parameters.CardSelectors.Length;
+            for (int i = 0; i < nbIterations; i++)
             {
                 try
                 {
-                    CardSelectionResponse cardSelectionResponse = ProcessCardSelectionRequest(cardSelectionRequest,
+                    CardSelectionResponse cardSelectionResponse =
+                        ProcessCardSelectionRequest(transmitCardSelectionRequestsCmdBody.Parameters.CardSelectors[i],
+                        transmitCardSelectionRequestsCmdBody.Parameters.CardSelectionRequests[i],
                         transmitCardSelectionRequestsCmdBody.Parameters.ChannelControl);
                     cardSelectionResponses.Add(cardSelectionResponse);
                     if (cardSelectionResponse.HasMatched)
@@ -218,10 +223,10 @@ namespace App.domain.api
             return JsonConvert.SerializeObject(transmitCardSelectionRequestsRespBody, Formatting.None);
         }
 
-        private CardSelectionResponse ProcessCardSelectionRequest(CardSelectionRequest cardSelectionRequest, ChannelControl channelControl)
+        private CardSelectionResponse ProcessCardSelectionRequest(CardSelector cardSelector, CardSelectionRequest cardSelectionRequest, ChannelControl channelControl)
         {
             _reader.OpenPhysicalChannel();
-            ApduResponse selectAppResponse = SelectApplication(cardSelectionRequest.CardSelector);
+            ApduResponse selectAppResponse = SelectApplication(cardSelector);
             CardResponse? cardResponse = null;
 
             if (cardSelectionRequest.CardRequest != null)
@@ -231,7 +236,7 @@ namespace App.domain.api
 
             CardSelectionResponse cardSelectionResponse = new CardSelectionResponse
             {
-                HasMatched = cardSelectionRequest.CardSelector.SuccessfulSelectionStatusWords.Contains(selectAppResponse.StatusWord),
+                HasMatched = cardSelectionRequest.SuccessfulSelectionStatusWords.Contains(selectAppResponse.StatusWord),
                 PowerOnData = _reader.GetPowerOnData(),
                 SelectApplicationResponse = selectAppResponse,
                 CardResponse = cardResponse
@@ -272,7 +277,7 @@ namespace App.domain.api
             }
 
             // Handle the case where cardSelector or cardSelector.Aid is null.
-            throw new ArgumentNullException("cardSelector or cardSelector.Aid is null.");
+            throw new ArgumentNullException("cardSelector", "cardSelector or cardSelector.Aid is null.");
         }
 
         private byte ComputeSelectApplicationP2(FileOccurrence fileOccurrence, FileControlInformation fileControlInformation)

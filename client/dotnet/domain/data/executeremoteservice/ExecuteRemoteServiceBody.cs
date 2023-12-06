@@ -17,9 +17,21 @@ namespace App.domain.data.executeremoteservice
     /// </summary>
     class ExecuteRemoteServiceBody
     {
+        /// <summary>
+        /// Core API level.
+        /// </summary>
+        [JsonProperty("coreApiLevel")]
+        public const int CoreApiLevel = ApiInfo.CORE_API_LEVEL;
+
+        /// <summary>
+        /// Service ID.
+        /// </summary>
         [JsonProperty("serviceId")]
         public required string ServiceId { get; set; }
 
+        /// <summary>
+        /// Input data.
+        /// </summary>
         [JsonProperty("inputData")]
         public InputData? InputData { get; set; }
     }
