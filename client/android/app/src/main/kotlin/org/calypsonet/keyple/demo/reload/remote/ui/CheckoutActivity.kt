@@ -15,18 +15,19 @@ import android.content.Intent
 import android.os.Bundle
 import java.text.SimpleDateFormat
 import java.util.Calendar
-import kotlinx.android.synthetic.main.activity_checkout.expiryValue
-import kotlinx.android.synthetic.main.activity_checkout.selectionLabel
-import kotlinx.android.synthetic.main.activity_checkout.selectionPrice
-import kotlinx.android.synthetic.main.activity_checkout.validateBtn
 import org.calypsonet.keyple.demo.common.model.type.PriorityCode
 import org.calypsonet.keyple.demo.reload.remote.R
+import org.calypsonet.keyple.demo.reload.remote.databinding.ActivityCheckoutBinding
 
 class CheckoutActivity : AbstractDemoActivity() {
 
+  private lateinit var activityCheckoutBinding: ActivityCheckoutBinding
+
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
-    setContentView(R.layout.activity_checkout)
+    activityCheckoutBinding = ActivityCheckoutBinding.inflate(layoutInflater)
+    toolbarBinding = activityCheckoutBinding.appBarLayout
+    setContentView(activityCheckoutBinding.root)
 
     val selectedTicketPriorityCode =
         PriorityCode.findEnumByKey(
@@ -35,14 +36,15 @@ class CheckoutActivity : AbstractDemoActivity() {
     val ticketNumberCount: Int = intent.getIntExtra(SelectTicketsActivity.TICKETS_NUMBER, 0)
 
     if (selectedTicketPriorityCode == PriorityCode.SEASON_PASS) {
-      selectionLabel.text = getString(R.string.season_pass_title)
-      selectionPrice.text = getString(R.string.ticket_price, 20)
+      activityCheckoutBinding.selectionLabel.text = getString(R.string.season_pass_title)
+      activityCheckoutBinding.selectionPrice.text = getString(R.string.ticket_price, 20)
     } else {
-      selectionLabel.text =
+      activityCheckoutBinding.selectionLabel.text =
           resources.getQuantityString(R.plurals.x_tickets, ticketNumberCount, ticketNumberCount)
-      selectionPrice.text = getString(R.string.ticket_price, ticketNumberCount)
+      activityCheckoutBinding.selectionPrice.text =
+          getString(R.string.ticket_price, ticketNumberCount)
     }
-    validateBtn.setOnClickListener {
+    activityCheckoutBinding.validateBtn.setOnClickListener {
       val intent = Intent(this, PaymentValidatedActivity::class.java)
       intent.putExtras(getIntent())
       startActivity(intent)
@@ -51,6 +53,6 @@ class CheckoutActivity : AbstractDemoActivity() {
 
     val now = Calendar.getInstance().time
     val sdf = SimpleDateFormat("MM/yy")
-    expiryValue.text = sdf.format(now)
+    activityCheckoutBinding.expiryValue.text = sdf.format(now)
   }
 }

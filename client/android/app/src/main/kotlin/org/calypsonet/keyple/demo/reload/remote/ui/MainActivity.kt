@@ -16,14 +16,17 @@ import android.os.Bundle
 import dagger.android.support.DaggerAppCompatActivity
 import java.util.Timer
 import java.util.TimerTask
-import org.calypsonet.keyple.demo.reload.remote.R
+import org.calypsonet.keyple.demo.reload.remote.databinding.ActivityMainBinding
 
 class MainActivity : DaggerAppCompatActivity() {
+
+  private lateinit var activityMainBinding: ActivityMainBinding
 
   override fun onCreate(savedInstanceState: Bundle?) {
     // Make sure this is before calling super.onCreate
     super.onCreate(savedInstanceState)
-    setContentView(R.layout.activity_main)
+    activityMainBinding = ActivityMainBinding.inflate(layoutInflater)
+    setContentView(activityMainBinding.root)
     // Wait for Wizway Device to be connected
     Timer()
         .schedule(

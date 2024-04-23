@@ -16,16 +16,10 @@ import android.media.MediaPlayer
 import android.os.Bundle
 import android.view.View
 import androidx.recyclerview.widget.LinearLayoutManager
-import kotlinx.android.synthetic.main.activity_card_summary.animation
-import kotlinx.android.synthetic.main.activity_card_summary.bigText
-import kotlinx.android.synthetic.main.activity_card_summary.buyBtn
-import kotlinx.android.synthetic.main.activity_card_summary.contentTitle
-import kotlinx.android.synthetic.main.activity_card_summary.lastValidationContent
-import kotlinx.android.synthetic.main.activity_card_summary.smallDesc
-import kotlinx.android.synthetic.main.activity_card_summary.titlesList
 import org.calypsonet.keyple.demo.reload.remote.R
 import org.calypsonet.keyple.demo.reload.remote.data.model.CardReaderResponse
 import org.calypsonet.keyple.demo.reload.remote.data.model.Status
+import org.calypsonet.keyple.demo.reload.remote.databinding.ActivityCardSummaryBinding
 import org.calypsonet.keyple.demo.reload.remote.ui.AbstractCardActivity
 import org.calypsonet.keyple.demo.reload.remote.ui.AbstractDemoActivity
 import org.calypsonet.keyple.demo.reload.remote.ui.SelectTicketsActivity
@@ -34,85 +28,90 @@ class CardSummaryActivity : AbstractDemoActivity() {
 
   private lateinit var titleLinearLayoutManager: LinearLayoutManager
   private lateinit var titlesAdapter: TitlesRecyclerAdapter
+  private lateinit var activityCardSummaryBinding: ActivityCardSummaryBinding
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
-    setContentView(R.layout.activity_card_summary)
+    activityCardSummaryBinding = ActivityCardSummaryBinding.inflate(layoutInflater)
+    toolbarBinding = activityCardSummaryBinding.appBarLayout
+    setContentView(activityCardSummaryBinding.root)
 
     val cardContent: CardReaderResponse =
         intent.getParcelableExtra(AbstractCardActivity.CARD_CONTENT)!!
 
     titleLinearLayoutManager = LinearLayoutManager(this)
-    titlesList.layoutManager = titleLinearLayoutManager
+    activityCardSummaryBinding.titlesList.layoutManager = titleLinearLayoutManager
 
     titlesAdapter = TitlesRecyclerAdapter(cardContent.titlesList)
-    titlesList.adapter = titlesAdapter
+    activityCardSummaryBinding.titlesList.adapter = titlesAdapter
 
     when (cardContent.status) {
       Status.INVALID_CARD -> {
-        animation.setAnimation("error_orange_anim.json")
-        animation.playAnimation()
-        bigText.setText(R.string.card_invalid_label)
-        bigText.setTextColor(resources.getColor(R.color.orange))
-        smallDesc.text = cardContent.errorMessage
-        smallDesc.setTextColor(resources.getColor(R.color.orange))
-        buyBtn.visibility = View.INVISIBLE
-        titlesList.visibility = View.GONE
-        lastValidationContent.visibility = View.GONE
-        contentTitle.visibility = View.GONE
+        activityCardSummaryBinding.animation.setAnimation("error_orange_anim.json")
+        activityCardSummaryBinding.animation.playAnimation()
+        activityCardSummaryBinding.bigText.setText(R.string.card_invalid_label)
+        activityCardSummaryBinding.bigText.setTextColor(resources.getColor(R.color.orange))
+        activityCardSummaryBinding.smallDesc.text = cardContent.errorMessage
+        activityCardSummaryBinding.smallDesc.setTextColor(resources.getColor(R.color.orange))
+        activityCardSummaryBinding.buyBtn.visibility = View.INVISIBLE
+        activityCardSummaryBinding.titlesList.visibility = View.GONE
+        activityCardSummaryBinding.lastValidationContent.visibility = View.GONE
+        activityCardSummaryBinding.contentTitle.visibility = View.GONE
       }
-      Status.TICKETS_FOUND, Status.SUCCESS -> {
-        titlesList.visibility = View.VISIBLE
-        animation.visibility = View.GONE
-        bigText.visibility = View.GONE
-        smallDesc.visibility = View.INVISIBLE
-        buyBtn.visibility = View.VISIBLE
-        lastValidationContent.visibility = View.VISIBLE
-        contentTitle.visibility = View.VISIBLE
+      Status.TICKETS_FOUND,
+      Status.SUCCESS -> {
+        activityCardSummaryBinding.titlesList.visibility = View.VISIBLE
+        activityCardSummaryBinding.animation.visibility = View.GONE
+        activityCardSummaryBinding.bigText.visibility = View.GONE
+        activityCardSummaryBinding.smallDesc.visibility = View.INVISIBLE
+        activityCardSummaryBinding.buyBtn.visibility = View.VISIBLE
+        activityCardSummaryBinding.lastValidationContent.visibility = View.VISIBLE
+        activityCardSummaryBinding.contentTitle.visibility = View.VISIBLE
       }
       Status.EMPTY_CARD -> {
-        animation.setAnimation("error_anim.json")
-        animation.playAnimation()
-        bigText.text = getString(R.string.no_valid_label)
-        bigText.setTextColor(resources.getColor(R.color.red))
-        smallDesc.visibility = View.VISIBLE
-        smallDesc.setTextColor(resources.getColor(R.color.red))
-        smallDesc.text = getString(R.string.no_valid_desc)
-        buyBtn.visibility = View.VISIBLE
-        titlesList.visibility = View.GONE
-        lastValidationContent.visibility = View.VISIBLE
-        contentTitle.visibility = View.GONE
+        activityCardSummaryBinding.animation.setAnimation("error_anim.json")
+        activityCardSummaryBinding.animation.playAnimation()
+        activityCardSummaryBinding.bigText.text = getString(R.string.no_valid_label)
+        activityCardSummaryBinding.bigText.setTextColor(resources.getColor(R.color.red))
+        activityCardSummaryBinding.smallDesc.visibility = View.VISIBLE
+        activityCardSummaryBinding.smallDesc.setTextColor(resources.getColor(R.color.red))
+        activityCardSummaryBinding.smallDesc.text = getString(R.string.no_valid_desc)
+        activityCardSummaryBinding.buyBtn.visibility = View.VISIBLE
+        activityCardSummaryBinding.titlesList.visibility = View.GONE
+        activityCardSummaryBinding.lastValidationContent.visibility = View.VISIBLE
+        activityCardSummaryBinding.contentTitle.visibility = View.GONE
       }
       Status.ERROR -> {
-        animation.setAnimation("error_anim.json")
-        animation.playAnimation()
-        if (cardContent.errorMessage != null) bigText.text = cardContent.errorMessage
-        else bigText.setText(R.string.error_label)
-        bigText.setTextColor(resources.getColor(R.color.red))
-        smallDesc.visibility = View.INVISIBLE
-        buyBtn.visibility = View.INVISIBLE
-        titlesList.visibility = View.GONE
-        lastValidationContent.visibility = View.GONE
-        contentTitle.visibility = View.GONE
+        activityCardSummaryBinding.animation.setAnimation("error_anim.json")
+        activityCardSummaryBinding.animation.playAnimation()
+        if (cardContent.errorMessage != null)
+            activityCardSummaryBinding.bigText.text = cardContent.errorMessage
+        else activityCardSummaryBinding.bigText.setText(R.string.error_label)
+        activityCardSummaryBinding.bigText.setTextColor(resources.getColor(R.color.red))
+        activityCardSummaryBinding.smallDesc.visibility = View.INVISIBLE
+        activityCardSummaryBinding.buyBtn.visibility = View.INVISIBLE
+        activityCardSummaryBinding.titlesList.visibility = View.GONE
+        activityCardSummaryBinding.lastValidationContent.visibility = View.GONE
+        activityCardSummaryBinding.contentTitle.visibility = View.GONE
       }
       else -> {
-        animation.setAnimation("error_anim.json")
-        animation.playAnimation()
-        bigText.setText(R.string.error_label)
-        bigText.setTextColor(resources.getColor(R.color.red))
-        smallDesc.visibility = View.INVISIBLE
-        buyBtn.visibility = View.INVISIBLE
-        titlesList.visibility = View.GONE
-        lastValidationContent.visibility = View.GONE
-        contentTitle.visibility = View.GONE
+        activityCardSummaryBinding.animation.setAnimation("error_anim.json")
+        activityCardSummaryBinding.animation.playAnimation()
+        activityCardSummaryBinding.bigText.setText(R.string.error_label)
+        activityCardSummaryBinding.bigText.setTextColor(resources.getColor(R.color.red))
+        activityCardSummaryBinding.smallDesc.visibility = View.INVISIBLE
+        activityCardSummaryBinding.buyBtn.visibility = View.INVISIBLE
+        activityCardSummaryBinding.titlesList.visibility = View.GONE
+        activityCardSummaryBinding.lastValidationContent.visibility = View.GONE
+        activityCardSummaryBinding.contentTitle.visibility = View.GONE
       }
     }
-    animation.playAnimation()
+    activityCardSummaryBinding.animation.playAnimation()
 
     // Play sound
     val mp: MediaPlayer = MediaPlayer.create(this, R.raw.reading_sound)
     mp.start()
-    buyBtn.setOnClickListener {
+    activityCardSummaryBinding.buyBtn.setOnClickListener {
       val intent = Intent(this, SelectTicketsActivity::class.java)
       getIntent().getStringExtra(AbstractCardActivity.CARD_APPLICATION_NUMBER)?.let {
         intent.putExtra(AbstractCardActivity.CARD_APPLICATION_NUMBER, it)

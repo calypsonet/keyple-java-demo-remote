@@ -13,32 +13,36 @@ package org.calypsonet.keyple.demo.reload.remote.ui
 
 import android.content.Intent
 import android.os.Bundle
-import kotlinx.android.synthetic.main.activity_settings_menu.*
 import org.calypsonet.keyple.demo.reload.remote.BuildConfig
 import org.calypsonet.keyple.demo.reload.remote.R
+import org.calypsonet.keyple.demo.reload.remote.databinding.ActivitySettingsMenuBinding
 
 class SettingsMenuActivity : AbstractDemoActivity() {
+  private lateinit var activitySettingsMenuBinding: ActivitySettingsMenuBinding
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
-    setContentView(R.layout.activity_settings_menu)
+    activitySettingsMenuBinding = ActivitySettingsMenuBinding.inflate(layoutInflater)
+    toolbarBinding = activitySettingsMenuBinding.appBarLayout
+    setContentView(activitySettingsMenuBinding.root)
 
-    serverBtn.setOnClickListener {
+    activitySettingsMenuBinding.serverBtn.setOnClickListener {
       val intent = Intent(this, ServerSettingsActivity::class.java)
       startActivity(intent)
     }
 
-    configurationBtn.setOnClickListener {
+    activitySettingsMenuBinding.configurationBtn.setOnClickListener {
       val intent = Intent(this, ConfigurationSettingsActivity::class.java)
       startActivity(intent)
     }
 
-    personalizationBtn.setOnClickListener {
+    activitySettingsMenuBinding.personalizationBtn.setOnClickListener {
       val intent = Intent(this, HomeActivity::class.java)
       intent.putExtra(HomeActivity.CHOOSE_DEVICE_FOR_PERSO, true)
       startActivity(intent)
     }
 
-    versionName.text = getString(R.string.version, BuildConfig.VERSION_NAME)
+    activitySettingsMenuBinding.versionName.text =
+        getString(R.string.version, BuildConfig.VERSION_NAME)
   }
 }

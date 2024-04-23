@@ -13,17 +13,20 @@ package org.calypsonet.keyple.demo.reload.remote.ui
 
 import android.content.Intent
 import android.os.Bundle
-import kotlinx.android.synthetic.main.activity_payment_validated.animation
-import kotlinx.android.synthetic.main.activity_payment_validated.chargeBtn
 import org.calypsonet.keyple.demo.reload.remote.R
+import org.calypsonet.keyple.demo.reload.remote.databinding.ActivityPaymentValidatedBinding
 
 class PaymentValidatedActivity : AbstractDemoActivity() {
 
+  private lateinit var activityPaymentValidatedBinding: ActivityPaymentValidatedBinding
+
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
-    setContentView(R.layout.activity_payment_validated)
-    chargeBtn.text = getString(R.string.load_card)
-    chargeBtn.setOnClickListener {
+    activityPaymentValidatedBinding = ActivityPaymentValidatedBinding.inflate(layoutInflater)
+    toolbarBinding = activityPaymentValidatedBinding.appBarLayout
+    setContentView(activityPaymentValidatedBinding.root)
+    activityPaymentValidatedBinding.chargeBtn.text = getString(R.string.load_card)
+    activityPaymentValidatedBinding.chargeBtn.setOnClickListener {
       val intent = Intent(this, ReloadActivity::class.java)
       intent.putExtras(getIntent())
       startActivity(intent)
@@ -33,8 +36,8 @@ class PaymentValidatedActivity : AbstractDemoActivity() {
 
   override fun onResume() {
     super.onResume()
-    animation.setAnimation("tick_anim.json")
-    animation.repeatCount = 0
-    animation.playAnimation()
+    activityPaymentValidatedBinding.animation.setAnimation("tick_anim.json")
+    activityPaymentValidatedBinding.animation.repeatCount = 0
+    activityPaymentValidatedBinding.animation.playAnimation()
   }
 }

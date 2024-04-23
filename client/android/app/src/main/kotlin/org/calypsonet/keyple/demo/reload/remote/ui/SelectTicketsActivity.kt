@@ -13,45 +13,50 @@ package org.calypsonet.keyple.demo.reload.remote.ui
 
 import android.content.Intent
 import android.os.Bundle
-import kotlinx.android.synthetic.main.activity_select_tickets.seasonPassBtn
-import kotlinx.android.synthetic.main.activity_select_tickets.seasonPassPrice
-import kotlinx.android.synthetic.main.activity_select_tickets.ticket1Btn
-import kotlinx.android.synthetic.main.activity_select_tickets.ticket1Label
-import kotlinx.android.synthetic.main.activity_select_tickets.ticket1Price
-import kotlinx.android.synthetic.main.activity_select_tickets.ticket2Btn
-import kotlinx.android.synthetic.main.activity_select_tickets.ticket2Label
-import kotlinx.android.synthetic.main.activity_select_tickets.ticket2Price
-import kotlinx.android.synthetic.main.activity_select_tickets.ticket3Btn
-import kotlinx.android.synthetic.main.activity_select_tickets.ticket3Label
-import kotlinx.android.synthetic.main.activity_select_tickets.ticket3Price
-import kotlinx.android.synthetic.main.activity_select_tickets.ticket4Btn
-import kotlinx.android.synthetic.main.activity_select_tickets.ticket4Label
-import kotlinx.android.synthetic.main.activity_select_tickets.ticket4Price
 import org.calypsonet.keyple.demo.common.model.type.PriorityCode
 import org.calypsonet.keyple.demo.reload.remote.R
+import org.calypsonet.keyple.demo.reload.remote.databinding.ActivitySelectTicketsBinding
 
 class SelectTicketsActivity : AbstractDemoActivity() {
+  private lateinit var activitySelectTicketsBinding: ActivitySelectTicketsBinding
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
-    setContentView(R.layout.activity_select_tickets)
 
-    ticket1Label.text = resources.getQuantityString(R.plurals.x_tickets, 1, 1)
-    ticket2Label.text = resources.getQuantityString(R.plurals.x_tickets, 2, 2)
-    ticket3Label.text = resources.getQuantityString(R.plurals.x_tickets, 3, 3)
-    ticket4Label.text = resources.getQuantityString(R.plurals.x_tickets, 4, 4)
-    ticket1Price.text = getString(R.string.ticket_price, 1)
-    ticket2Price.text = getString(R.string.ticket_price, 2)
-    ticket3Price.text = getString(R.string.ticket_price, 3)
-    ticket4Price.text = getString(R.string.ticket_price, 4)
-    seasonPassPrice.text = getString(R.string.ticket_price, 20)
+    activitySelectTicketsBinding = ActivitySelectTicketsBinding.inflate(layoutInflater)
+    toolbarBinding = activitySelectTicketsBinding.appBarLayout
+    setContentView(activitySelectTicketsBinding.root)
 
-    ticket1Btn.setOnClickListener { startCheckoutActivity(PriorityCode.MULTI_TRIP, 1) }
-    ticket2Btn.setOnClickListener { startCheckoutActivity(PriorityCode.MULTI_TRIP, 2) }
-    ticket3Btn.setOnClickListener { startCheckoutActivity(PriorityCode.MULTI_TRIP, 3) }
-    ticket4Btn.setOnClickListener { startCheckoutActivity(PriorityCode.MULTI_TRIP, 4) }
+    activitySelectTicketsBinding.ticket1Label.text =
+        resources.getQuantityString(R.plurals.x_tickets, 1, 1)
+    activitySelectTicketsBinding.ticket2Label.text =
+        resources.getQuantityString(R.plurals.x_tickets, 2, 2)
+    activitySelectTicketsBinding.ticket3Label.text =
+        resources.getQuantityString(R.plurals.x_tickets, 3, 3)
+    activitySelectTicketsBinding.ticket4Label.text =
+        resources.getQuantityString(R.plurals.x_tickets, 4, 4)
+    activitySelectTicketsBinding.ticket1Price.text = getString(R.string.ticket_price, 1)
+    activitySelectTicketsBinding.ticket2Price.text = getString(R.string.ticket_price, 2)
+    activitySelectTicketsBinding.ticket3Price.text = getString(R.string.ticket_price, 3)
+    activitySelectTicketsBinding.ticket4Price.text = getString(R.string.ticket_price, 4)
+    activitySelectTicketsBinding.seasonPassPrice.text = getString(R.string.ticket_price, 20)
 
-    seasonPassBtn.setOnClickListener { startCheckoutActivity(PriorityCode.SEASON_PASS) }
+    activitySelectTicketsBinding.ticket1Btn.setOnClickListener {
+      startCheckoutActivity(PriorityCode.MULTI_TRIP, 1)
+    }
+    activitySelectTicketsBinding.ticket2Btn.setOnClickListener {
+      startCheckoutActivity(PriorityCode.MULTI_TRIP, 2)
+    }
+    activitySelectTicketsBinding.ticket3Btn.setOnClickListener {
+      startCheckoutActivity(PriorityCode.MULTI_TRIP, 3)
+    }
+    activitySelectTicketsBinding.ticket4Btn.setOnClickListener {
+      startCheckoutActivity(PriorityCode.MULTI_TRIP, 4)
+    }
+
+    activitySelectTicketsBinding.seasonPassBtn.setOnClickListener {
+      startCheckoutActivity(PriorityCode.SEASON_PASS)
+    }
   }
 
   private fun startCheckoutActivity(priorityCode: PriorityCode, ticketNumber: Int? = null) {

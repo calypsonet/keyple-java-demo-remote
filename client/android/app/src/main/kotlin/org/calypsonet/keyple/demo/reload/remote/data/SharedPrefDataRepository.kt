@@ -74,8 +74,9 @@ class SharedPrefDataRepository @Inject constructor(private var prefs: SharedPref
 
   fun loadContactlessConfigurationVisibility(): Visibility {
     return Visibility.valueOf(
-        prefs.getString(SETTING_CONTACTLESS_VISIBILITY, Visibility.ENABLE.text)!!.uppercase(
-            Locale.ROOT))
+        prefs
+            .getString(SETTING_CONTACTLESS_VISIBILITY, Visibility.ENABLE.text)!!
+            .uppercase(Locale.ROOT))
   }
 
   fun saveSimConfigurationVisibility(visibility: Visibility) {
@@ -97,8 +98,9 @@ class SharedPrefDataRepository @Inject constructor(private var prefs: SharedPref
 
   fun loadWearableConfigurationVisibility(): Visibility {
     return Visibility.valueOf(
-        prefs.getString(SETTING_WEARABLE_VISIBILITY, Visibility.DISABLE.text)!!.uppercase(
-            Locale.ROOT))
+        prefs
+            .getString(SETTING_WEARABLE_VISIBILITY, Visibility.DISABLE.text)!!
+            .uppercase(Locale.ROOT))
   }
 
   fun saveEmbeddedConfigurationVisibility(visibility: Visibility) {
@@ -109,8 +111,9 @@ class SharedPrefDataRepository @Inject constructor(private var prefs: SharedPref
 
   fun loadEmbeddedConfigurationVisibility(): Visibility {
     return Visibility.valueOf(
-        prefs.getString(SETTING_EMBEDDED_VISIBILITY, Visibility.DISABLE.text)!!.uppercase(
-            Locale.ROOT))
+        prefs
+            .getString(SETTING_EMBEDDED_VISIBILITY, Visibility.DISABLE.text)!!
+            .uppercase(Locale.ROOT))
   }
 
   fun saveLastStatus(up: Boolean) {

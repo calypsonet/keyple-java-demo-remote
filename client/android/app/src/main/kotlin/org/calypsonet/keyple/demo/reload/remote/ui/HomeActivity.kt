@@ -15,34 +15,46 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.core.content.ContextCompat
-import kotlinx.android.synthetic.main.activity_home.*
-import kotlinx.android.synthetic.main.toolbar.*
 import org.calypsonet.keyple.demo.reload.remote.R
 import org.calypsonet.keyple.demo.reload.remote.data.SharedPrefDataRepository
 import org.calypsonet.keyple.demo.reload.remote.data.model.DeviceEnum
+import org.calypsonet.keyple.demo.reload.remote.databinding.ActivityHomeBinding
 
 class HomeActivity : AbstractDemoActivity() {
 
+  private lateinit var activityHomeBinding: ActivityHomeBinding
+
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
-    setContentView(R.layout.activity_home)
+    activityHomeBinding = ActivityHomeBinding.inflate(layoutInflater)
+    toolbarBinding = activityHomeBinding.appBarLayout
+    setContentView(activityHomeBinding.root)
     if (intent.getBooleanExtra(CHOOSE_DEVICE_FOR_PERSO, false)) {
-      chooseDeviceTv.append(" ")
-      chooseDeviceTv.append(getString(R.string.to_be_personalized))
+      activityHomeBinding.chooseDeviceTv.append(" ")
+      activityHomeBinding.chooseDeviceTv.append(getString(R.string.to_be_personalized))
     }
-    menuBtn.visibility = View.VISIBLE
-    menuBtn.setOnClickListener { startActivity(Intent(this, SettingsMenuActivity::class.java)) }
+    toolbarBinding.menuBtn.visibility = View.VISIBLE
+    toolbarBinding.menuBtn.setOnClickListener {
+      startActivity(Intent(this, SettingsMenuActivity::class.java))
+    }
   }
 
   override fun onResume() {
     super.onResume()
     setupBtn(
-        contactlessCardBtn,
+        activityHomeBinding.contactlessCardBtn,
         prefData.loadContactlessConfigurationVisibility(),
         DeviceEnum.CONTACTLESS_CARD)
-    setupBtn(simCardBtn, prefData.loadSimConfigurationVisibility(), DeviceEnum.SIM)
-    setupBtn(wearableBtn, prefData.loadWearableConfigurationVisibility(), DeviceEnum.WEARABLE)
-    setupBtn(embeddedElemBtn, prefData.loadEmbeddedConfigurationVisibility(), DeviceEnum.EMBEDDED)
+    setupBtn(
+        activityHomeBinding.simCardBtn, prefData.loadSimConfigurationVisibility(), DeviceEnum.SIM)
+    setupBtn(
+        activityHomeBinding.wearableBtn,
+        prefData.loadWearableConfigurationVisibility(),
+        DeviceEnum.WEARABLE)
+    setupBtn(
+        activityHomeBinding.embeddedElemBtn,
+        prefData.loadEmbeddedConfigurationVisibility(),
+        DeviceEnum.EMBEDDED)
   }
 
   private fun setupBtn(

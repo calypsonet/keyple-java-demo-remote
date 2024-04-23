@@ -17,9 +17,6 @@ import android.view.View
 import java.lang.Exception
 import java.lang.IllegalStateException
 import javax.inject.Inject
-import kotlinx.android.synthetic.main.activity_card_reader.cardAnimation
-import kotlinx.android.synthetic.main.activity_card_reader.loadingAnimation
-import kotlinx.android.synthetic.main.activity_card_reader.presentTxt
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -35,6 +32,7 @@ import org.calypsonet.keyple.demo.reload.remote.data.model.AppSettings
 import org.calypsonet.keyple.demo.reload.remote.data.model.CardReaderResponse
 import org.calypsonet.keyple.demo.reload.remote.data.model.DeviceEnum
 import org.calypsonet.keyple.demo.reload.remote.data.model.Status
+import org.calypsonet.keyple.demo.reload.remote.databinding.ActivityCardReaderBinding
 import org.calypsonet.keyple.demo.reload.remote.di.scopes.ActivityScoped
 import org.calypsonet.keyple.demo.reload.remote.domain.TicketingService
 import org.eclipse.keyple.core.util.HexUtil
@@ -45,10 +43,13 @@ import timber.log.Timber
 class ReloadActivity : AbstractCardActivity() {
 
   @Inject lateinit var ticketingService: TicketingService
+  private lateinit var activityCardReaderBinding: ActivityCardReaderBinding
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
-    setContentView(R.layout.activity_charge)
+    activityCardReaderBinding = ActivityCardReaderBinding.inflate(layoutInflater)
+    toolbarBinding = activityCardReaderBinding.appBarLayout
+    setContentView(activityCardReaderBinding.root)
   }
 
   override fun initReaders() {
@@ -71,8 +72,8 @@ class ReloadActivity : AbstractCardActivity() {
   }
 
   override fun onPause() {
-    cardAnimation.cancelAnimation()
-    loadingAnimation.cancelAnimation()
+    activityCardReaderBinding.cardAnimation.cancelAnimation()
+    activityCardReaderBinding.loadingAnimation.cancelAnimation()
     try {
       if (DeviceEnum.getDeviceEnum(prefData.loadDeviceType()!!) == DeviceEnum.CONTACTLESS_CARD) {
         deactivateAndClearAndroidKeypleNfcReader()
@@ -169,8 +170,8 @@ class ReloadActivity : AbstractCardActivity() {
       applicationSerialNumber: String?,
       finishActivity: Boolean?
   ) {
-    loadingAnimation.cancelAnimation()
-    cardAnimation.cancelAnimation()
+    activityCardReaderBinding.loadingAnimation.cancelAnimation()
+    activityCardReaderBinding.cardAnimation.cancelAnimation()
     val intent = Intent(this, ReloadResultActivity::class.java)
     intent.putExtra(ReloadResultActivity.TICKETS_NUMBER, 0)
     intent.putExtra(ReloadResultActivity.STATUS, cardReaderResponse.status.toString())
@@ -182,18 +183,18 @@ class ReloadActivity : AbstractCardActivity() {
   }
 
   private fun showPresentNfcCardInstructions() {
-    presentTxt.text = getString(R.string.present_card)
-    cardAnimation.visibility = View.VISIBLE
-    cardAnimation.playAnimation()
-    loadingAnimation.cancelAnimation()
-    loadingAnimation.visibility = View.INVISIBLE
+    activityCardReaderBinding.presentTxt.text = getString(R.string.present_card)
+    activityCardReaderBinding.cardAnimation.visibility = View.VISIBLE
+    activityCardReaderBinding.cardAnimation.playAnimation()
+    activityCardReaderBinding.loadingAnimation.cancelAnimation()
+    activityCardReaderBinding.loadingAnimation.visibility = View.INVISIBLE
   }
 
   private fun showNowLoadingInformation() {
-    presentTxt.text = getString(R.string.loading_in_progress)
-    loadingAnimation.visibility = View.VISIBLE
-    loadingAnimation.playAnimation()
-    cardAnimation.cancelAnimation()
-    cardAnimation.visibility = View.INVISIBLE
+    activityCardReaderBinding.presentTxt.text = getString(R.string.loading_in_progress)
+    activityCardReaderBinding.loadingAnimation.visibility = View.VISIBLE
+    activityCardReaderBinding.loadingAnimation.playAnimation()
+    activityCardReaderBinding.cardAnimation.cancelAnimation()
+    activityCardReaderBinding.cardAnimation.visibility = View.INVISIBLE
   }
 }

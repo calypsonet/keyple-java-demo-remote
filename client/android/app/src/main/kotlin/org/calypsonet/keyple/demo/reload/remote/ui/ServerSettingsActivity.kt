@@ -20,10 +20,10 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import java.lang.NumberFormatException
 import kotlin.system.exitProcess
-import kotlinx.android.synthetic.main.activity_server_settings.*
 import org.calypsonet.keyple.demo.reload.remote.R
 import org.calypsonet.keyple.demo.reload.remote.data.network.KeypleSyncEndPointClient
 import org.calypsonet.keyple.demo.reload.remote.data.network.RestClient
+import org.calypsonet.keyple.demo.reload.remote.databinding.ActivityServerSettingsBinding
 import org.calypsonet.keyple.demo.reload.remote.di.scopes.ActivityScoped
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
@@ -34,26 +34,31 @@ import timber.log.Timber
 class ServerSettingsActivity : AbstractDemoActivity() {
 
   private lateinit var disposables: CompositeDisposable
+  private lateinit var activityServerSettingsBinding: ActivityServerSettingsBinding
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
-    setContentView(R.layout.activity_server_settings)
+    activityServerSettingsBinding = ActivityServerSettingsBinding.inflate(layoutInflater)
+    toolbarBinding = activityServerSettingsBinding.appBarLayout
+    setContentView(activityServerSettingsBinding.root)
 
     disposables = CompositeDisposable()
 
-    server_ip_edit.text.append(prefData.loadServerIP() ?: "")
-    server_port_edit.text.append(prefData.loadServerPort().toString())
-    server_protocol_edit.text.append(prefData.loadServerProtocol())
+    activityServerSettingsBinding.serverIpEdit.text.append(prefData.loadServerIP() ?: "")
+    activityServerSettingsBinding.serverPortEdit.text.append(prefData.loadServerPort().toString())
+    activityServerSettingsBinding.serverProtocolEdit.text.append(prefData.loadServerProtocol())
 
-    restart.setOnClickListener { if (validateEntries(true)) restartApp() }
+    activityServerSettingsBinding.restart.setOnClickListener {
+      if (validateEntries(true)) restartApp()
+    }
 
-    ping_btn.setOnClickListener {
+    activityServerSettingsBinding.pingBtn.setOnClickListener {
       if (validateEntries(false)) {
         val serverUrl =
-            server_protocol_edit.text.toString() +
-                server_ip_edit.text.toString() +
+            activityServerSettingsBinding.serverProtocolEdit.text.toString() +
+                activityServerSettingsBinding.serverIpEdit.text.toString() +
                 ":" +
-                server_port_edit.text.toString()
+                activityServerSettingsBinding.serverPortEdit.text.toString()
         Timber.i("Loaded Rest client with URL: $serverUrl")
         val testKeypleEndpointClient =
             KeypleSyncEndPointClient(
@@ -70,20 +75,22 @@ class ServerSettingsActivity : AbstractDemoActivity() {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnSubscribe {
-                  ping_progress_bar.visibility = View.VISIBLE
-                  ping_result_text.visibility = View.INVISIBLE
+                  activityServerSettingsBinding.pingProgressBar.visibility = View.VISIBLE
+                  activityServerSettingsBinding.pingResultText.visibility = View.INVISIBLE
                 }
                 .subscribe(
                     {
-                      ping_progress_bar.visibility = View.INVISIBLE
-                      ping_result_text.visibility = View.VISIBLE
-                      ping_result_text.text = getString(R.string.ping_success)
+                      activityServerSettingsBinding.pingProgressBar.visibility = View.INVISIBLE
+                      activityServerSettingsBinding.pingResultText.visibility = View.VISIBLE
+                      activityServerSettingsBinding.pingResultText.text =
+                          getString(R.string.ping_success)
                     },
                     {
                       Timber.e(it)
-                      ping_progress_bar.visibility = View.INVISIBLE
-                      ping_result_text.visibility = View.VISIBLE
-                      ping_result_text.text = getString(R.string.ping_failed)
+                      activityServerSettingsBinding.pingProgressBar.visibility = View.INVISIBLE
+                      activityServerSettingsBinding.pingResultText.visibility = View.VISIBLE
+                      activityServerSettingsBinding.pingResultText.text =
+                          getString(R.string.ping_failed)
                     }))
       }
     }
@@ -100,7 +107,7 @@ class ServerSettingsActivity : AbstractDemoActivity() {
   }
 
   private fun validateEntries(saveOnSuccess: Boolean): Boolean {
-    with(server_ip_edit) {
+    with(activityServerSettingsBinding.serverIpEdit) {
       if (this.text.isNotBlank() && Patterns.IP_ADDRESS.matcher(this.text.toString()).matches()) {
         if (saveOnSuccess) prefData.saveServerIP(this.text.toString())
       } else {
@@ -108,7 +115,7 @@ class ServerSettingsActivity : AbstractDemoActivity() {
         return false
       }
     }
-    with(server_port_edit) {
+    with(activityServerSettingsBinding.serverPortEdit) {
       try {
         if (this.text.isNotBlank()) {
           if (saveOnSuccess) prefData.saveServerPort(Integer.valueOf(this.text.toString()))
@@ -120,7 +127,7 @@ class ServerSettingsActivity : AbstractDemoActivity() {
         return false
       }
     }
-    with(server_protocol_edit) {
+    with(activityServerSettingsBinding.serverProtocolEdit) {
       if (this.text.isNotBlank() && arrayOf("http://", "https://").contains(this.text.toString())) {
         if (saveOnSuccess) prefData.saveServerProtocol(this.text.toString())
       } else {
