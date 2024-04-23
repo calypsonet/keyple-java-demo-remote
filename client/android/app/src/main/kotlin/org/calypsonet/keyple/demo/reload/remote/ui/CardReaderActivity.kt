@@ -21,9 +21,6 @@ import java.time.format.DateTimeFormatter
 import java.util.Locale
 import javax.inject.Inject
 import kotlin.Exception
-import kotlinx.android.synthetic.main.activity_card_reader.cardAnimation
-import kotlinx.android.synthetic.main.activity_card_reader.loadingAnimation
-import kotlinx.android.synthetic.main.activity_card_reader.presentTxt
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -35,6 +32,7 @@ import org.calypsonet.keyple.demo.common.model.ContractStructure
 import org.calypsonet.keyple.demo.common.model.type.PriorityCode
 import org.calypsonet.keyple.demo.reload.remote.R
 import org.calypsonet.keyple.demo.reload.remote.data.model.*
+import org.calypsonet.keyple.demo.reload.remote.databinding.ActivityCardReaderBinding
 import org.calypsonet.keyple.demo.reload.remote.di.scopes.ActivityScoped
 import org.calypsonet.keyple.demo.reload.remote.domain.TicketingService
 import org.calypsonet.keyple.demo.reload.remote.ui.cardsummary.CardSummaryActivity
@@ -50,10 +48,13 @@ class CardReaderActivity : AbstractCardActivity() {
   @Inject lateinit var ticketingService: TicketingService
 
   private val dateTimeFormatter = DateTimeFormatter.ofPattern("d MMMM yyyy", Locale.ENGLISH)
+  private lateinit var activityCardReaderBinding: ActivityCardReaderBinding
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
-    setContentView(R.layout.activity_card_reader)
+    activityCardReaderBinding = ActivityCardReaderBinding.inflate(layoutInflater)
+    toolbarBinding = activityCardReaderBinding.appBarLayout
+    setContentView(activityCardReaderBinding.root)
   }
 
   override fun initReaders() {
@@ -94,8 +95,8 @@ class CardReaderActivity : AbstractCardActivity() {
   }
 
   override fun onPause() {
-    cardAnimation.cancelAnimation()
-    loadingAnimation.cancelAnimation()
+    activityCardReaderBinding.cardAnimation.cancelAnimation()
+    activityCardReaderBinding.loadingAnimation.cancelAnimation()
     try {
       if (DeviceEnum.getDeviceEnum(prefData.loadDeviceType()!!) == DeviceEnum.CONTACTLESS_CARD) {
         deactivateAndClearAndroidKeypleNfcReader()
@@ -238,8 +239,8 @@ class CardReaderActivity : AbstractCardActivity() {
       applicationSerialNumber: String?,
       finishActivity: Boolean?
   ) {
-    loadingAnimation?.cancelAnimation()
-    cardAnimation?.cancelAnimation()
+    activityCardReaderBinding.loadingAnimation?.cancelAnimation()
+    activityCardReaderBinding.cardAnimation?.cancelAnimation()
     val intent = Intent(this, CardSummaryActivity::class.java)
     intent.putExtra(CARD_CONTENT, cardReaderResponse)
     intent.putExtra(CARD_APPLICATION_NUMBER, applicationSerialNumber)
@@ -250,18 +251,18 @@ class CardReaderActivity : AbstractCardActivity() {
   }
 
   private fun showPresentNfcCardInstructions() {
-    presentTxt.text = getString(R.string.present_travel_card_label)
-    cardAnimation.visibility = View.VISIBLE
-    cardAnimation.playAnimation()
-    loadingAnimation.cancelAnimation()
-    loadingAnimation.visibility = View.INVISIBLE
+    activityCardReaderBinding.presentTxt.text = getString(R.string.present_travel_card_label)
+    activityCardReaderBinding.cardAnimation.visibility = View.VISIBLE
+    activityCardReaderBinding.cardAnimation.playAnimation()
+    activityCardReaderBinding.loadingAnimation.cancelAnimation()
+    activityCardReaderBinding.loadingAnimation.visibility = View.INVISIBLE
   }
 
   private fun showNowLoadingInformation() {
-    presentTxt.text = getString(R.string.read_in_progress)
-    loadingAnimation.visibility = View.VISIBLE
-    loadingAnimation.playAnimation()
-    cardAnimation.cancelAnimation()
-    cardAnimation.visibility = View.INVISIBLE
+    activityCardReaderBinding.presentTxt.text = getString(R.string.read_in_progress)
+    activityCardReaderBinding.loadingAnimation.visibility = View.VISIBLE
+    activityCardReaderBinding.loadingAnimation.playAnimation()
+    activityCardReaderBinding.cardAnimation.cancelAnimation()
+    activityCardReaderBinding.cardAnimation.visibility = View.INVISIBLE
   }
 }

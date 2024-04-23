@@ -15,12 +15,12 @@ import android.os.AsyncTask
 import android.os.Bundle
 import dagger.android.support.DaggerAppCompatActivity
 import javax.inject.Inject
-import kotlinx.android.synthetic.main.toolbar.*
 import org.calypsonet.keyple.demo.reload.remote.R
 import org.calypsonet.keyple.demo.reload.remote.data.SharedPrefDataRepository
 import org.calypsonet.keyple.demo.reload.remote.data.model.SamStatus
 import org.calypsonet.keyple.demo.reload.remote.data.model.ServerStatusEvent
 import org.calypsonet.keyple.demo.reload.remote.data.network.RestClient
+import org.calypsonet.keyple.demo.reload.remote.databinding.ToolbarBinding
 import org.eclipse.keyple.core.util.json.JsonUtil
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
@@ -33,6 +33,7 @@ import retrofit2.converter.scalars.ScalarsConverterFactory
 abstract class AbstractDemoActivity : DaggerAppCompatActivity() {
 
   private lateinit var client: RestClient
+  protected lateinit var toolbarBinding: ToolbarBinding
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -73,8 +74,9 @@ abstract class AbstractDemoActivity : DaggerAppCompatActivity() {
   }
 
   private fun updateServerStatusIndicator() {
-    if (prefData.loadLastStatus()) serverStatus.setImageResource(R.drawable.ic_connection_success)
-    else serverStatus.setImageResource(R.drawable.ic_connection_wait)
+    if (prefData.loadLastStatus())
+        toolbarBinding.serverStatus.setImageResource(R.drawable.ic_connection_success)
+    else toolbarBinding.serverStatus.setImageResource(R.drawable.ic_connection_wait)
   }
 
   private fun checkServerStatus() {

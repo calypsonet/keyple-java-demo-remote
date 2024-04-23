@@ -4,6 +4,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
+### Upgraded
+- keyple-demo-common-lib `2.0.0-SNAPSHOT` -> `2.0.1-SNAPSHOT`
+- All Keyple components (compiled to java 8)
+    - keypop-reader-java-api `2.0.0` -> `2.0.1`
+    - keypop-calypso-card-java-api `2.0.0` -> `2.1.0`
+    - keypop-calypso-crypto-legacysam-java-api `0.3.0` -> `0.6.0`
+    - keyple-common-java-api `2.0.0` -> `2.0.1`
+    - keyple-util-java-lib `2.3.1` -> `2.4.0`
+    - keyple-service-java-lib `3.0.1` -> `3.2.1`
+    - keyple-distributed-network-java-lib `2.3.0` -> `2.3.1`
+    - keyple-distributed-local-java-lib `2.3.0` -> `2.3.1`
+    - keyple-distributed-local-java-lib `2.3.0` -> `2.3.1`
+    - keyple-card-calypso-java-lib `3.0.1` -> `3.1.1`
+    - keyple-card-calypso-crypto-legacysam-java-lib `0.4.0` -> `0.7.0`
+    - keyple-plugin-android-nfc-java-lib `2.0.1` -> `2.2.0`
+    - keyple-plugin-android-omapi-java-lib `2.0.1` -> `2.1.0`
+    - keyple-plugin-pcsc-java-lib `2.1.2` -> `2.2.1`
+- Other components (Gradle wrapper, Android Gradle Plugin, etc.)
 
 ## [2023.12.06]
 ### Upgraded

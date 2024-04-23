@@ -14,47 +14,42 @@ package org.calypsonet.keyple.demo.reload.remote.ui
 import android.os.Bundle
 import android.view.View
 import android.widget.RadioButton
-import kotlinx.android.synthetic.main.activity_configuration_settings.backBtn
-import kotlinx.android.synthetic.main.activity_configuration_settings.contactlessCardDisable
-import kotlinx.android.synthetic.main.activity_configuration_settings.contactlessCardEnable
-import kotlinx.android.synthetic.main.activity_configuration_settings.contactlessCardHide
-import kotlinx.android.synthetic.main.activity_configuration_settings.embeddedCardDisable
-import kotlinx.android.synthetic.main.activity_configuration_settings.embeddedCardEnable
-import kotlinx.android.synthetic.main.activity_configuration_settings.embeddedCardHide
-import kotlinx.android.synthetic.main.activity_configuration_settings.simCardDisable
-import kotlinx.android.synthetic.main.activity_configuration_settings.simCardEnable
-import kotlinx.android.synthetic.main.activity_configuration_settings.simCardHide
-import kotlinx.android.synthetic.main.activity_configuration_settings.wearableCardDisable
-import kotlinx.android.synthetic.main.activity_configuration_settings.wearableCardEnable
-import kotlinx.android.synthetic.main.activity_configuration_settings.wearableCardHide
 import org.calypsonet.keyple.demo.reload.remote.R
 import org.calypsonet.keyple.demo.reload.remote.data.SharedPrefDataRepository
+import org.calypsonet.keyple.demo.reload.remote.databinding.ActivityConfigurationSettingsBinding
 
 class ConfigurationSettingsActivity : AbstractDemoActivity() {
+  private lateinit var activityConfigurationSettingsBinding: ActivityConfigurationSettingsBinding
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
-    setContentView(R.layout.activity_configuration_settings)
+    activityConfigurationSettingsBinding =
+        ActivityConfigurationSettingsBinding.inflate(layoutInflater)
+    toolbarBinding = activityConfigurationSettingsBinding.appBarLayout
+    setContentView(activityConfigurationSettingsBinding.root)
 
-    backBtn.setOnClickListener { onBackPressed() }
+    activityConfigurationSettingsBinding.backBtn.setOnClickListener { onBackPressed() }
 
     setupRadioBtn(
         prefData.loadContactlessConfigurationVisibility(),
-        contactlessCardEnable,
-        contactlessCardDisable,
-        contactlessCardHide)
+        activityConfigurationSettingsBinding.contactlessCardEnable,
+        activityConfigurationSettingsBinding.contactlessCardDisable,
+        activityConfigurationSettingsBinding.contactlessCardHide)
     setupRadioBtn(
-        prefData.loadSimConfigurationVisibility(), simCardEnable, simCardDisable, simCardHide)
+        prefData.loadSimConfigurationVisibility(),
+        activityConfigurationSettingsBinding.simCardEnable,
+        activityConfigurationSettingsBinding.simCardDisable,
+        activityConfigurationSettingsBinding.simCardHide)
     setupRadioBtn(
         prefData.loadWearableConfigurationVisibility(),
-        wearableCardEnable,
-        wearableCardDisable,
-        wearableCardHide)
+        activityConfigurationSettingsBinding.wearableCardEnable,
+        activityConfigurationSettingsBinding.wearableCardDisable,
+        activityConfigurationSettingsBinding.wearableCardHide)
     setupRadioBtn(
         prefData.loadEmbeddedConfigurationVisibility(),
-        embeddedCardEnable,
-        embeddedCardDisable,
-        embeddedCardHide)
+        activityConfigurationSettingsBinding.embeddedCardEnable,
+        activityConfigurationSettingsBinding.embeddedCardDisable,
+        activityConfigurationSettingsBinding.embeddedCardHide)
   }
 
   private fun setupRadioBtn(
@@ -118,9 +113,9 @@ class ConfigurationSettingsActivity : AbstractDemoActivity() {
       // Update layout
       setupRadioBtn(
           prefData.loadContactlessConfigurationVisibility(),
-          contactlessCardEnable,
-          contactlessCardDisable,
-          contactlessCardHide)
+          activityConfigurationSettingsBinding.contactlessCardEnable,
+          activityConfigurationSettingsBinding.contactlessCardDisable,
+          activityConfigurationSettingsBinding.contactlessCardHide)
     }
   }
 
@@ -148,7 +143,10 @@ class ConfigurationSettingsActivity : AbstractDemoActivity() {
             }
       }
       setupRadioBtn(
-          prefData.loadSimConfigurationVisibility(), simCardEnable, simCardDisable, simCardHide)
+          prefData.loadSimConfigurationVisibility(),
+          activityConfigurationSettingsBinding.simCardEnable,
+          activityConfigurationSettingsBinding.simCardDisable,
+          activityConfigurationSettingsBinding.simCardHide)
     }
   }
 
@@ -177,9 +175,9 @@ class ConfigurationSettingsActivity : AbstractDemoActivity() {
       }
       setupRadioBtn(
           prefData.loadWearableConfigurationVisibility(),
-          wearableCardEnable,
-          wearableCardDisable,
-          wearableCardHide)
+          activityConfigurationSettingsBinding.wearableCardEnable,
+          activityConfigurationSettingsBinding.wearableCardDisable,
+          activityConfigurationSettingsBinding.wearableCardHide)
     }
   }
 
@@ -208,9 +206,9 @@ class ConfigurationSettingsActivity : AbstractDemoActivity() {
       }
       setupRadioBtn(
           prefData.loadEmbeddedConfigurationVisibility(),
-          embeddedCardEnable,
-          embeddedCardDisable,
-          embeddedCardHide)
+          activityConfigurationSettingsBinding.embeddedCardEnable,
+          activityConfigurationSettingsBinding.embeddedCardDisable,
+          activityConfigurationSettingsBinding.embeddedCardHide)
     }
   }
 }

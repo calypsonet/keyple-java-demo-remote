@@ -11,32 +11,31 @@
  ************************************************************************************** */
 package org.calypsonet.keyple.demo.reload.remote.ui.cardsummary
 
-import android.view.View
+import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import kotlinx.android.synthetic.main.title_recycler_row.view.titleDescription
-import kotlinx.android.synthetic.main.title_recycler_row.view.titleName
-import org.calypsonet.keyple.demo.reload.remote.R
 import org.calypsonet.keyple.demo.reload.remote.data.model.CardTitle
+import org.calypsonet.keyple.demo.reload.remote.databinding.TitleRecyclerRowBinding
 import org.calypsonet.keyple.demo.reload.remote.inflate
 
 class TitlesRecyclerAdapter(private val titles: List<CardTitle>) :
     RecyclerView.Adapter<TitlesRecyclerAdapter.TitleHolder>() {
 
   override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TitleHolder {
-    val inflatedView = parent.inflate(R.layout.title_recycler_row, false)
-    return TitleHolder(inflatedView)
+    val binding =
+        TitleRecyclerRowBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+    return TitleHolder(binding)
   }
 
-  class TitleHolder(v: View) : RecyclerView.ViewHolder(v) {
+  class TitleHolder(private val binding: TitleRecyclerRowBinding) :
+      RecyclerView.ViewHolder(binding.root) {
 
-    private var view: View = v
     private var title: CardTitle? = null
 
     fun bindItem(title: CardTitle) {
       this.title = title
-      view.titleName.text = title.name
-      view.titleDescription.text = title.description
+      binding.titleName.text = title.name
+      binding.titleDescription.text = title.description
     }
   }
 

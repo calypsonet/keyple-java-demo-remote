@@ -17,7 +17,6 @@ import android.view.View
 import java.lang.Exception
 import java.lang.IllegalStateException
 import javax.inject.Inject
-import kotlinx.android.synthetic.main.activity_card_reader.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -30,6 +29,7 @@ import org.calypsonet.keyple.demo.reload.remote.data.model.AppSettings
 import org.calypsonet.keyple.demo.reload.remote.data.model.CardReaderResponse
 import org.calypsonet.keyple.demo.reload.remote.data.model.DeviceEnum
 import org.calypsonet.keyple.demo.reload.remote.data.model.Status
+import org.calypsonet.keyple.demo.reload.remote.databinding.ActivityPersonalizationBinding
 import org.calypsonet.keyple.demo.reload.remote.di.scopes.ActivityScoped
 import org.calypsonet.keyple.demo.reload.remote.domain.TicketingService
 import org.eclipse.keyple.core.util.HexUtil
@@ -40,10 +40,13 @@ import timber.log.Timber
 class PersonalizationActivity : AbstractCardActivity() {
 
   @Inject lateinit var ticketingService: TicketingService
+  private lateinit var activityPersonalizationBinding: ActivityPersonalizationBinding
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
-    setContentView(R.layout.activity_personalization)
+    activityPersonalizationBinding = ActivityPersonalizationBinding.inflate(layoutInflater)
+    toolbarBinding = activityPersonalizationBinding.appBarLayout
+    setContentView(activityPersonalizationBinding.root)
   }
 
   override fun initReaders() {
@@ -65,8 +68,8 @@ class PersonalizationActivity : AbstractCardActivity() {
   }
 
   override fun onPause() {
-    cardAnimation.cancelAnimation()
-    loadingAnimation.cancelAnimation()
+    activityPersonalizationBinding.cardAnimation.cancelAnimation()
+    activityPersonalizationBinding.loadingAnimation.cancelAnimation()
     try {
       if (DeviceEnum.getDeviceEnum(prefData.loadDeviceType()!!) == DeviceEnum.CONTACTLESS_CARD) {
         deactivateAndClearAndroidKeypleNfcReader()
@@ -80,19 +83,20 @@ class PersonalizationActivity : AbstractCardActivity() {
   }
 
   private fun showPresentNfcCardInstructions() {
-    presentTxt.text = getString(R.string.present_card_personalization)
-    cardAnimation.visibility = View.VISIBLE
-    cardAnimation.playAnimation()
-    loadingAnimation.cancelAnimation()
-    loadingAnimation.visibility = View.INVISIBLE
+    activityPersonalizationBinding.presentTxt.text =
+        getString(R.string.present_card_personalization)
+    activityPersonalizationBinding.cardAnimation.visibility = View.VISIBLE
+    activityPersonalizationBinding.cardAnimation.playAnimation()
+    activityPersonalizationBinding.loadingAnimation.cancelAnimation()
+    activityPersonalizationBinding.loadingAnimation.visibility = View.INVISIBLE
   }
 
   private fun showNowPersonalizingInformation() {
-    presentTxt.text = getString(R.string.personalization_in_progress)
-    loadingAnimation.visibility = View.VISIBLE
-    loadingAnimation.playAnimation()
-    cardAnimation.cancelAnimation()
-    cardAnimation.visibility = View.INVISIBLE
+    activityPersonalizationBinding.presentTxt.text = getString(R.string.personalization_in_progress)
+    activityPersonalizationBinding.loadingAnimation.visibility = View.VISIBLE
+    activityPersonalizationBinding.loadingAnimation.playAnimation()
+    activityPersonalizationBinding.cardAnimation.cancelAnimation()
+    activityPersonalizationBinding.cardAnimation.visibility = View.INVISIBLE
   }
 
   override fun changeDisplay(
