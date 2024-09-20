@@ -27,6 +27,6 @@ namespace App.domain.data.command
         /// A value indicating whether status codes verification is enabled.
         /// </summary>
         [JsonProperty("stopOnUnsuccessfulStatusWord")]
-        public bool stopOnUnsuccessfulStatusWord { get; set; }
+        public bool StopOnUnsuccessfulStatusWord { get; set; }
     }
 }
