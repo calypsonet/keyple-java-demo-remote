@@ -20,7 +20,7 @@ public class EndRemoteServiceBody
     /// Core API level.
     /// </summary>
     [JsonProperty("coreApiLevel")]
-    public const int CoreApiLevel = ApiInfo.CORE_API_LEVEL;
+    public required int CoreApiLevel { get; set; }
 
     /// <summary>
     /// Gets or sets the OutputData.

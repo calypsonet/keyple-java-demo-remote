@@ -21,13 +21,13 @@ namespace App.domain.data.command
         /// Core API level.
         /// </summary>
         [JsonProperty("coreApiLevel")]
-        public int CoreApiLevel = ApiInfo.CORE_API_LEVEL;
+        public required int CoreApiLevel { get; set; }
 
         /// <summary>
         /// Service name.
         /// </summary>
         [JsonProperty("service")]
-        public const string Service = "TRANSMIT_CARD_SELECTION_REQUESTS";
+        public required string Service { get; set; }
 
         /// <summary>
         /// Parameters for transmitting a card request.
