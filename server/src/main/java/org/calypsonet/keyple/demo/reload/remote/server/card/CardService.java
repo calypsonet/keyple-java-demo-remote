@@ -145,7 +145,7 @@ public class CardService {
               .getCardResource(CardConfigurator.SAM_RESOURCE_PROFILE_NAME);
 
       Card card = cardRepository.readCard(cardReader, calypsoCard, samResource);
-      logger.info("{}", card);
+      // logger.info("{}", card); deactivate until LocalDate is properly processed by KeypleUtil
       activityService.push(
           new Activity()
               .setPlugin(CUSTOM_PLUGIN)
@@ -201,7 +201,7 @@ public class CardService {
               .getCardResource(CardConfigurator.SAM_RESOURCE_PROFILE_NAME);
 
       Card card = cardRepository.readCard(cardReader, calypsoCard, samResource);
-      logger.info("{}", card);
+      // logger.info("{}", card); deactivate until LocalDate is properly processed by KeypleUtil
       activityService.push(
           new Activity()
               .setPlugin(CUSTOM_PLUGIN)
@@ -256,7 +256,7 @@ public class CardService {
             .getCardResource(CardConfigurator.SAM_RESOURCE_PROFILE_NAME);
     try {
       Card card = cardRepository.readCard(cardReader, calypsoCard, samResource);
-      logger.info("{}", card);
+      // logger.info("{}", card); deactivate until LocalDate is properly processed by KeypleUtil
       List<ContractStructure> validContracts = findValidContracts(card);
       activityService.push(
           new Activity()
@@ -319,7 +319,7 @@ public class CardService {
         // If card has not been read previously, throw error
         return new WriteContractOutputDto(3);
       }
-      logger.info("{}", card);
+      // logger.info("{}", card); deactivate until LocalDate is properly processed by KeypleUtil
       insertNewContract(inputData.getContractTariff(), inputData.getTicketToLoad(), card);
       int statusCode = cardRepository.writeCard(cardReader, calypsoCard, samResource, card);
       activityService.push(
