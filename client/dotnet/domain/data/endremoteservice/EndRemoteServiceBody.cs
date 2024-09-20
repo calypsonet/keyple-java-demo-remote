@@ -8,7 +8,6 @@
 //
 // SPDX-License-Identifier: EPL-2.0
 
-using App.domain.data;
 using Newtonsoft.Json;
 
 /// <summary>
