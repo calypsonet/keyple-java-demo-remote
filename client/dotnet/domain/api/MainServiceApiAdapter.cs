@@ -103,7 +103,8 @@ namespace App.domain.api
             ExecuteRemoteServiceBody bodyContent = new ExecuteRemoteServiceBody
             {
                 ServiceId = serviceId,
-                InputData = inputData
+                InputData = inputData,
+                IsReaderContactless = true
             };
 
             // Create and fill RemoteServiceDto object

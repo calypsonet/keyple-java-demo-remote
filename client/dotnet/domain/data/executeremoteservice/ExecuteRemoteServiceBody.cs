@@ -30,6 +30,12 @@ namespace App.domain.data.executeremoteservice
         public required string ServiceId { get; set; }
 
         /// <summary>
+        /// A value indicating whether the reader is contactless.
+        /// </summary>
+        [JsonProperty("isReaderContactless")]
+        public bool IsReaderContactless { get; set; }
+
+        /// <summary>
         /// Input data.
         /// </summary>
         [JsonProperty("inputData")]

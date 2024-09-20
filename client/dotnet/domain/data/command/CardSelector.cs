@@ -21,8 +21,8 @@ namespace App.domain.data.command
         /// <summary>
         /// Card protocol.
         /// </summary>
-        [JsonProperty("cardProtocol")]
-        public string? CardProtocol { get; set; }
+        [JsonProperty("logicalProtocolName")]
+        public string? LogicalProtocolName { get; set; }
 
         /// <summary>
         /// Power On Data regular expression filter.
