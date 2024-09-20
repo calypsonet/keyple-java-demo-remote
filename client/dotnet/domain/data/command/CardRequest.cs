@@ -26,7 +26,7 @@ namespace App.domain.data.command
         /// <summary>
         /// A value indicating whether status codes verification is enabled.
         /// </summary>
-        [JsonProperty("isStatusCodesVerificationEnabled")]
-        public bool IsStatusCodesVerificationEnabled { get; set; }
+        [JsonProperty("stopOnUnsuccessfulStatusWord")]
+        public bool stopOnUnsuccessfulStatusWord { get; set; }
     }
 }

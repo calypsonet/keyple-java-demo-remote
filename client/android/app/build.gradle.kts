@@ -62,7 +62,7 @@ android {
 
     buildTypes {
         getByName("release") {
-            isMinifyEnabled = true // Enables code shrinking for the release build type.
+            isMinifyEnabled = false // Disables code shrinking for the release build type.
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -123,10 +123,10 @@ dependencies {
     implementation("org.eclipse.keypop:keypop-calypso-card-java-api:2.1.0")
     implementation("org.eclipse.keyple:keyple-common-java-api:2.0.1")
     implementation("org.eclipse.keyple:keyple-util-java-lib:2.4.0")
-    implementation("org.eclipse.keyple:keyple-service-java-lib:3.2.1")
-    implementation("org.eclipse.keyple:keyple-distributed-network-java-lib:2.3.1")
-    implementation("org.eclipse.keyple:keyple-distributed-local-java-lib:2.3.1")
-    implementation("org.eclipse.keyple:keyple-card-calypso-java-lib:3.1.1")
+    implementation("org.eclipse.keyple:keyple-service-java-lib:3.3.1")
+    implementation("org.eclipse.keyple:keyple-distributed-network-java-lib:2.5.1")
+    implementation("org.eclipse.keyple:keyple-distributed-local-java-lib:2.5.1")
+    implementation("org.eclipse.keyple:keyple-card-calypso-java-lib:3.1.3")
     implementation("org.eclipse.keyple:keyple-plugin-android-nfc-java-lib:2.2.0")
     implementation("org.eclipse.keyple:keyple-plugin-android-omapi-java-lib:2.1.0")
     // End Keyple configuration

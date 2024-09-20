@@ -8,6 +8,7 @@
 //
 // SPDX-License-Identifier: EPL-2.0
 
+using App.domain.data;
 using Newtonsoft.Json;
 
 /// <summary>
@@ -19,7 +20,7 @@ public class EndRemoteServiceBody
     /// Core API level.
     /// </summary>
     [JsonProperty("coreApiLevel")]
-    public required int CoreApiLevel { get; set; }
+    public const int CoreApiLevel = ApiInfo.CORE_API_LEVEL;
 
     /// <summary>
     /// Gets or sets the OutputData.
