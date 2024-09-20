@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
+
+## [2024.09.20]
 ### Fixed
 - Android client build.
 ### Upgraded
@@ -101,8 +103,9 @@ New dependencies
 - `keyple-plugin-android-nfc-java-lib:2.0.1`
 - `keyple-plugin-android-omapi-java-lib:2.0.1`
 - `keyple-util-java-lib:2.3.0`
-  
-[Unreleased]: https://github.com/calypsonet/keyple-java-demo-remote/compare/2024.04.23...HEAD
+
+[Unreleased]: https://github.com/calypsonet/keyple-java-demo-remote/compare/2024.09.20...HEAD
+[2024.09.20]: https://github.com/calypsonet/keyple-java-demo-remote/compare/2024.04.23...2024.09.20
 [2024.04.23]: https://github.com/calypsonet/keyple-java-demo-remote/compare/2023.12.06...2024.04.23
 [2023.12.06]: https://github.com/calypsonet/keyple-java-demo-remote/compare/2023.05.31...2023.12.06
 [2023.05.31]: https://github.com/calypsonet/keyple-java-demo-remote/compare/2023.03.03...2023.05.31
