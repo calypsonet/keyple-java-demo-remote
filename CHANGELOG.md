@@ -8,6 +8,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [2024.10.01]
 ### Upgraded
 - Keyple components
+  - keyple-service-java-lib `3.3.1` -> `3.3.3`
+  - keyple-card-calypso-java-lib `3.1.3` -> `3.1.4`
   - keyple-plugin-pcsc-java-lib `2.2.3` -> `2.3.1`
 
 ## [2024.09.20]
