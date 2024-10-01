@@ -1,6 +1,6 @@
 {
   "name": "dashboard-app",
-  "version": "2024.09.20",
+  "version": "2024.10.01",
   "private": true,
   "dependencies": {
     "@material-ui/core": "^4.11.3",
