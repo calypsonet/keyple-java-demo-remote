@@ -109,7 +109,8 @@ New dependencies
 - `keyple-plugin-android-omapi-java-lib:2.0.1`
 - `keyple-util-java-lib:2.3.0`
 
-[Unreleased]: https://github.com/calypsonet/keyple-java-demo-remote/compare/2024.09.20...HEAD
+[Unreleased]: https://github.com/calypsonet/keyple-java-demo-remote/compare/2024.10.01...HEAD
+[2024.10.01]: https://github.com/calypsonet/keyple-java-demo-remote/compare/2024.09.20...2024.10.01
 [2024.09.20]: https://github.com/calypsonet/keyple-java-demo-remote/compare/2024.04.23...2024.09.20
 [2024.04.23]: https://github.com/calypsonet/keyple-java-demo-remote/compare/2023.12.06...2024.04.23
 [2023.12.06]: https://github.com/calypsonet/keyple-java-demo-remote/compare/2023.05.31...2023.12.06
